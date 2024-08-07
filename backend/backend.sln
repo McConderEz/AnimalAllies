@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalAllies.API", "src\AnimalAllies.API\AnimalAllies.API.csproj", "{AAC125D5-C812-43F0-BB44-37FB8560B798}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalAllies.Domain", "src\AnimalAllies.Domain\AnimalAllies.Domain.csproj", "{B946D8FA-8138-4B94-9A72-EEDCBB8E3CD0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalAllies.Application", "src\AnimalAllies.Application\AnimalAllies.Application.csproj", "{02907C56-F3B8-48E0-B698-F539E475F673}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalAllies.Infrastructure", "src\AnimalAllies.Infrastructure\AnimalAllies.Infrastructure.csproj", "{71EC93BA-146F-4C27-AFDF-A3C78C08C5D6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AAC125D5-C812-43F0-BB44-37FB8560B798}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAC125D5-C812-43F0-BB44-37FB8560B798}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAC125D5-C812-43F0-BB44-37FB8560B798}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAC125D5-C812-43F0-BB44-37FB8560B798}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B946D8FA-8138-4B94-9A72-EEDCBB8E3CD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B946D8FA-8138-4B94-9A72-EEDCBB8E3CD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B946D8FA-8138-4B94-9A72-EEDCBB8E3CD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B946D8FA-8138-4B94-9A72-EEDCBB8E3CD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02907C56-F3B8-48E0-B698-F539E475F673}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02907C56-F3B8-48E0-B698-F539E475F673}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02907C56-F3B8-48E0-B698-F539E475F673}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02907C56-F3B8-48E0-B698-F539E475F673}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71EC93BA-146F-4C27-AFDF-A3C78C08C5D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71EC93BA-146F-4C27-AFDF-A3C78C08C5D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71EC93BA-146F-4C27-AFDF-A3C78C08C5D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71EC93BA-146F-4C27-AFDF-A3C78C08C5D6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
