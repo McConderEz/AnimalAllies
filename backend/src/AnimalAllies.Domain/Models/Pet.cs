@@ -6,7 +6,7 @@ namespace AnimalAllies.Domain.Models;
 public class Pet: Entity
 {
     private List<Requisite> _requisites = [];
-    private Pet(int id,
+    private Pet(
         string name,
         string description,
         string color,
@@ -19,10 +19,9 @@ public class Pet: Entity
         Address address,
         PhoneNumber phone,
         HelpStatus status,
-        int speciesId,
-        Species species = null,
-        List<Requisite> requisites = null) 
-        : base(id)
+        Species species,
+        AnimalType animalType,
+        List<Requisite> requisites) 
     {
         Name = name;
         Description = description;
@@ -36,8 +35,8 @@ public class Pet: Entity
         Address = address;
         Phone = phone;
         HelpStatus = status;
-        SpeciesId = speciesId;
         Species = species;
+        AnimalType = animalType;
         AddRequisite(requisites);
     }
     
@@ -53,17 +52,16 @@ public class Pet: Entity
     public Address Address { get; }
     public PhoneNumber Phone { get; }
     public HelpStatus HelpStatus { get; }
+    public Species Species { get; }
+    public AnimalType AnimalType { get; }
     public DateTime CreationTime { get; } = DateTime.Now;
     
-    public int SpeciesId { get; }
-    public virtual Species? Species { get; }
     
     public IReadOnlyList<Requisite> Requisites => _requisites;
 
     public void AddRequisite(List<Requisite> requisites) => _requisites.AddRange(requisites);
 
     public static Result<Pet> Create(
-        int id,
         string name,
         string description,
         string color,
@@ -79,20 +77,20 @@ public class Pet: Entity
         int flatNumber,
         string phone,
         string status,
-        int speciesId,
-        Species species = null,
-        List<Requisite> requisites = null)
+        string speciesValue,
+        string animalTypeValue,
+        List<Requisite> requisites)
     {
-        if (string.IsNullOrWhiteSpace(name) || name.Length > Constraints.Constraints.MAX_PET_NAME_LENGTH)
+        if (string.IsNullOrWhiteSpace(name) || name.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
             return Result.Failure<Pet>(
-                $"{name} cannot be null or have length more than {Constraints.Constraints.MAX_PET_NAME_LENGTH}");
+                $"{name} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}");
         }
         
-        if (string.IsNullOrWhiteSpace(description) || description.Length > Constraints.Constraints.MAX_PET_DESCRIPTION_LENGTH)
+        if (string.IsNullOrWhiteSpace(description) || description.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
         {
             return Result.Failure<Pet>(
-                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_PET_DESCRIPTION_LENGTH}");
+                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_DESCRIPTION_LENGTH}");
         }
         
         if (string.IsNullOrWhiteSpace(color) || color.Length > Constraints.Constraints.MAX_PET_COLOR_LENGTH)
@@ -107,16 +105,16 @@ public class Pet: Entity
                 $"{healthInformation} cannot be null or have length more than {Constraints.Constraints.MAX_PET_INFORMATION_LENGTH}");
         }
         
-        if (weight > Constraints.Constraints.MIN_PET_WEIGHT)
+        if (weight > Constraints.Constraints.MIN_VALUE)
         {
             return Result.Failure<Pet>(
-                $"{weight} must be more than {Constraints.Constraints.MIN_PET_WEIGHT}");
+                $"{weight} must be more than {Constraints.Constraints.MIN_VALUE}");
         }
         
-        if (height > Constraints.Constraints.MIN_PET_HEIGHT)
+        if (height > Constraints.Constraints.MIN_VALUE)
         {
             return Result.Failure<Pet>(
-                $"{height} must be more than {Constraints.Constraints.MIN_PET_HEIGHT}");
+                $"{height} must be more than {Constraints.Constraints.MIN_VALUE}");
         }
 
         if (birthDate > DateOnly.FromDateTime(DateTime.Now))
@@ -127,6 +125,8 @@ public class Pet: Entity
         var address = ValueObjects.Address.Create(city, district, houseNumber, flatNumber);
         var phoneNumber = PhoneNumber.Create(phone);
         var helpStatus = ValueObjects.HelpStatus.Create(status);
+        var species = ValueObjects.Species.Create(speciesValue);
+        var animalType = ValueObjects.AnimalType.Create(animalTypeValue);
 
         if (address.IsFailure)
         {
@@ -143,7 +143,17 @@ public class Pet: Entity
             return Result.Failure<Pet>(helpStatus.Error);
         }
 
-        var pet = new Pet(id,
+        if (species.IsFailure)
+        {
+            return Result.Failure<Pet>(species.Error);
+        }
+        
+        if (animalType.IsFailure)
+        {
+            return Result.Failure<Pet>(animalType.Error);
+        }
+
+        var pet = new Pet(
             name,
             description,
             color,
@@ -156,10 +166,9 @@ public class Pet: Entity
             address.Value,
             phoneNumber.Value,
             helpStatus.Value,
-            speciesId,
-            species,
-            requisites == null ? requisites : new List<Requisite>()
-        );
+            species.Value,
+            animalType.Value,
+            requisites ?? []);
 
         return Result.Success(pet);
     }

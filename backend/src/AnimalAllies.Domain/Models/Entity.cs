@@ -4,7 +4,9 @@ namespace AnimalAllies.Domain.Models;
 
 public abstract class Entity
 {
-    public int Id { get; }
+    public Guid Id { get; } = Guid.NewGuid();
 
-    protected Entity(int id) => Id = id;
+    protected Entity() {}
+    
+    protected Entity(Guid id) => Id = id;
 }

@@ -4,9 +4,6 @@ namespace AnimalAllies.Domain.ValueObjects;
 
 public class Address : ValueObject
 {
-    public const int MAX_CITY_SIZE = 100;
-    public const int MAX_DISTRICT_SIZE = 100;
-
     public string City { get; }
     public string District { get; }
     public int HouseNumber { get; }
@@ -22,10 +19,10 @@ public class Address : ValueObject
 
     public static Result<Address> Create(string city, string district, int houseNumber, int flatNumber)
     {
-        if (string.IsNullOrWhiteSpace(city) || city.Length > MAX_CITY_SIZE)
+        if (string.IsNullOrWhiteSpace(city) || city.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
             return Result.Failure<Address>($"{nameof(city)} incorrect format");
 
-        if (string.IsNullOrWhiteSpace(district) || district.Length > MAX_DISTRICT_SIZE)
+        if (string.IsNullOrWhiteSpace(district) || district.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
             return Result.Failure<Address>($"{nameof(district)} incorrect format");
 
         var address = new Address(city, district, houseNumber, flatNumber);
