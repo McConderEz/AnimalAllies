@@ -8,6 +8,7 @@ public class Volunteer: Entity
 {
     private List<Requisite> _requisites = [];
     private List<Pet> _pets = [];
+    private List<SocialNetwork> _socialNetworks = [];
     
     private Volunteer(
         FullName fullName,
@@ -17,7 +18,7 @@ public class Volunteer: Entity
         int petsSearchingHome,
         int petsFoundHome,
         PhoneNumber phone,
-        SocialNetwork socialNetwork,
+        List<SocialNetwork> socialNetworks,
         List<Requisite> requisites,
         List<Pet> pets)
     {
@@ -28,7 +29,7 @@ public class Volunteer: Entity
         PetsSearchingHome = petsSearchingHome;
         PetsFoundHome = petsFoundHome;
         Phone = phone;
-        SocialNetwork = socialNetwork;
+        AddSocialNetworks(socialNetworks);
         AddRequisites(requisites);
         AddPets(pets);
     }
@@ -40,13 +41,14 @@ public class Volunteer: Entity
     public int PetsSearchingHome { get; }
     public int PetsFoundHome { get; }
     public PhoneNumber Phone { get; }
-    public SocialNetwork SocialNetwork { get; }
+    public List<SocialNetwork> SocialNetwork => _socialNetworks;
 
     public IReadOnlyList<Requisite> Requisites => _requisites;
     public IReadOnlyList<Pet> Pets => _pets;
 
     public void AddRequisites(List<Requisite> requisites) => _requisites.AddRange(requisites);
     public void AddPets(List<Pet> pets) => _pets.AddRange(pets);
+    public void AddSocialNetworks(List<SocialNetwork> socialNetworks) => _socialNetworks.AddRange(socialNetworks);
 
     public static Result<Volunteer> Create(
         string firstName,
@@ -58,8 +60,7 @@ public class Volunteer: Entity
         int petsSearchingHome,
         int petsFoundHome,
         string phoneNumber,
-        string socialNetworkTitle,
-        string socialNetworkUrl,
+        List<SocialNetwork> socialNetworks,
         List<Requisite> requisites,
         List<Pet> pets)
     {
@@ -104,13 +105,6 @@ public class Volunteer: Entity
             return Result.Failure<Volunteer>(phone.Error);
         }
 
-        var socialNetwork = SocialNetwork.Create(socialNetworkTitle, socialNetworkUrl);
-
-        if (socialNetwork.IsFailure)
-        {
-            return Result.Failure<Volunteer>(socialNetwork.Error);
-        }
-
         var volunteer = new Volunteer(
             fullName.Value,
             description,
@@ -119,7 +113,7 @@ public class Volunteer: Entity
             petsSearchingHome,
             petsFoundHome,
             phone.Value,
-            socialNetwork.Value,
+            socialNetworks ?? [],
             requisites ?? [],
             pets ?? []);
 
