@@ -12,23 +12,18 @@ public abstract class Entity
     
     public override bool Equals(object? obj)
     {
-        if(obj == null)
+        if(obj is not Entity other)
             return false;
-
-        if (GetType() != obj.GetType())
-            return false;
-
-        var entity = (Entity)obj;
         
-        if (!ReferenceEquals(this, entity))
+        if (!ReferenceEquals(this, other))
             return false;
 
-        return Id == entity.Id;
+        return Id == other.Id;
     }
 
     public override int GetHashCode()
     {
-        return Id.GetHashCode();
+        return (GetType().ToString() + Id).GetHashCode();
     }
 
     public static bool operator ==(Entity? a, Entity? b)
