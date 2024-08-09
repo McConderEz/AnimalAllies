@@ -6,6 +6,7 @@ namespace AnimalAllies.Domain.Models;
 public class Pet: Entity
 {
     private List<Requisite> _requisites = [];
+    private List<PetPhoto> _petPhotos = [];
     private Pet(
         string name,
         string description,
@@ -21,7 +22,8 @@ public class Pet: Entity
         HelpStatus status,
         Species species,
         AnimalType animalType,
-        List<Requisite> requisites) 
+        List<Requisite> requisites,
+        List<PetPhoto> petPhotos) 
     {
         Name = name;
         Description = description;
@@ -37,7 +39,8 @@ public class Pet: Entity
         HelpStatus = status;
         Species = species;
         AnimalType = animalType;
-        AddRequisite(requisites);
+        AddRequisites(requisites);
+        AddPetPhotos(petPhotos);
     }
     
     public string Name { get; } = String.Empty;
@@ -46,9 +49,9 @@ public class Pet: Entity
     public string HealthInformation { get; } = string.Empty;
     public double Weight { get; }
     public double Height { get; }
-    public bool IsCastrated { get; } = false;
+    public bool IsCastrated { get; private set; } = false;
     public DateOnly BirthDate { get; }
-    public bool IsVaccinated { get; } = false;
+    public bool IsVaccinated { get; private set; } = false;
     public Address Address { get; }
     public PhoneNumber Phone { get; }
     public HelpStatus HelpStatus { get; }
@@ -58,9 +61,14 @@ public class Pet: Entity
     
     
     public IReadOnlyList<Requisite> Requisites => _requisites;
+    public IReadOnlyList<PetPhoto> PetPhotos => _petPhotos;
 
-    public void AddRequisite(List<Requisite> requisites) => _requisites.AddRange(requisites);
+    public void AddRequisites(List<Requisite> requisites) => _requisites.AddRange(requisites);
+    public void AddPetPhotos(List<PetPhoto> petPhotos) => _petPhotos.AddRange(petPhotos);
 
+    public void SetVaccinated() => IsVaccinated = !IsVaccinated;
+    public void SetCastrated() => IsCastrated = !IsCastrated;
+    
     public static Result<Pet> Create(
         string name,
         string description,
@@ -79,7 +87,8 @@ public class Pet: Entity
         string status,
         string speciesValue,
         string animalTypeValue,
-        List<Requisite> requisites)
+        List<Requisite> requisites,
+        List<PetPhoto> petPhotos)
     {
         if (string.IsNullOrWhiteSpace(name) || name.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
@@ -168,7 +177,8 @@ public class Pet: Entity
             helpStatus.Value,
             species.Value,
             animalType.Value,
-            requisites ?? []);
+            requisites ?? [],
+            petPhotos ?? []);
 
         return Result.Success(pet);
     }
