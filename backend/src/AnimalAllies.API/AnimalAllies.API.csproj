@@ -14,7 +14,7 @@
     <ItemGroup>
       <ProjectReference Include="..\AnimalAllies.Application\AnimalAllies.Application.csproj" />
       <ProjectReference Include="..\AnimalAllies.Domain\AnimalAllies.Domain.csproj" />
-      <ProjectReference Include="..\AnimalAllies.Infrastructure\AnimalAllies.Infrastructure.csproj" />
+      <ProjectReference Include="..\AnimalAllies.Infrastructure.Postgres\AnimalAllies.Infrastructure.Postgres.csproj" />
     </ItemGroup>
 
 </Project>

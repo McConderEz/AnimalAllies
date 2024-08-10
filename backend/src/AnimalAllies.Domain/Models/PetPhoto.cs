@@ -4,6 +4,7 @@ namespace AnimalAllies.Domain.Models;
 
 public class PetPhoto: Entity
 {
+    private PetPhoto(){}
     private PetPhoto(string path, bool isMain)
     {
         Path = path;

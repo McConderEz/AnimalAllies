@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalAllies.Domain", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalAllies.Application", "src\AnimalAllies.Application\AnimalAllies.Application.csproj", "{02907C56-F3B8-48E0-B698-F539E475F673}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalAllies.Infrastructure", "src\AnimalAllies.Infrastructure\AnimalAllies.Infrastructure.csproj", "{71EC93BA-146F-4C27-AFDF-A3C78C08C5D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalAllies.Infrastructure.Postgres", "src\AnimalAllies.Infrastructure.Postgres\AnimalAllies.Infrastructure.Postgres.csproj", "{71EC93BA-146F-4C27-AFDF-A3C78C08C5D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

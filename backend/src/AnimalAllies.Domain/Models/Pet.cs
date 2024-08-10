@@ -7,6 +7,7 @@ public class Pet: Entity
 {
     private List<Requisite> _requisites = [];
     private List<PetPhoto> _petPhotos = [];
+    private Pet(){}
     private Pet(
         string name,
         string description,
@@ -43,10 +44,10 @@ public class Pet: Entity
         AddPetPhotos(petPhotos);
     }
     
-    public string Name { get; } = String.Empty;
-    public string Description { get; } = string.Empty;
-    public string Color { get; } = string.Empty;
-    public string HealthInformation { get; } = string.Empty;
+    public string Name { get; } 
+    public string Description { get; }
+    public string Color { get; }
+    public string HealthInformation { get; } 
     public double Weight { get; }
     public double Height { get; }
     public bool IsCastrated { get; private set; } = false;

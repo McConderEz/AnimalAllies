@@ -10,6 +10,8 @@ public class Volunteer: Entity
     private List<Pet> _pets = [];
     private List<SocialNetwork> _socialNetworks = [];
     
+    private Volunteer(){}
+    
     private Volunteer(
         FullName fullName,
         string description,
@@ -35,13 +37,13 @@ public class Volunteer: Entity
     }
     
     public FullName FullName { get; }
-    public string Description { get; } = string.Empty;
+    public string Description { get; } 
     public int WorkExperience { get; }
     public int PetsNeedsHelp { get; }
     public int PetsSearchingHome { get; }
     public int PetsFoundHome { get; }
     public PhoneNumber Phone { get; }
-    public List<SocialNetwork> SocialNetwork => _socialNetworks;
+    public List<SocialNetwork> SocialNetworks => _socialNetworks;
 
     public IReadOnlyList<Requisite> Requisites => _requisites;
     public IReadOnlyList<Pet> Pets => _pets;
