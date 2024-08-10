@@ -5,10 +5,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IConfiguration>();
-builder.Services.AddDbContext<AnimalAlliesDbContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.AddScoped<AnimalAlliesDbContext>();
 
 builder.Services.AddControllers();
 
