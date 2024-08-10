@@ -11,7 +11,7 @@ public class AnimalType: ValueObject
     private static readonly AnimalType[] _all = [Cat, Dog];
     
     public string Value { get; }
-    
+    private AnimalType(){}
     private AnimalType(string value)
     {
         Value = value;

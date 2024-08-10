@@ -7,7 +7,7 @@ public class Species: ValueObject
 {
     
     public string Value { get; }
-    
+    private Species(){}
     private Species(string value)
     {
         Value = value;

@@ -6,9 +6,10 @@ namespace AnimalAllies.Domain.ValueObjects;
 public class Requisite : ValueObject
 {
     
-    public string Title { get; } = string.Empty;
-    public string Description { get; } = string.Empty;
+    public string Title { get; } 
+    public string Description { get; }
     
+    private Requisite(){}
     private Requisite(string title, string description)
     {
         Title = title;

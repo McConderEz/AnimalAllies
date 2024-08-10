@@ -1,5 +1,6 @@
 using AnimalAllies.Domain.Constraints;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,14 +12,14 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
     {
         builder.HasKey(x => x.Id);
 
+        
         builder.ToTable(t =>
         {
-            t.HasCheckConstraint("ck_pet_weight", "Weight > 0");
-            t.HasCheckConstraint("ck_pet_height", "Height > 0");
-            t.HasCheckConstraint("ck_pet_birthdate", "YEAR(BirthDate)<=YEAR(GETDATE())");
+            t.HasCheckConstraint("CK_Pet_Weight", "\"Weight\" > 0");
+            t.HasCheckConstraint("CK_Pet_Height", "\"Height\" > 0");
         });
         
-        builder.HasIndex(x => x.Address);
+        
 
         builder.Property(x => x.Name)
             .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
@@ -53,6 +54,7 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
             a.Property(x => x.FlatNumber)
                 .HasColumnName("flat_number")
                 .HasMaxLength(20);
+            
         });
 
         builder.ComplexProperty(x => x.Phone, p =>

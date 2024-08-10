@@ -12,15 +12,15 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
     public void Configure(EntityTypeBuilder<Volunteer> builder)
     {
         builder.HasKey(x => x.Id);
-
-        builder.HasIndex(x => x.Phone).IsUnique();
         
-        builder.ToTable(t =>
+        
+        builder
+            .ToTable(t =>
         {
-            t.HasCheckConstraint("ck_volunteer_workExp", "WorkExperience >= 0");
-            t.HasCheckConstraint("ck_volunteer_petsNeedsHelp", "PetsNeedsHelp >= 0");
-            t.HasCheckConstraint("ck_volunteer_petsSearchingHome", "PetsSearchingHome >= 0");
-            t.HasCheckConstraint("ck_volunteer_petsFoundHome", "PetsFoundHome >= 0");
+            t.HasCheckConstraint("CK_Volunteer_WorkExperience", "\"WorkExperience\" >= 0");
+            t.HasCheckConstraint("CK_Volunteer_PetsNeedsHelp", "\"PetsNeedsHelp\" >= 0");
+            t.HasCheckConstraint("CK_Volunteer_PetsSearchingHome", "\"PetsSearchingHome\" >= 0");
+            t.HasCheckConstraint("CK_Volunteer_PetsFoundHome", "\"PetsFoundHome\" >= 0");
         });
         
         builder.Property(x => x.Description)
