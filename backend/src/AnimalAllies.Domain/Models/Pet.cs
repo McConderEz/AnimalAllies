@@ -44,20 +44,20 @@ public class Pet: Entity
         AddPetPhotos(petPhotos);
     }
     
-    public string Name { get; } 
-    public string Description { get; }
-    public string Color { get; }
-    public string HealthInformation { get; } 
-    public double Weight { get; }
-    public double Height { get; }
+    public string Name { get; private set; } 
+    public string Description { get; private set; }
+    public string Color { get; private set; }
+    public string HealthInformation { get; private set;} 
+    public double Weight { get; private set; }
+    public double Height { get; private set; }
     public bool IsCastrated { get; private set; } = false;
-    public DateOnly BirthDate { get; }
+    public DateOnly BirthDate { get; private set; }
     public bool IsVaccinated { get; private set; } = false;
-    public Address Address { get; }
-    public PhoneNumber Phone { get; }
-    public HelpStatus HelpStatus { get; }
-    public Species Species { get; }
-    public AnimalType AnimalType { get; }
+    public Address Address { get; private set; }
+    public PhoneNumber Phone { get; private set; }
+    public HelpStatus HelpStatus { get; private set; }
+    public Species Species { get; private set; }
+    public AnimalType AnimalType { get; private set; }
     public DateTime CreationTime { get; } = DateTime.Now;
     
     

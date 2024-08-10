@@ -11,8 +11,10 @@ public class PetPhoto: Entity
         IsMain = isMain;
     }
 
-    public string Path { get; } = string.Empty;
-    public bool IsMain { get; } = false;
+    public string Path { get; private set; }
+    public bool IsMain { get; private set; } = false;
+
+    public void SetMain() => IsMain = !IsMain;
 
     public static Result<PetPhoto> Create(string path, bool isMain)
     {

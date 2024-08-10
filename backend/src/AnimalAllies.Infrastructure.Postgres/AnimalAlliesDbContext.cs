@@ -1,6 +1,7 @@
 using AnimalAllies.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Infrastructure;
 
@@ -10,15 +11,17 @@ public class AnimalAlliesDbContext: DbContext
 
     public AnimalAlliesDbContext(){}
     
-    /*public AnimalAlliesDbContext(IConfiguration configuration)
+    public AnimalAlliesDbContext(IConfiguration configuration)
     {
         _configuration = configuration;
-    }*/
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        //optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
-        optionsBuilder.UseNpgsql("Host = localhost; Database = animalAllies; Username = postgres; Password = 345890; ");
+        optionsBuilder
+            .UseNpgsql(_configuration.GetConnectionString("DefaultConnection"))
+            .UseLoggerFactory(CreateLoggerFactory)
+            .EnableSensitiveDataLogging();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -26,6 +29,9 @@ public class AnimalAlliesDbContext: DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AnimalAlliesDbContext).Assembly);
     }
 
+    public static readonly ILoggerFactory CreateLoggerFactory
+        = LoggerFactory.Create(builder => { builder.AddConsole(); });
+    
     public DbSet<Volunteer> Volunteers { get; set; }
     public DbSet<Pet> Pets { get; set; }
     public DbSet<PetPhoto> PetPhotos { get; set; }

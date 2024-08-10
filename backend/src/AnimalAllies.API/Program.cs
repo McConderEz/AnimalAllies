@@ -1,8 +1,10 @@
 using AnimalAllies.Infrastructure;
+using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped<IConfiguration>();
 builder.Services.AddDbContext<AnimalAlliesDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
