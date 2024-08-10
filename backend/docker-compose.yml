@@ -1,0 +1,15 @@
+﻿services:
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "animalAllies"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "345890"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres-data:
