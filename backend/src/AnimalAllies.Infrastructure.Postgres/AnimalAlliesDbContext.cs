@@ -8,8 +8,6 @@ namespace AnimalAllies.Infrastructure;
 public class AnimalAlliesDbContext: DbContext
 {
     private readonly IConfiguration _configuration;
-
-    public AnimalAlliesDbContext(){}
     
     public AnimalAlliesDbContext(IConfiguration configuration)
     {

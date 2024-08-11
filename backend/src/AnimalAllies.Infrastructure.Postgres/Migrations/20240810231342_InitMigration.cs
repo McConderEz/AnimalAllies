@@ -24,6 +24,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                     first_name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     patronymic = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     second_name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    phone_number = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false),
                     Requisites = table.Column<string>(type: "jsonb", nullable: true),
                     SocialNetworks = table.Column<string>(type: "jsonb", nullable: true)
                 },
@@ -44,9 +45,11 @@ namespace AnimalAllies.Infrastructure.Migrations
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "character varying(350)", maxLength: 350, nullable: false),
                     Color = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    HealthInformation = table.Column<string>(type: "text", nullable: false),
                     Weight = table.Column<double>(type: "double precision", nullable: false),
                     Height = table.Column<double>(type: "double precision", nullable: false),
                     IsCastrated = table.Column<bool>(type: "boolean", nullable: false),
+                    BirthDate = table.Column<DateOnly>(type: "date", nullable: false),
                     IsVaccinated = table.Column<bool>(type: "boolean", nullable: false),
                     VolunteerId = table.Column<Guid>(type: "uuid", nullable: true),
                     city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
@@ -77,6 +80,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Path = table.Column<string>(type: "character varying(260)", maxLength: 260, nullable: false),
+                    IsMain = table.Column<bool>(type: "boolean", nullable: false),
                     PetId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>

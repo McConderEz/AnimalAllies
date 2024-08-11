@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AnimalAllies.Infrastructure.Migrations
 {
     [DbContext(typeof(AnimalAlliesDbContext))]
-    [Migration("20240810191210_InitMigration")]
+    [Migration("20240810231342_InitMigration")]
     partial class InitMigration
     {
         /// <inheritdoc />
@@ -32,6 +32,9 @@ namespace AnimalAllies.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateOnly>("BirthDate")
+                        .HasColumnType("date");
+
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -41,6 +44,10 @@ namespace AnimalAllies.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(350)
                         .HasColumnType("character varying(350)");
+
+                    b.Property<string>("HealthInformation")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<double>("Height")
                         .HasColumnType("double precision");
@@ -148,6 +155,9 @@ namespace AnimalAllies.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("IsMain")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Path")
                         .IsRequired()
                         .HasMaxLength(260)
@@ -207,6 +217,17 @@ namespace AnimalAllies.Infrastructure.Migrations
                                 .HasMaxLength(50)
                                 .HasColumnType("character varying(50)")
                                 .HasColumnName("second_name");
+                        });
+
+                    b.ComplexProperty<Dictionary<string, object>>("Phone", "AnimalAllies.Domain.Models.Volunteer.Phone#PhoneNumber", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("Number")
+                                .IsRequired()
+                                .HasMaxLength(14)
+                                .HasColumnType("character varying(14)")
+                                .HasColumnName("phone_number");
                         });
 
                     b.HasKey("Id");

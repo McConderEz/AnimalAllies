@@ -38,6 +38,14 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
 
         builder.Property(x => x.PetsFoundHome)
             .IsRequired();
+        
+        builder.ComplexProperty(x => x.Phone, p =>
+        {
+            p.IsRequired();
+            p.Property(x => x.Number)
+                .HasColumnName("phone_number")
+                .HasMaxLength(14);
+        });
 
         builder.ComplexProperty(x => x.FullName, f =>
         {
