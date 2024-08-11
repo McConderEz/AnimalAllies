@@ -72,19 +72,7 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
                 .HasColumnName("help_status");
         });
 
-        builder.ComplexProperty(x => x.Species, s =>
-        {
-            s.IsRequired();
-            s.Property(x => x.Value)
-                .HasColumnName("species");
-        });
-
-        builder.ComplexProperty(x => x.AnimalType, a =>
-        {
-            a.IsRequired();
-            a.Property(x => x.Value)
-                .HasColumnName("animal_type");
-        });
+        
 
         builder.HasMany(x => x.PetPhotos)
             .WithOne()

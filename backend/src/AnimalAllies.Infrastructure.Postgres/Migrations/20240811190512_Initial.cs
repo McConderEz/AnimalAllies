@@ -12,6 +12,18 @@ namespace AnimalAllies.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "SpeciesList",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SpeciesList", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Volunteers",
                 columns: table => new
                 {
@@ -38,6 +50,25 @@ namespace AnimalAllies.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Breed",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    SpeciesId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Breed", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Breed_SpeciesList_SpeciesId",
+                        column: x => x.SpeciesId,
+                        principalTable: "SpeciesList",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Pets",
                 columns: table => new
                 {
@@ -51,15 +82,15 @@ namespace AnimalAllies.Infrastructure.Migrations
                     IsCastrated = table.Column<bool>(type: "boolean", nullable: false),
                     BirthDate = table.Column<DateOnly>(type: "date", nullable: false),
                     IsVaccinated = table.Column<bool>(type: "boolean", nullable: false),
+                    SpeciesID = table.Column<int>(type: "integer", nullable: false),
+                    BreedName = table.Column<string>(type: "text", nullable: false),
                     VolunteerId = table.Column<Guid>(type: "uuid", nullable: true),
                     city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     district = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     flat_number = table.Column<int>(type: "integer", maxLength: 20, nullable: false),
                     house_number = table.Column<int>(type: "integer", maxLength: 30, nullable: false),
-                    animal_type = table.Column<string>(type: "text", nullable: false),
                     help_status = table.Column<string>(type: "text", nullable: false),
                     phone_number = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false),
-                    species = table.Column<string>(type: "text", nullable: false),
                     Requisites = table.Column<string>(type: "jsonb", nullable: true)
                 },
                 constraints: table =>
@@ -95,6 +126,11 @@ namespace AnimalAllies.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Breed_SpeciesId",
+                table: "Breed",
+                column: "SpeciesId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PetPhotos_PetId",
                 table: "PetPhotos",
                 column: "PetId");
@@ -109,7 +145,13 @@ namespace AnimalAllies.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Breed");
+
+            migrationBuilder.DropTable(
                 name: "PetPhotos");
+
+            migrationBuilder.DropTable(
+                name: "SpeciesList");
 
             migrationBuilder.DropTable(
                 name: "Pets");

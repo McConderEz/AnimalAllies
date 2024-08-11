@@ -21,8 +21,8 @@ public class Pet: Entity
         Address address,
         PhoneNumber phone,
         HelpStatus status,
-        Species species,
-        AnimalType animalType,
+        int speciesID,
+        string breedName,
         List<Requisite> requisites,
         List<PetPhoto> petPhotos) 
     {
@@ -38,8 +38,8 @@ public class Pet: Entity
         Address = address;
         Phone = phone;
         HelpStatus = status;
-        Species = species;
-        AnimalType = animalType;
+        SpeciesID = speciesID;
+        BreedName = breedName;
         AddRequisites(requisites);
         AddPetPhotos(petPhotos);
     }
@@ -56,8 +56,8 @@ public class Pet: Entity
     public Address Address { get; private set; }
     public PhoneNumber Phone { get; private set; }
     public HelpStatus HelpStatus { get; private set; }
-    public Species Species { get; private set; }
-    public AnimalType AnimalType { get; private set; }
+    public int SpeciesID { get; private set; }
+    public string BreedName { get; private set; }
     public DateTime CreationTime { get; } = DateTime.Now;
     
     
@@ -86,8 +86,8 @@ public class Pet: Entity
         int flatNumber,
         string phone,
         string status,
-        string speciesValue,
-        string animalTypeValue,
+        int speciesID,
+        string breedName,
         List<Requisite> requisites,
         List<PetPhoto> petPhotos)
     {
@@ -132,11 +132,15 @@ public class Pet: Entity
             return Result.Failure<Pet>($"{birthDate} cannot be more than {DateOnly.FromDateTime(DateTime.Now)}");
         }
 
+        if (string.IsNullOrWhiteSpace(breedName) || breedName.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
+        {
+            return Result.Failure<Pet>(
+                $"{breedName} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}");
+        }
+
         var address = ValueObjects.Address.Create(city, district, houseNumber, flatNumber);
         var phoneNumber = PhoneNumber.Create(phone);
         var helpStatus = ValueObjects.HelpStatus.Create(status);
-        var species = ValueObjects.Species.Create(speciesValue);
-        var animalType = ValueObjects.AnimalType.Create(animalTypeValue);
 
         if (address.IsFailure)
         {
@@ -153,16 +157,6 @@ public class Pet: Entity
             return Result.Failure<Pet>(helpStatus.Error);
         }
 
-        if (species.IsFailure)
-        {
-            return Result.Failure<Pet>(species.Error);
-        }
-        
-        if (animalType.IsFailure)
-        {
-            return Result.Failure<Pet>(animalType.Error);
-        }
-
         var pet = new Pet(
             name,
             description,
@@ -176,8 +170,8 @@ public class Pet: Entity
             address.Value,
             phoneNumber.Value,
             helpStatus.Value,
-            species.Value,
-            animalType.Value,
+            speciesID,
+            breedName,
             requisites ?? [],
             petPhotos ?? []);
 
