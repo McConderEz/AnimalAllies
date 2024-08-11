@@ -9,6 +9,7 @@ public class Address : ValueObject
     public int HouseNumber { get; }
     public int FlatNumber { get; }
 
+    private Address(){}
     private Address(string city, string district, int houseNumber,int flatNumber)
     {
         City = city;

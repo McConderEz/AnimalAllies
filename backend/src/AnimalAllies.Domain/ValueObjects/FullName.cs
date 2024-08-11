@@ -14,6 +14,7 @@ public class FullName : ValueObject
     public string SecondName { get; }
     public string Patronymic { get; } 
 
+    private FullName(){}
     private FullName(string firstName, string secondName, string patronymic)
     {
         FirstName = firstName;

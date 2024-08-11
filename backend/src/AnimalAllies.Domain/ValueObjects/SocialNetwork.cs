@@ -7,6 +7,8 @@ public class SocialNetwork: ValueObject
     public string Title { get; }
     public string Url { get; }
 
+    private SocialNetwork(){}
+    
     private SocialNetwork(string title, string url)
     {
         Title = title;

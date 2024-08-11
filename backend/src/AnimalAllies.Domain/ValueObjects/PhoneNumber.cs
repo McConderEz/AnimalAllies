@@ -11,9 +11,10 @@ public class PhoneNumber : ValueObject
 
     public string Number { get; }
 
-    private PhoneNumber(string phoneNumber)
+    private PhoneNumber(){}
+    private PhoneNumber(string number)
     {
-        Number = phoneNumber;
+        Number = number;
     }
 
     public static Result<PhoneNumber> Create(string number)

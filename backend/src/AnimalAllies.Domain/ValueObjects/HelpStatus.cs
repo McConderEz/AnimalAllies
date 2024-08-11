@@ -13,6 +13,7 @@ public class HelpStatus:ValueObject
 
     public string Value { get; }
 
+    private HelpStatus(){}
     private HelpStatus(string value)
     {
         Value = value;
