@@ -7,11 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<AnimalAlliesDbContext>();
 
-/*builder.Services.AddDbContext<AnimalAlliesDbContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-});*/
-
 
 builder.Services.AddControllers();
 
