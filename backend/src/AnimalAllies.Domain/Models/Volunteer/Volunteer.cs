@@ -52,6 +52,8 @@ public class Volunteer: Entity
     public void AddPets(List<Pet> pets) => _pets.AddRange(pets);
     public void AddSocialNetworks(List<SocialNetwork> socialNetworks) => _socialNetworks.AddRange(socialNetworks);
 
+    //TODO: Добавить методы изменения ValueObject`ов
+    
     public static Result<Volunteer> Create(
         string firstName,
         string secondName,
@@ -62,12 +64,12 @@ public class Volunteer: Entity
         int petsSearchingHome,
         int petsFoundHome,
         string phoneNumber,
-        List<SocialNetwork> socialNetworks,
-        List<Requisite> requisites,
-        List<Pet> pets)
+        List<SocialNetwork>? socialNetworks,
+        List<Requisite>? requisites,
+        List<Pet>? pets)
     {
         if (string.IsNullOrWhiteSpace(description) ||
-            description.Length < Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
+            description.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
         {
             return Result.Failure<Volunteer>(
                 $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_DESCRIPTION_LENGTH}");

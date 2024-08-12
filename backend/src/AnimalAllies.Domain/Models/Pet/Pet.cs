@@ -66,9 +66,11 @@ public class Pet: Entity
 
     public void AddRequisites(List<Requisite> requisites) => _requisites.AddRange(requisites);
     public void AddPetPhotos(List<PetPhoto> petPhotos) => _petPhotos.AddRange(petPhotos);
-
+    
     public void SetVaccinated() => IsVaccinated = !IsVaccinated;
     public void SetCastrated() => IsCastrated = !IsCastrated;
+    
+    //TODO: Добавить методы изменения ValueObject`ов
     
     public static Result<Pet> Create(
         string name,
