@@ -3,12 +3,13 @@ using CSharpFunctionalExtensions;
 
 namespace AnimalAllies.Domain.Models;
 
-public class Pet: Entity
+public class Pet: Entity<PetId>
 {
-    private List<Requisite> _requisites = [];
-    private List<PetPhoto> _petPhotos = [];
-    private Pet(){}
+    private readonly List<Requisite> _requisites = [];
+    private readonly List<PetPhoto> _petPhotos = [];
+    private Pet(PetId id): base(id) {}
     private Pet(
+        PetId petId,
         string name,
         string description,
         string color,
@@ -25,6 +26,7 @@ public class Pet: Entity
         string breedName,
         List<Requisite> requisites,
         List<PetPhoto> petPhotos) 
+    : base(petId)
     {
         Name = name;
         Description = description;
@@ -73,6 +75,7 @@ public class Pet: Entity
     //TODO: Добавить методы изменения ValueObject`ов
     
     public static Result<Pet> Create(
+        PetId petId,
         string name,
         string description,
         string color,
@@ -160,6 +163,7 @@ public class Pet: Entity
         }
 
         var pet = new Pet(
+            petId,
             name,
             description,
             color,

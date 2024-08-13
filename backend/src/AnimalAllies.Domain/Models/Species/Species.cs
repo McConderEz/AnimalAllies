@@ -3,11 +3,12 @@ using CSharpFunctionalExtensions;
 
 namespace AnimalAllies.Domain.Models;
 
-public class Species: Entity
+public class Species: Entity<SpeciesId>
 {
     private readonly List<Breed> _breeds = [];
     private Species(){}
-    private Species(string name, List<Breed> breeds)
+    private Species(SpeciesId speciesId,string name, List<Breed> breeds)
+        : base(speciesId)
     {
         Name = name;
         AddBreeds(breeds);
@@ -17,7 +18,7 @@ public class Species: Entity
     public IReadOnlyList<Breed> Breeds => _breeds;
     public void AddBreeds(List<Breed> breeds) => _breeds.AddRange(breeds);
 
-    public static Result<Species> Create(string name, List<Breed> breeds)
+    public static Result<Species> Create(SpeciesId speciesId,string name, List<Breed> breeds)
     {
         if (string.IsNullOrWhiteSpace(name) || name.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
@@ -25,7 +26,7 @@ public class Species: Entity
                 $"{name} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}");
         }
 
-        return Result.Success<Species>(new Species(name, breeds ?? []));
+        return Result.Success<Species>(new Species(speciesId,name, breeds ?? []));
     }
     
 }

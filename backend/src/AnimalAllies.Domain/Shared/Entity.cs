@@ -2,23 +2,24 @@ using System.Xml;
 
 namespace AnimalAllies.Domain.Models;
 
-public abstract class Entity
+public abstract class Entity<TId>
+    where TId:notnull
 {
-    public Guid Id { get; } = Guid.Empty;
+    public TId Id { get; private set; } 
 
     protected Entity() {}
     
-    protected Entity(Guid id) => Id = id;
+    protected Entity(TId id) => Id = id;
     
     public override bool Equals(object? obj)
     {
-        if(obj is not Entity other)
+        if(obj is not Entity<TId> other)
             return false;
         
-        if (!ReferenceEquals(this, other))
+        if (!ReferenceEquals(this, other) || !EqualityComparer<TId>.Default.Equals(Id, other.Id))
             return false;
 
-        return Id == other.Id;
+        return true;
     }
 
     public override int GetHashCode()
@@ -26,7 +27,7 @@ public abstract class Entity
         return (GetType().ToString() + Id).GetHashCode();
     }
 
-    public static bool operator ==(Entity? a, Entity? b)
+    public static bool operator ==(Entity<TId>? a, Entity<TId>? b)
     {
         if (a is null && b is null)
             return true;
@@ -37,5 +38,5 @@ public abstract class Entity
         return a.Equals(b);
     }
 
-    public static bool operator !=(Entity a, Entity b) => !(a == b);
+    public static bool operator !=(Entity<TId> a, Entity<TId> b) => !(a == b);
 }

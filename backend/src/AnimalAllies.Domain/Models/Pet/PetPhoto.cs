@@ -2,10 +2,11 @@ using CSharpFunctionalExtensions;
 
 namespace AnimalAllies.Domain.Models;
 
-public class PetPhoto: Entity
+public class PetPhoto: Entity<PetPhotoId>
 {
-    private PetPhoto(){}
-    private PetPhoto(string path, bool isMain)
+    private PetPhoto(PetPhotoId id) : base(id) {}
+    private PetPhoto(PetPhotoId petPhotoId,string path, bool isMain)
+    :base(petPhotoId)
     {
         Path = path;
         IsMain = isMain;
@@ -16,7 +17,7 @@ public class PetPhoto: Entity
 
     public void SetMain() => IsMain = !IsMain;
 
-    public static Result<PetPhoto> Create(string path, bool isMain)
+    public static Result<PetPhoto> Create(PetPhotoId petPhotoId,string path, bool isMain)
     {
         if (string.IsNullOrWhiteSpace(path) || path.Length > Constraints.Constraints.MAX_PATH_LENGHT)
         {
@@ -24,7 +25,7 @@ public class PetPhoto: Entity
                 $"{path} cannot be null or have length more than {Constraints.Constraints.MAX_PATH_LENGHT}");
         }
 
-        return Result.Success(new PetPhoto(path, isMain));
+        return Result.Success(new PetPhoto(petPhotoId,path, isMain));
     }
 
 }

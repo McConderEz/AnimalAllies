@@ -1,6 +1,8 @@
-using AnimalAllies.Application.Abstractions.Volunteer;
+using AnimalAllies.Application.Abstractions;
 using AnimalAllies.Application.Common;
+using AnimalAllies.Application.Contracts.DTOs.Volunteer;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.ValueObjects;
 
 namespace AnimalAllies.Application.Services;
 
@@ -14,9 +16,29 @@ public class VolunteerService: IVolunteerService
     }
     
     
-    public async Task Create(Volunteer entity)
+    public async Task Create(CreateVolunteerRequest request)
     {
-        await _repository.Create(entity);
+        var socialNetworks = request.SocialNetworks
+            .Select(x => SocialNetwork.Create(x.name, x.url).Value).ToList();
+        var requisites = request.Requisites
+            .Select(x => Requisite.Create(x.title, x.description).Value).ToList();
+        
+        var volunteerEntity = Volunteer.Create(
+            VolunteerId.NewGuid(),
+            request.FirstName,
+            request.SecondName,
+            request.Patronymic,
+            request.Description,
+            request.WorkExperience,
+            request.PetsNeedHelp,
+            request.PetsSearchingHome,
+            request.PetsFoundHome,
+            request.PhoneNumber,
+            socialNetworks,
+            requisites,
+            null);
+        
+        await _repository.Create(volunteerEntity.Value);
     }
 
     public Task Delete(Guid id)

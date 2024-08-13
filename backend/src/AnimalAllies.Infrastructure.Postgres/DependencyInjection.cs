@@ -1,4 +1,4 @@
-using AnimalAllies.Application.Abstractions.Volunteer;
+using AnimalAllies.Application.Abstractions;
 using AnimalAllies.Application.Common;
 using AnimalAllies.Application.Services;
 using AnimalAllies.Infrastructure.Repositories;

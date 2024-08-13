@@ -1,4 +1,4 @@
-using AnimalAllies.Application.Abstractions.Volunteer;
+using AnimalAllies.Application.Abstractions;
 using AnimalAllies.Application.Contracts.DTOs.Volunteer;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.ValueObjects;
@@ -20,29 +20,7 @@ public class VolunteerController: ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateVolunteerRequest request)
     {
-        if (request == null)
-        {
-            return BadRequest("request null");
-        }
-
-        var volunteerEntity = Volunteer.Create(
-            request.firstName,
-            request.secondName,
-            request.patronymic,
-            request.description,
-            request.workExperience,
-            request.petsNeedHelp,
-            request.petsSearchingHome,
-            request.petsFoundHome,
-            request.phoneNumber,
-            null,
-            null,
-            null);
-
-        if (volunteerEntity.IsFailure)
-        {
-            return BadRequest(volunteerEntity.Error);
-        }
+        await _volunteerService.Create(request);
 
         return Ok();
     }

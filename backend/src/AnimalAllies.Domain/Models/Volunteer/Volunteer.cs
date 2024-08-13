@@ -4,15 +4,19 @@ using CSharpFunctionalExtensions;
 
 namespace AnimalAllies.Domain.Models;
 
-public class Volunteer: Entity
+public class Volunteer: Entity<VolunteerId>
 {
-    private List<Requisite> _requisites = [];
-    private List<Pet> _pets = [];
-    private List<SocialNetwork> _socialNetworks = [];
-    
-    private Volunteer(){}
+    private readonly List<Requisite> _requisites = [];
+    private readonly List<Pet> _pets = [];
+    private readonly List<SocialNetwork> _socialNetworks = [];
+
+    private Volunteer(VolunteerId id) : base(id)
+    {
+        
+    }
     
     private Volunteer(
+        VolunteerId volunteerId,
         FullName fullName,
         string description,
         int workExperience,
@@ -23,6 +27,7 @@ public class Volunteer: Entity
         List<SocialNetwork> socialNetworks,
         List<Requisite> requisites,
         List<Pet> pets)
+    : base(volunteerId)
     {
         FullName = fullName;
         Description = description;
@@ -55,6 +60,7 @@ public class Volunteer: Entity
     //TODO: Добавить методы изменения ValueObject`ов
     
     public static Result<Volunteer> Create(
+        VolunteerId volunteerId,
         string firstName,
         string secondName,
         string patronymic,
@@ -110,6 +116,7 @@ public class Volunteer: Entity
         }
 
         var volunteer = new Volunteer(
+            volunteerId,
             fullName.Value,
             description,
             workExperience,
