@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore.Design;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<AnimalAlliesDbContext>();
-
+builder.Services.AddInfrastructure();
+builder.Services.AddApplication();
 
 builder.Services.AddControllers();
 

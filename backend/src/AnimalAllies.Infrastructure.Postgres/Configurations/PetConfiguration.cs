@@ -19,7 +19,10 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
             t.HasCheckConstraint("CK_Pet_Height", "\"Height\" > 0");
         });
         
-        
+        builder.Property(x => x.Id)
+            .HasConversion(
+                id => id.Id,
+                Id => PetId.Create(Id));
 
         builder.Property(x => x.Name)
             .HasMaxLength(Constraints.MAX_VALUE_LENGTH)

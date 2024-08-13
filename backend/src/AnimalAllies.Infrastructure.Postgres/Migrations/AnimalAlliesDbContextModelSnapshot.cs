@@ -26,7 +26,6 @@ namespace AnimalAllies.Infrastructure.Migrations
             modelBuilder.Entity("AnimalAllies.Domain.Models.Breed", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
@@ -47,7 +46,6 @@ namespace AnimalAllies.Infrastructure.Migrations
             modelBuilder.Entity("AnimalAllies.Domain.Models.Pet", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateOnly>("BirthDate")
@@ -157,7 +155,6 @@ namespace AnimalAllies.Infrastructure.Migrations
             modelBuilder.Entity("AnimalAllies.Domain.Models.PetPhoto", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<bool>("IsMain")
@@ -181,7 +178,6 @@ namespace AnimalAllies.Infrastructure.Migrations
             modelBuilder.Entity("AnimalAllies.Domain.Models.Species", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
@@ -197,7 +193,6 @@ namespace AnimalAllies.Infrastructure.Migrations
             modelBuilder.Entity("AnimalAllies.Domain.Models.Volunteer", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")

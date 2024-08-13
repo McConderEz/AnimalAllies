@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>3e46ba07-9325-4b0c-b920-0539cb84b0cf</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,10 +28,6 @@
       <Content Include="..\..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Extensions\" />
     </ItemGroup>
 
 </Project>

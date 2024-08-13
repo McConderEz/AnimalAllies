@@ -11,6 +11,11 @@ public class BreedConfiguration: IEntityTypeConfiguration<Breed>
     {
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.Id)
+            .HasConversion(
+                id => id.Id,
+                Id => BreedId.Create(Id));
+
         builder.Property(x => x.Name)
             .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
             .IsRequired();
