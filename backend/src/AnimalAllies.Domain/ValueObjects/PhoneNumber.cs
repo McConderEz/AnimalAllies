@@ -16,7 +16,7 @@ public class PhoneNumber : ValueObject
     {
         Number = number;
     }
-
+    
     public static Result<PhoneNumber> Create(string number)
     {
         if (string.IsNullOrWhiteSpace(number) || !ValidationRegex.IsMatch(number))

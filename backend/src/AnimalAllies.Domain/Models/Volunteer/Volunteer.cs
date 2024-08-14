@@ -20,9 +20,6 @@ public class Volunteer: Entity<VolunteerId>
         FullName fullName,
         string description,
         int workExperience,
-        int petsNeedsHelp,
-        int petsSearchingHome,
-        int petsFoundHome,
         PhoneNumber phone,
         List<SocialNetwork> socialNetworks,
         List<Requisite> requisites,
@@ -32,9 +29,6 @@ public class Volunteer: Entity<VolunteerId>
         FullName = fullName;
         Description = description;
         WorkExperience = workExperience;
-        PetsNeedsHelp = petsNeedsHelp;
-        PetsSearchingHome = petsSearchingHome;
-        PetsFoundHome = petsFoundHome;
         Phone = phone;
         AddSocialNetworks(socialNetworks);
         AddRequisites(requisites);
@@ -42,11 +36,11 @@ public class Volunteer: Entity<VolunteerId>
     }
     
     public FullName FullName { get; private set;}
-    public string Description { get; private set; } 
+    public string Description { get; private set; }
     public int WorkExperience { get; private set; }
-    public int PetsNeedsHelp { get; private set; }
-    public int PetsSearchingHome { get; private set; }
-    public int PetsFoundHome { get; private set; }
+    public int PetsNeedsHelp => _pets.Count(x => x.HelpStatus == HelpStatus.NeedsHelp);
+    public int PetsSearchingHome => _pets.Count(x => x.HelpStatus == HelpStatus.SearchingHome);
+    public int PetsFoundHome => _pets.Count(x => x.HelpStatus == HelpStatus.FoundHome);
     public PhoneNumber Phone { get; private set; }
     public List<SocialNetwork> SocialNetworks => _socialNetworks;
 
@@ -56,8 +50,30 @@ public class Volunteer: Entity<VolunteerId>
     public void AddRequisites(List<Requisite> requisites) => _requisites.AddRange(requisites);
     public void AddPets(List<Pet> pets) => _pets.AddRange(pets);
     public void AddSocialNetworks(List<SocialNetwork> socialNetworks) => _socialNetworks.AddRange(socialNetworks);
+    
+    public Result UpdatePhoneNumber(string phone)
+    {
+        var newPhoneNumber = PhoneNumber.Create(phone);
+        if (newPhoneNumber.IsFailure)
+        {
+            return Result.Failure(newPhoneNumber.Error!);
+        }
 
-    //TODO: Добавить методы изменения ValueObject`ов
+        this.Phone = newPhoneNumber.Value;
+        return Result.Success();
+    }
+    
+    public Result UpdatePhoneNumber(string firstName,string secondName,string patronymic)
+    {
+        var newFullName = FullName.Create(firstName,secondName,patronymic);
+        if (newFullName.IsFailure)
+        {
+            return Result.Failure(newFullName.Error!);
+        }
+
+        this.FullName = newFullName.Value;
+        return Result.Success();
+    }
     
     public static Result<Volunteer> Create(
         VolunteerId volunteerId,
@@ -66,9 +82,6 @@ public class Volunteer: Entity<VolunteerId>
         string patronymic,
         string description,
         int workExperience,
-        int petsNeedHelp,
-        int petsSearchingHome,
-        int petsFoundHome,
         string phoneNumber,
         List<SocialNetwork>? socialNetworks,
         List<Requisite>? requisites,
@@ -84,21 +97,6 @@ public class Volunteer: Entity<VolunteerId>
         if (workExperience < Constraints.Constraints.MIN_VALUE)
         {
             return Result<Volunteer>.Failure(new Error("Invalid Input",$"{workExperience} cannot be less than {Constraints.Constraints.MIN_VALUE}"));
-        }
-        
-        if (petsNeedHelp < Constraints.Constraints.MIN_VALUE)
-        {
-            return Result<Volunteer>.Failure(new Error("Invalid input",$"{petsNeedHelp} cannot be less than {Constraints.Constraints.MIN_VALUE}"));
-        }
-
-        if (petsSearchingHome < Constraints.Constraints.MIN_VALUE)
-        {
-            return Result<Volunteer>.Failure(new Error("Invalid input",$"{petsSearchingHome} cannot be less than {Constraints.Constraints.MIN_VALUE}"));
-        }
-        
-        if (petsFoundHome < Constraints.Constraints.MIN_VALUE)
-        {
-            return Result<Volunteer>.Failure(new Error("Invalid input",$"{petsFoundHome} cannot be less than {Constraints.Constraints.MIN_VALUE}"));
         }
 
         var fullName = FullName.Create(firstName, secondName, patronymic);
@@ -120,9 +118,6 @@ public class Volunteer: Entity<VolunteerId>
             fullName.Value,
             description,
             workExperience,
-            petsNeedHelp,
-            petsSearchingHome,
-            petsFoundHome,
             phone.Value,
             socialNetworks ?? [],
             requisites ?? [],

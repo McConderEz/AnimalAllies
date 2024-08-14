@@ -19,18 +19,7 @@ public class HelpStatus:ValueObject
     {
         Value = value;
     }
-
-    public static Result<HelpStatus> Update(string newValue)
-    {
-        var result = Create(newValue);
-
-        if (result.IsSuccess)
-        {
-            return result.Value;
-        }
-
-        return result;
-    }
+    
 
     public static Result<HelpStatus> Create(string input)
     {

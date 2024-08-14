@@ -15,7 +15,8 @@ public class SocialNetwork: ValueObject
         Title = title;
         Url = url;
     }
-
+    
+    
     public static Result<SocialNetwork> Create(string title, string url)
     {
         if (string.IsNullOrWhiteSpace(title) || title.Length > Constraints.Constraints.MAX_VALUE_LENGTH)

@@ -9,9 +9,6 @@ public record class CreateVolunteerRequest(
     string Patronymic,
     string Description,
     int WorkExperience,
-    int PetsNeedHelp,
-    int PetsSearchingHome,
-    int PetsFoundHome,
     string PhoneNumber,
     List<SocialNetworkDto> SocialNetworks,
     List<RequisiteDto> Requisites);
