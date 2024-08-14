@@ -1,36 +1,28 @@
 using AnimalAllies.Application.Common;
 using AnimalAllies.Domain.Models;
-using AnimalAllies.Infrastructure.Common;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace AnimalAllies.Infrastructure.Repositories;
 
-public class VolunteerRepository : BaseRepository,IVolunteerRepository
+public class VolunteerRepository: IVolunteerRepository
 {
+    private protected readonly AnimalAlliesDbContext _context;
     
-    public VolunteerRepository(AnimalAlliesDbContext context) : base(context)
+    public VolunteerRepository(AnimalAlliesDbContext context)
     {
+        _context = context;
     }
     
-    public async Task Create(Volunteer entity)
+    public async Task<VolunteerId> Create(Volunteer entity)
     {
-        await _semaphore.WaitAsync();
-        try
-        {
-            if (entity == null)
-                throw new ArgumentNullException($"{nameof(entity)} cannot be null!");
-            
-            await _context.Volunteers.AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-
-        }
-        finally
-        {
-            _semaphore.Release();
-        }
+        
+        if (entity == null)
+            throw new ArgumentNullException($"{nameof(entity)} cannot be null!");
+        
+        await _context.Volunteers.AddAsync(entity);
+        await _context.SaveChangesAsync();
+        return entity.Id;
+        
     }
 
     public Task Delete(Guid id)

@@ -1,4 +1,5 @@
-using CSharpFunctionalExtensions;
+
+using AnimalAllies.Domain.Models;
 using ValueObject = AnimalAllies.Domain.ValueObjects.ValueObject;
 
 namespace AnimalAllies.Domain.ValueObjects;
@@ -21,19 +22,19 @@ public class Requisite : ValueObject
     {
         if(string.IsNullOrWhiteSpace(title) || title.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Result.Failure<Requisite>(
-                $"{title} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}");
+            return Result<Requisite>.Failure(new Error("Invalid input",
+                $"{title} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
         }
         
         if(string.IsNullOrWhiteSpace(description) || title.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Result.Failure<Requisite>(
-                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}");
+            return Result<Requisite>.Failure(new Error("Invalid input",
+                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
         }
 
         var requisite = new Requisite(title, description);
 
-        return Result.Success(requisite);
+        return Result<Requisite>.Success(requisite);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

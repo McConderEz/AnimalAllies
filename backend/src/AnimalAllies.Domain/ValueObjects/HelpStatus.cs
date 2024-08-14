@@ -1,4 +1,5 @@
-using CSharpFunctionalExtensions;
+
+using AnimalAllies.Domain.Models;
 
 namespace AnimalAllies.Domain.ValueObjects;
 
@@ -34,16 +35,16 @@ public class HelpStatus:ValueObject
     public static Result<HelpStatus> Create(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
-            return Result.Failure<HelpStatus>($"{nameof(input)} cannot be null");
+            return Result<HelpStatus>.Failure(new Error("Invalid input",$"{nameof(input)} cannot be null"));
 
         var status = input.Trim().ToLower();
 
         if(_all.Any(s => s.Value.ToLower() == status) == false)
         {
-            return Result.Failure<HelpStatus>($"{status} is not correct");
+            return Result<HelpStatus>.Failure(new Error("Invalid input",$"{status} is not correct"));
         }
 
-        return Result.Success(new HelpStatus(input));
+        return Result<HelpStatus>.Success(new HelpStatus(input));
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

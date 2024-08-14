@@ -1,4 +1,4 @@
-using CSharpFunctionalExtensions;
+
 
 namespace AnimalAllies.Domain.Models;
 
@@ -21,11 +21,11 @@ public class PetPhoto: Entity<PetPhotoId>
     {
         if (string.IsNullOrWhiteSpace(path) || path.Length > Constraints.Constraints.MAX_PATH_LENGHT)
         {
-            return Result.Failure<PetPhoto>(
-                $"{path} cannot be null or have length more than {Constraints.Constraints.MAX_PATH_LENGHT}");
+            return Result<PetPhoto>.Failure(new Error("Invalid input",
+                $"{path} cannot be null or have length more than {Constraints.Constraints.MAX_PATH_LENGHT}"));
         }
 
-        return Result.Success(new PetPhoto(petPhotoId,path, isMain));
+        return Result<PetPhoto>.Success(new PetPhoto(petPhotoId,path, isMain));
     }
 
 }

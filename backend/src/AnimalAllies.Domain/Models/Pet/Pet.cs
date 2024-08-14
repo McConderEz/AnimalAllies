@@ -1,5 +1,4 @@
 using AnimalAllies.Domain.ValueObjects;
-using CSharpFunctionalExtensions;
 
 namespace AnimalAllies.Domain.Models;
 
@@ -98,49 +97,49 @@ public class Pet: Entity<PetId>
     {
         if (string.IsNullOrWhiteSpace(name) || name.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Result.Failure<Pet>(
-                $"{name} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}");
+            return Result<Pet>.Failure(new Error("Invalid input",
+                $"{name} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
         }
         
         if (string.IsNullOrWhiteSpace(description) || description.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
         {
-            return Result.Failure<Pet>(
-                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_DESCRIPTION_LENGTH}");
+            return Result<Pet>.Failure(new Error("Invalid input",
+                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_DESCRIPTION_LENGTH}"));
         }
         
         if (string.IsNullOrWhiteSpace(color) || color.Length > Constraints.Constraints.MAX_PET_COLOR_LENGTH)
         {
-            return Result.Failure<Pet>(
-                $"{color} cannot be null or have length more than {Constraints.Constraints.MAX_PET_COLOR_LENGTH}");
+            return Result<Pet>.Failure(new Error("Invalid input",
+                $"{color} cannot be null or have length more than {Constraints.Constraints.MAX_PET_COLOR_LENGTH}"));
         }
         
         if (string.IsNullOrWhiteSpace(healthInformation) || healthInformation.Length > Constraints.Constraints.MAX_PET_COLOR_LENGTH)
         {
-            return Result.Failure<Pet>(
-                $"{healthInformation} cannot be null or have length more than {Constraints.Constraints.MAX_PET_INFORMATION_LENGTH}");
+            return Result<Pet>.Failure(new Error("Invalid input",
+                $"{healthInformation} cannot be null or have length more than {Constraints.Constraints.MAX_PET_INFORMATION_LENGTH}"));
         }
         
         if (weight > Constraints.Constraints.MIN_VALUE)
         {
-            return Result.Failure<Pet>(
-                $"{weight} must be more than {Constraints.Constraints.MIN_VALUE}");
+            return Result<Pet>.Failure(new Error("Invalid input",
+                $"{weight} must be more than {Constraints.Constraints.MIN_VALUE}"));
         }
         
         if (height > Constraints.Constraints.MIN_VALUE)
         {
-            return Result.Failure<Pet>(
-                $"{height} must be more than {Constraints.Constraints.MIN_VALUE}");
+            return Result<Pet>.Failure(new Error("Invalid input",
+                $"{height} must be more than {Constraints.Constraints.MIN_VALUE}"));
         }
 
         if (birthDate > DateOnly.FromDateTime(DateTime.Now))
         {
-            return Result.Failure<Pet>($"{birthDate} cannot be more than {DateOnly.FromDateTime(DateTime.Now)}");
+            return Result<Pet>.Failure(new Error("Invalid input",$"{birthDate} cannot be more than {DateOnly.FromDateTime(DateTime.Now)}"));
         }
 
         if (string.IsNullOrWhiteSpace(breedName) || breedName.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Result.Failure<Pet>(
-                $"{breedName} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}");
+            return Result<Pet>.Failure(new Error("Invalid input",
+                $"{breedName} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
         }
 
         var address = ValueObjects.Address.Create(city, district, houseNumber, flatNumber);
@@ -149,17 +148,17 @@ public class Pet: Entity<PetId>
 
         if (address.IsFailure)
         {
-            return Result.Failure<Pet>(address.Error);
+            return Result<Pet>.Failure(address.Error);
         }
         
         if (phoneNumber.IsFailure)
         {
-            return Result.Failure<Pet>(phoneNumber.Error);
+            return Result<Pet>.Failure(phoneNumber.Error);
         }
         
         if (helpStatus.IsFailure)
         {
-            return Result.Failure<Pet>(helpStatus.Error);
+            return Result<Pet>.Failure(helpStatus.Error);
         }
 
         var pet = new Pet(
@@ -181,7 +180,7 @@ public class Pet: Entity<PetId>
             requisites ?? [],
             petPhotos ?? []);
 
-        return Result.Success(pet);
+        return Result<Pet>.Success(pet);
     }
 
 }

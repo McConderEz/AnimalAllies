@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using CSharpFunctionalExtensions;
+using AnimalAllies.Domain.Models;
 
 namespace AnimalAllies.Domain.ValueObjects;
 
@@ -20,11 +20,11 @@ public class PhoneNumber : ValueObject
     public static Result<PhoneNumber> Create(string number)
     {
         if (string.IsNullOrWhiteSpace(number) || !ValidationRegex.IsMatch(number))
-            return Result.Failure<PhoneNumber>($"{nameof(number)} incorrect format");
+            return Result<PhoneNumber>.Failure(new Error("Invalid input",$"{nameof(number)} incorrect format"));
 
         var phoneNumber = new PhoneNumber(number);
 
-        return Result.Success(phoneNumber);
+        return Result<PhoneNumber>.Success(phoneNumber);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

@@ -1,5 +1,4 @@
 using AnimalAllies.Infrastructure;
-using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 

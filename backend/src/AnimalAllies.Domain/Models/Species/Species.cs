@@ -1,5 +1,4 @@
 using AnimalAllies.Domain.Constraints;
-using CSharpFunctionalExtensions;
 
 namespace AnimalAllies.Domain.Models;
 
@@ -22,11 +21,11 @@ public class Species: Entity<SpeciesId>
     {
         if (string.IsNullOrWhiteSpace(name) || name.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Result.Failure<Species>(
-                $"{name} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}");
+            return Result<Species>.Failure(new Error("Invalid input",
+                $"{name} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
         }
 
-        return Result.Success<Species>(new Species(speciesId,name, breeds ?? []));
+        return Result<Species>.Success(new Species(speciesId,name, breeds ?? []));
     }
     
 }
