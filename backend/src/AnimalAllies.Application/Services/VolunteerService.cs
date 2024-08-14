@@ -19,9 +19,22 @@ public class VolunteerService: IVolunteerService
     public async Task<Result<VolunteerId>> Create(CreateVolunteerRequest request)
     {
         var socialNetworks = request.SocialNetworks
-            .Select(x => SocialNetwork.Create(x.name, x.url).Value).ToList();
+            .Select(x => SocialNetwork.Create(x.name, x.url));
+
+        if (socialNetworks.Any(x => x.IsFailure))
+        {
+            return Result<VolunteerId>.Failure(new Error("Invalid input",
+                "One of the items from socialNetworks returned failure!"));
+        }
+        
         var requisites = request.Requisites
-            .Select(x => Requisite.Create(x.title, x.description).Value).ToList();
+            .Select(x => Requisite.Create(x.title, x.description));
+
+        if (requisites.Any(x => x.IsFailure))
+        {
+            return Result<VolunteerId>.Failure(new Error("Invalid input",
+                "One of the items from socialNetworks returned failure!"));
+        }
         
         var volunteerEntity = Volunteer.Create(
             VolunteerId.NewGuid(),
@@ -34,11 +47,16 @@ public class VolunteerService: IVolunteerService
             request.PetsSearchingHome,
             request.PetsFoundHome,
             request.PhoneNumber,
-            socialNetworks,
-            requisites,
+            socialNetworks.Select(x => x.Value).ToList(),
+            requisites.Select(x => x.Value).ToList(),
             null);
+
+        if (volunteerEntity.IsFailure)
+        {
+            return Result<VolunteerId>.Failure(volunteerEntity.Error!);
+        }
         
-       return await _repository.Create(volunteerEntity.Value);
+        return await _repository.Create(volunteerEntity.Value);
     }
 
     public Task Delete(Guid id)
