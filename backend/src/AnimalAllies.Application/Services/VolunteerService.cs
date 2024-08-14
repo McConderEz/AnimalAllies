@@ -16,25 +16,19 @@ public class VolunteerService: IVolunteerService
     }
     
     
-    public async Task<Result<VolunteerId>> Create(CreateVolunteerRequest request)
+    public async Task<Result<VolunteerId>> Create(CreateVolunteerRequest request, CancellationToken cancellationToken = default)
     {
-        var socialNetworks = request.SocialNetworks
-            .Select(x => SocialNetwork.Create(x.name, x.url));
 
-        if (socialNetworks.Any(x => x.IsFailure))
-        {
-            return Result<VolunteerId>.Failure(new Error("Invalid input",
-                "One of the items from socialNetworks returned failure!"));
-        }
+        var validator = new CreateVolunteerRequestValidator();
+        var result = await validator.ValidateAsync(request, cancellationToken);
+
+        if (result.Errors.Any())
+            return Result<VolunteerId>.Failure(new Error("Invalid input", result.ToString("\n")));
         
+        var socialNetworks = request.SocialNetworks
+            .Select(x => SocialNetwork.Create(x.name, x.url).Value).ToList();
         var requisites = request.Requisites
-            .Select(x => Requisite.Create(x.title, x.description));
-
-        if (requisites.Any(x => x.IsFailure))
-        {
-            return Result<VolunteerId>.Failure(new Error("Invalid input",
-                "One of the items from socialNetworks returned failure!"));
-        }
+            .Select(x => Requisite.Create(x.title, x.description).Value).ToList();
         
         var volunteerEntity = Volunteer.Create(
             VolunteerId.NewGuid(),
@@ -47,8 +41,8 @@ public class VolunteerService: IVolunteerService
             request.PetsSearchingHome,
             request.PetsFoundHome,
             request.PhoneNumber,
-            socialNetworks.Select(x => x.Value).ToList(),
-            requisites.Select(x => x.Value).ToList(),
+            socialNetworks,
+            requisites,
             null);
 
         if (volunteerEntity.IsFailure)
@@ -56,7 +50,7 @@ public class VolunteerService: IVolunteerService
             return Result<VolunteerId>.Failure(volunteerEntity.Error!);
         }
         
-        return await _repository.Create(volunteerEntity.Value);
+        return await _repository.Create(volunteerEntity.Value, cancellationToken);
     }
 
     public Task Delete(Guid id)

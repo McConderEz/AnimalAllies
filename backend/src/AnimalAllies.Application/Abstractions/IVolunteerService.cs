@@ -6,7 +6,7 @@ namespace AnimalAllies.Application.Abstractions;
 
 public interface IVolunteerService
 {
-    Task<Result<VolunteerId>> Create(CreateVolunteerRequest request);
+    Task<Result<VolunteerId>> Create(CreateVolunteerRequest request, CancellationToken cancellationToken = default);
     Task Delete(Guid id);
     Task Update(Volunteer entity);
     Task<Volunteer> GetById(Guid id);

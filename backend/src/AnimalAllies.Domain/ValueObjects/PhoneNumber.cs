@@ -5,7 +5,7 @@ namespace AnimalAllies.Domain.ValueObjects;
 
 public class PhoneNumber : ValueObject
 {
-    private static readonly Regex ValidationRegex = new Regex(
+    public static readonly Regex ValidationRegex = new Regex(
         @"(^\+\d{1,3}\d{10}$|^$)",
         RegexOptions.Singleline | RegexOptions.Compiled);
 

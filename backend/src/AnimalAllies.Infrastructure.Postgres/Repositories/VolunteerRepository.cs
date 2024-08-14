@@ -6,21 +6,21 @@ namespace AnimalAllies.Infrastructure.Repositories;
 
 public class VolunteerRepository: IVolunteerRepository
 {
-    private protected readonly AnimalAlliesDbContext _context;
+    private readonly AnimalAlliesDbContext _context;
     
     public VolunteerRepository(AnimalAlliesDbContext context)
     {
         _context = context;
     }
     
-    public async Task<VolunteerId> Create(Volunteer entity)
+    public async Task<Result<VolunteerId>> Create(Volunteer entity, CancellationToken cancellationToken = default)
     {
-        
+
         if (entity == null)
-            throw new ArgumentNullException($"{nameof(entity)} cannot be null!");
+            return Result<VolunteerId>.Failure(new Error("Null argument", "Entity is null"));
         
-        await _context.Volunteers.AddAsync(entity);
-        await _context.SaveChangesAsync();
+        await _context.Volunteers.AddAsync(entity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
         return entity.Id;
         
     }
