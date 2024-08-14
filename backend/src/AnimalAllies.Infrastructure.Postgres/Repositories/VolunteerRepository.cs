@@ -22,17 +22,12 @@ public class VolunteerRepository : BaseRepository,IVolunteerRepository
             
             await _context.Volunteers.AddAsync(entity);
             await _context.SaveChangesAsync();
-            
-        }
-        catch (Exception ex)
-        {
-
+            return entity.Id;
         }
         finally
         {
             _semaphore.Release();
         }
-        return entity.Id;
     }
 
     public Task Delete(Guid id)
