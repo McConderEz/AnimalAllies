@@ -1,6 +1,6 @@
 using System.Reflection;
 using AnimalAllies.Domain.ValueObjects;
-using CSharpFunctionalExtensions;
+
 
 namespace AnimalAllies.Domain.Models;
 
@@ -77,42 +77,42 @@ public class Volunteer: Entity<VolunteerId>
         if (string.IsNullOrWhiteSpace(description) ||
             description.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
         {
-            return Result.Failure<Volunteer>(
-                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_DESCRIPTION_LENGTH}");
+            return Result<Volunteer>.Failure(new Error("Invalid Input",
+                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_DESCRIPTION_LENGTH}"));
         }
         
         if (workExperience < Constraints.Constraints.MIN_VALUE)
         {
-            return Result.Failure<Volunteer>($"{workExperience} cannot be less than {Constraints.Constraints.MIN_VALUE}");
+            return Result<Volunteer>.Failure(new Error("Invalid Input",$"{workExperience} cannot be less than {Constraints.Constraints.MIN_VALUE}"));
         }
         
         if (petsNeedHelp < Constraints.Constraints.MIN_VALUE)
         {
-            return Result.Failure<Volunteer>($"{petsNeedHelp} cannot be less than {Constraints.Constraints.MIN_VALUE}");
+            return Result<Volunteer>.Failure(new Error("Invalid input",$"{petsNeedHelp} cannot be less than {Constraints.Constraints.MIN_VALUE}"));
         }
 
         if (petsSearchingHome < Constraints.Constraints.MIN_VALUE)
         {
-            return Result.Failure<Volunteer>($"{petsSearchingHome} cannot be less than {Constraints.Constraints.MIN_VALUE}");
+            return Result<Volunteer>.Failure(new Error("Invalid input",$"{petsSearchingHome} cannot be less than {Constraints.Constraints.MIN_VALUE}"));
         }
         
         if (petsFoundHome < Constraints.Constraints.MIN_VALUE)
         {
-            return Result.Failure<Volunteer>($"{petsFoundHome} cannot be less than {Constraints.Constraints.MIN_VALUE}");
+            return Result<Volunteer>.Failure(new Error("Invalid input",$"{petsFoundHome} cannot be less than {Constraints.Constraints.MIN_VALUE}"));
         }
 
         var fullName = FullName.Create(firstName, secondName, patronymic);
 
         if (fullName.IsFailure)
         {
-            return Result.Failure<Volunteer>(fullName.Error);
+            return Result<Volunteer>.Failure(fullName.Error);
         }
 
         var phone = PhoneNumber.Create(phoneNumber);
 
         if (phone.IsFailure)
         {
-            return Result.Failure<Volunteer>(phone.Error);
+            return Result<Volunteer>.Failure(phone.Error);
         }
 
         var volunteer = new Volunteer(
@@ -128,7 +128,7 @@ public class Volunteer: Entity<VolunteerId>
             requisites ?? [],
             pets ?? []);
 
-        return Result.Success(volunteer);
+        return Result<Volunteer>.Success(volunteer);
     }
 
 }

@@ -20,8 +20,13 @@ public class VolunteerController: ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateVolunteerRequest request)
     {
-        await _volunteerService.Create(request);
+        var response = await _volunteerService.Create(request);
 
-        return Ok();
+        if (response.IsFailure)
+        {
+            return BadRequest();
+        }
+        
+        return Ok(response);
     }
 }

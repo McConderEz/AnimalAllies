@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
-using CSharpFunctionalExtensions;
+using AnimalAllies.Domain.Models;
+
 
 namespace AnimalAllies.Domain.ValueObjects;
 
@@ -25,15 +26,15 @@ public class FullName : ValueObject
     public static Result<FullName> Create(string firstName,string secondName, string patronymic)
     {
         if (string.IsNullOrWhiteSpace(firstName) || !ValidationRegex.IsMatch(firstName))
-            return Result.Failure<FullName>($"{nameof(firstName)} incorrect format");
+            return Result<FullName>.Failure(new Error("Invalid input",$"{nameof(firstName)} incorrect format"));
 
         if (string.IsNullOrWhiteSpace(secondName) || !ValidationRegex.IsMatch(secondName))
-            return Result.Failure<FullName>($"{nameof(secondName)} incorrect format");
+            return Result<FullName>.Failure(new Error("Invalid input",$"{nameof(secondName)} incorrect format"));
 
         if (string.IsNullOrWhiteSpace(patronymic) || !ValidationRegex.IsMatch(patronymic))
-            return Result.Failure<FullName>($"{nameof(patronymic)} incorrect format");
+            return Result<FullName>.Failure(new Error("Invalid input",$"{nameof(patronymic)} incorrect format"));
 
-        return Result.Success(new FullName(firstName, secondName, patronymic));
+        return Result<FullName>.Success(new FullName(firstName, secondName, patronymic));
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

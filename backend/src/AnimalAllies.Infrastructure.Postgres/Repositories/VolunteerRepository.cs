@@ -12,7 +12,7 @@ public class VolunteerRepository : BaseRepository,IVolunteerRepository
     {
     }
     
-    public async Task Create(Volunteer entity)
+    public async Task<VolunteerId> Create(Volunteer entity)
     {
         await _semaphore.WaitAsync();
         try
@@ -22,6 +22,7 @@ public class VolunteerRepository : BaseRepository,IVolunteerRepository
             
             await _context.Volunteers.AddAsync(entity);
             await _context.SaveChangesAsync();
+            
         }
         catch (Exception ex)
         {
@@ -31,6 +32,7 @@ public class VolunteerRepository : BaseRepository,IVolunteerRepository
         {
             _semaphore.Release();
         }
+        return entity.Id;
     }
 
     public Task Delete(Guid id)

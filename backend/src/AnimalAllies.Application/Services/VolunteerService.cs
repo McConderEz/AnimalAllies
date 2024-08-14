@@ -16,7 +16,7 @@ public class VolunteerService: IVolunteerService
     }
     
     
-    public async Task Create(CreateVolunteerRequest request)
+    public async Task<Result<VolunteerId>> Create(CreateVolunteerRequest request)
     {
         var socialNetworks = request.SocialNetworks
             .Select(x => SocialNetwork.Create(x.name, x.url).Value).ToList();
@@ -38,7 +38,7 @@ public class VolunteerService: IVolunteerService
             requisites,
             null);
         
-        await _repository.Create(volunteerEntity.Value);
+       return await _repository.Create(volunteerEntity.Value);
     }
 
     public Task Delete(Guid id)

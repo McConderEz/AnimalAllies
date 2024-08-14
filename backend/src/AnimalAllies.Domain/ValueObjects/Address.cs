@@ -1,4 +1,6 @@
-using CSharpFunctionalExtensions;
+
+
+using AnimalAllies.Domain.Models;
 
 namespace AnimalAllies.Domain.ValueObjects;
 
@@ -21,14 +23,14 @@ public class Address : ValueObject
     public static Result<Address> Create(string city, string district, int houseNumber, int flatNumber)
     {
         if (string.IsNullOrWhiteSpace(city) || city.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
-            return Result.Failure<Address>($"{nameof(city)} incorrect format");
+            return Result<Address>.Failure(new Error("Invalid input",$"{nameof(city)} incorrect format"));
 
         if (string.IsNullOrWhiteSpace(district) || district.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
-            return Result.Failure<Address>($"{nameof(district)} incorrect format");
+            return Result<Address>.Failure(new Error("Invalid input",$"{nameof(district)} incorrect format"));
 
         var address = new Address(city, district, houseNumber, flatNumber);
 
-        return Result.Success(address);
+        return Result<Address>.Success(address);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
