@@ -38,9 +38,11 @@ public class Volunteer: Entity<VolunteerId>
     public FullName FullName { get; private set;}
     public string Description { get; private set; }
     public int WorkExperience { get; private set; }
-    public int PetsNeedsHelp => _pets.Count(x => x.HelpStatus == HelpStatus.NeedsHelp);
-    public int PetsSearchingHome => _pets.Count(x => x.HelpStatus == HelpStatus.SearchingHome);
-    public int PetsFoundHome => _pets.Count(x => x.HelpStatus == HelpStatus.FoundHome);
+
+    public int PetsNeedsHelp() => _pets.Count(x => x.HelpStatus == HelpStatus.NeedsHelp);
+    public int PetsSearchingHome() => _pets.Count(x => x.HelpStatus == HelpStatus.SearchingHome);
+    public int PetsFoundHome() => _pets.Count(x => x.HelpStatus == HelpStatus.FoundHome);
+    
     public PhoneNumber Phone { get; private set; }
     public List<SocialNetwork> SocialNetworks => _socialNetworks;
 
@@ -51,27 +53,15 @@ public class Volunteer: Entity<VolunteerId>
     public void AddPets(List<Pet> pets) => _pets.AddRange(pets);
     public void AddSocialNetworks(List<SocialNetwork> socialNetworks) => _socialNetworks.AddRange(socialNetworks);
     
-    public Result UpdatePhoneNumber(string phone)
+    public Result UpdatePhoneNumber(PhoneNumber phoneNumber)
     {
-        var newPhoneNumber = PhoneNumber.Create(phone);
-        if (newPhoneNumber.IsFailure)
-        {
-            return Result.Failure(newPhoneNumber.Error!);
-        }
-
-        this.Phone = newPhoneNumber.Value;
+        this.Phone = phoneNumber;
         return Result.Success();
     }
     
-    public Result UpdatePhoneNumber(string firstName,string secondName,string patronymic)
+    public Result UpdateFullName(FullName fullName)
     {
-        var newFullName = FullName.Create(firstName,secondName,patronymic);
-        if (newFullName.IsFailure)
-        {
-            return Result.Failure(newFullName.Error!);
-        }
-
-        this.FullName = newFullName.Value;
+        this.FullName = fullName;
         return Result.Success();
     }
     

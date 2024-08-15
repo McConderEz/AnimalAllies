@@ -71,39 +71,21 @@ public class Pet: Entity<PetId>
     public void SetVaccinated() => IsVaccinated = !IsVaccinated;
     public void SetCastrated() => IsCastrated = !IsCastrated;
 
-    public Result UpdateAddress(string city, string district, int houseNumber, int flatNumber)
+    public Result UpdateAddress(Address address)
     {
-        var newAddress = Address.Create(city, district, houseNumber, flatNumber);
-        if (newAddress.IsFailure)
-        {
-            return Result.Failure(newAddress.Error!);
-        }
-
-        this.Address = newAddress.Value;
+        this.Address = address;
         return Result.Success();
     }
 
-    public Result UpdatePhoneNumber(string phone)
+    public Result UpdatePhoneNumber(PhoneNumber phoneNumber)
     {
-        var newPhoneNumber = PhoneNumber.Create(phone);
-        if (newPhoneNumber.IsFailure)
-        {
-            return Result.Failure(newPhoneNumber.Error!);
-        }
-
-        this.Phone = newPhoneNumber.Value;
+        this.Phone = phoneNumber;
         return Result.Success();
     }
 
-    public Result UpdateHelpStatus(string value)
+    public Result UpdateHelpStatus(HelpStatus helpStatus)
     {
-        var newHelpStatus = HelpStatus.Create(value);
-        if (newHelpStatus.IsFailure)
-        {
-            return Result.Failure(newHelpStatus.Error!);
-        }
-
-        this.HelpStatus = newHelpStatus.Value;
+        this.HelpStatus = helpStatus;
         return Result.Success();
     }
     
