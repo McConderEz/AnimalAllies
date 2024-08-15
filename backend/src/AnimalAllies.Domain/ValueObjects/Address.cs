@@ -19,7 +19,8 @@ public class Address : ValueObject
         HouseNumber = houseNumber;
         FlatNumber = flatNumber;
     }
-
+    
+    
     public static Result<Address> Create(string city, string district, int houseNumber, int flatNumber)
     {
         if (string.IsNullOrWhiteSpace(city) || city.Length > Constraints.Constraints.MAX_VALUE_LENGTH)

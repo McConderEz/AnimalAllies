@@ -34,15 +34,6 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
 
         builder.Property(x => x.WorkExperience)
             .IsRequired();
-
-        builder.Property(x => x.PetsNeedsHelp)
-            .IsRequired();
-
-        builder.Property(x => x.PetsSearchingHome)
-            .IsRequired();
-
-        builder.Property(x => x.PetsFoundHome)
-            .IsRequired();
         
         builder.ComplexProperty(x => x.Phone, p =>
         {

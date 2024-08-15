@@ -70,8 +70,24 @@ public class Pet: Entity<PetId>
     
     public void SetVaccinated() => IsVaccinated = !IsVaccinated;
     public void SetCastrated() => IsCastrated = !IsCastrated;
-    
-    //TODO: Добавить методы изменения ValueObject`ов
+
+    public Result UpdateAddress(Address address)
+    {
+        this.Address = address;
+        return Result.Success();
+    }
+
+    public Result UpdatePhoneNumber(PhoneNumber phoneNumber)
+    {
+        this.Phone = phoneNumber;
+        return Result.Success();
+    }
+
+    public Result UpdateHelpStatus(HelpStatus helpStatus)
+    {
+        this.HelpStatus = helpStatus;
+        return Result.Success();
+    }
     
     public static Result<Pet> Create(
         PetId petId,

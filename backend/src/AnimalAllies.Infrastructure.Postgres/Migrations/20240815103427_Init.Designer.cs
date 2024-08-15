@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AnimalAllies.Infrastructure.Migrations
 {
     [DbContext(typeof(AnimalAlliesDbContext))]
-    [Migration("20240813192621_Init")]
+    [Migration("20240815103427_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -202,15 +202,6 @@ namespace AnimalAllies.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(350)
                         .HasColumnType("character varying(350)");
-
-                    b.Property<int>("PetsFoundHome")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PetsNeedsHelp")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PetsSearchingHome")
-                        .HasColumnType("integer");
 
                     b.Property<int>("WorkExperience")
                         .HasColumnType("integer");

@@ -22,7 +22,8 @@ public class FullName : ValueObject
         SecondName = secondName;
         Patronymic = patronymic;
     }
-
+    
+    
     public static Result<FullName> Create(string firstName,string secondName, string patronymic)
     {
         if (string.IsNullOrWhiteSpace(firstName) || !ValidationRegex.IsMatch(firstName))
