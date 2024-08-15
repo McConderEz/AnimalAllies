@@ -200,15 +200,6 @@ namespace AnimalAllies.Infrastructure.Migrations
                         .HasMaxLength(350)
                         .HasColumnType("character varying(350)");
 
-                    b.Property<int>("PetsFoundHome")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PetsNeedsHelp")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PetsSearchingHome")
-                        .HasColumnType("integer");
-
                     b.Property<int>("WorkExperience")
                         .HasColumnType("integer");
 
