@@ -3,7 +3,7 @@ using AnimalAllies.Domain.ValueObjects;
 
 namespace AnimalAllies.Application.Contracts.DTOs.Volunteer;
 
-public record class CreateVolunteerRequest(
+public record CreateVolunteerRequest(
     string FirstName,
     string SecondName,
     string Patronymic,

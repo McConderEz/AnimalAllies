@@ -4,7 +4,7 @@ namespace AnimalAllies.Application.Common;
 
 public interface IVolunteerRepository
 {
-    Task<VolunteerId> Create(Volunteer entity);
+    Task<Result<VolunteerId>> Create(Volunteer entity, CancellationToken cancellationToken = default);
     Task Delete(Guid id);
     Task Update(Volunteer entity);
     Task<Volunteer> GetById(Guid id);
