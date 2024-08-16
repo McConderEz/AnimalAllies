@@ -35,6 +35,7 @@ public class VolunteerDetails: ValueObject
     
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        throw new NotImplementedException();
+        yield return Description;
+        yield return WorkExperience;
     }
 }
