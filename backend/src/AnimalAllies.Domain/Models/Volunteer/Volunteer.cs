@@ -52,6 +52,31 @@ public class Volunteer: Entity<VolunteerId>
     public void AddRequisites(List<Requisite> requisites) => _requisites.AddRange(requisites);
     public void AddPets(List<Pet> pets) => _pets.AddRange(pets);
     public void AddSocialNetworks(List<SocialNetwork> socialNetworks) => _socialNetworks.AddRange(socialNetworks);
+
+    public Result UpdateWorkExperience(int workExperience)
+    {
+        if (workExperience < 0 || workExperience > Constraints.Constraints.MAX_EXP_VALUE)
+        {
+            return Result.Failure(new Error("Invalid input",
+                $"workExp cannot be less than 0 or more than {Constraints.Constraints.MAX_EXP_VALUE}"));
+        }
+
+        WorkExperience = workExperience;
+        return Result.Success();
+    }
+
+    public Result UpdateDescription(string description)
+    {
+        if (string.IsNullOrWhiteSpace(description) ||
+            description.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
+        {
+            return Result.Failure(new Error("Invalid Input",
+                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_DESCRIPTION_LENGTH}"));
+        }
+
+        Description = description;
+        return Result.Success();
+    }
     
     public Result UpdatePhoneNumber(PhoneNumber phoneNumber)
     {

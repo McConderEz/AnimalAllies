@@ -12,7 +12,15 @@ public class Breed: Entity<BreedId>
     }
     
     public string Name { get; private set; }
-    
+
+    public Result UpdateName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name) || name.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
+            return Result.Failure(new Error("Invalid input",$"{nameof(name)} cannot be null or length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
+
+        Name = name;
+        return Result.Success();
+    }
     
     public static Result<Breed> Create(BreedId breedId,string name)
     {

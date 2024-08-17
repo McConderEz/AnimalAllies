@@ -2,19 +2,19 @@ using AnimalAllies.Domain.ValueObjects;
 
 namespace AnimalAllies.Domain.Models;
 
-public class Pet: Entity<PetId>
+public class Pet : Entity<PetId>
 {
     private readonly List<Requisite> _requisites = [];
     private readonly List<PetPhoto> _petPhotos = [];
-    private Pet(PetId id): base(id) {}
+
+    private Pet(PetId id) : base(id)
+    {
+    }
+
     private Pet(
         PetId petId,
         string name,
-        string description,
-        string color,
-        string healthInformation,
-        double weight,
-        double height,
+        PetDetails petDetails,
         bool isCastrated,
         DateOnly birthDate,
         bool isVaccinated,
@@ -24,15 +24,11 @@ public class Pet: Entity<PetId>
         int speciesID,
         string breedName,
         List<Requisite> requisites,
-        List<PetPhoto> petPhotos) 
-    : base(petId)
+        List<PetPhoto> petPhotos)
+        : base(petId)
     {
         Name = name;
-        Description = description;
-        Color = color;
-        HealthInformation = healthInformation;
-        Weight = weight;
-        Height = height;
+        PetDetails = petDetails;
         IsCastrated = isCastrated;
         BirthDate = birthDate;
         IsVaccinated = isVaccinated;
@@ -44,13 +40,9 @@ public class Pet: Entity<PetId>
         AddRequisites(requisites);
         AddPetPhotos(petPhotos);
     }
-    
-    public string Name { get; private set; } 
-    public string Description { get; private set; }
-    public string Color { get; private set; }
-    public string HealthInformation { get; private set;} 
-    public double Weight { get; private set; }
-    public double Height { get; private set; }
+
+    public string Name { get; private set; }
+    public PetDetails PetDetails { get; private set; }
     public bool IsCastrated { get; private set; } = false;
     public DateOnly BirthDate { get; private set; }
     public bool IsVaccinated { get; private set; } = false;
@@ -60,14 +52,15 @@ public class Pet: Entity<PetId>
     public int SpeciesID { get; private set; }
     public string BreedName { get; private set; }
     public DateTime CreationTime { get; } = DateTime.Now;
-    
-    
+
+
     public IReadOnlyList<Requisite> Requisites => _requisites;
     public IReadOnlyList<PetPhoto> PetPhotos => _petPhotos;
 
     public void AddRequisites(List<Requisite> requisites) => _requisites.AddRange(requisites);
     public void AddPetPhotos(List<PetPhoto> petPhotos) => _petPhotos.AddRange(petPhotos);
-    
+
+
     public void SetVaccinated() => IsVaccinated = !IsVaccinated;
     public void SetCastrated() => IsCastrated = !IsCastrated;
 
@@ -88,8 +81,26 @@ public class Pet: Entity<PetId>
         this.HelpStatus = helpStatus;
         return Result.Success();
     }
-    
-    public static Result<Pet> Create(
+
+    public Result UpdatePetDetails(PetDetails petDetails)
+    {
+        this.PetDetails = petDetails;
+        return Result.Success();
+    }
+
+    public Result UpdateName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name) || name.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
+        {
+            return Result.Failure(new Error("Invalid input",
+                $"{name} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
+        }
+
+        Name = name;
+        return Result.Success();
+    }
+
+public static Result<Pet> Create(
         PetId petId,
         string name,
         string description,
@@ -117,36 +128,6 @@ public class Pet: Entity<PetId>
                 $"{name} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
         }
         
-        if (string.IsNullOrWhiteSpace(description) || description.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
-        {
-            return Result<Pet>.Failure(new Error("Invalid input",
-                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_DESCRIPTION_LENGTH}"));
-        }
-        
-        if (string.IsNullOrWhiteSpace(color) || color.Length > Constraints.Constraints.MAX_PET_COLOR_LENGTH)
-        {
-            return Result<Pet>.Failure(new Error("Invalid input",
-                $"{color} cannot be null or have length more than {Constraints.Constraints.MAX_PET_COLOR_LENGTH}"));
-        }
-        
-        if (string.IsNullOrWhiteSpace(healthInformation) || healthInformation.Length > Constraints.Constraints.MAX_PET_COLOR_LENGTH)
-        {
-            return Result<Pet>.Failure(new Error("Invalid input",
-                $"{healthInformation} cannot be null or have length more than {Constraints.Constraints.MAX_PET_INFORMATION_LENGTH}"));
-        }
-        
-        if (weight > Constraints.Constraints.MIN_VALUE)
-        {
-            return Result<Pet>.Failure(new Error("Invalid input",
-                $"{weight} must be more than {Constraints.Constraints.MIN_VALUE}"));
-        }
-        
-        if (height > Constraints.Constraints.MIN_VALUE)
-        {
-            return Result<Pet>.Failure(new Error("Invalid input",
-                $"{height} must be more than {Constraints.Constraints.MIN_VALUE}"));
-        }
-
         if (birthDate > DateOnly.FromDateTime(DateTime.Now))
         {
             return Result<Pet>.Failure(new Error("Invalid input",$"{birthDate} cannot be more than {DateOnly.FromDateTime(DateTime.Now)}"));
@@ -161,7 +142,13 @@ public class Pet: Entity<PetId>
         var address = ValueObjects.Address.Create(city, district, houseNumber, flatNumber);
         var phoneNumber = PhoneNumber.Create(phone);
         var helpStatus = ValueObjects.HelpStatus.Create(status);
+        var petDetails = PetDetails.Create(description, color, healthInformation, weight, height);
 
+        if (petDetails.IsFailure)
+        {
+            return Result<Pet>.Failure(petDetails.Error);
+        }
+        
         if (address.IsFailure)
         {
             return Result<Pet>.Failure(address.Error);
@@ -180,11 +167,7 @@ public class Pet: Entity<PetId>
         var pet = new Pet(
             petId,
             name,
-            description,
-            color,
-            healthInformation,
-            weight,
-            height,
+            petDetails.Value,
             isCastrated,
             birthDate,
             isVaccinated,

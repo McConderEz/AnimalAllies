@@ -11,13 +11,6 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
     public void Configure(EntityTypeBuilder<Pet> builder)
     {
         builder.HasKey(x => x.Id);
-
-        
-        builder.ToTable(t =>
-        {
-            t.HasCheckConstraint("CK_Pet_Weight", "\"Weight\" > 0");
-            t.HasCheckConstraint("CK_Pet_Height", "\"Height\" > 0");
-        });
         
         builder.Property(x => x.Id)
             .HasConversion(
@@ -28,19 +21,20 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
             .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
             .IsRequired();
 
-        builder.Property(x => x.Description)
-            .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH)
-            .IsRequired();
+        builder.ComplexProperty(x => x.PetDetails, b =>
+        {
+            b.IsRequired();
+            b.Property(x => x.Description)
+                .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH);
 
-        builder.Property(x => x.Color)
-            .HasMaxLength(Constraints.MAX_PET_COLOR_LENGTH)
-            .IsRequired();
+            b.Property(x => x.Color)
+                .HasMaxLength(Constraints.MAX_PET_COLOR_LENGTH);
 
-        builder.Property(x => x.Weight)
-            .IsRequired();
+            b.Property(x => x.Weight);
 
-        builder.Property(x => x.Height)
-            .IsRequired();
+            b.Property(x => x.Height);
+        });
+            
 
         builder.ComplexProperty(x => x.Address, a =>
         {

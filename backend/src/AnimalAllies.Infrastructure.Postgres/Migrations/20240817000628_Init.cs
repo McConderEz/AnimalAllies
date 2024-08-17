@@ -12,7 +12,7 @@ namespace AnimalAllies.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "SpeciesList",
+                name: "Species",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -20,7 +20,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SpeciesList", x => x.Id);
+                    table.PrimaryKey("PK_Species", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -28,7 +28,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Description = table.Column<string>(type: "character varying(350)", maxLength: 350, nullable: false),
+                    Description = table.Column<string>(type: "character varying(1500)", maxLength: 1500, nullable: false),
                     WorkExperience = table.Column<int>(type: "integer", nullable: false),
                     first_name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     patronymic = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
@@ -40,9 +40,6 @@ namespace AnimalAllies.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Volunteers", x => x.Id);
-                    table.CheckConstraint("CK_Volunteer_PetsFoundHome", "\"PetsFoundHome\" >= 0");
-                    table.CheckConstraint("CK_Volunteer_PetsNeedsHelp", "\"PetsNeedsHelp\" >= 0");
-                    table.CheckConstraint("CK_Volunteer_PetsSearchingHome", "\"PetsSearchingHome\" >= 0");
                     table.CheckConstraint("CK_Volunteer_WorkExperience", "\"WorkExperience\" >= 0");
                 });
 
@@ -58,9 +55,9 @@ namespace AnimalAllies.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Breed", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Breed_SpeciesList_SpeciesId",
+                        name: "FK_Breed_Species_SpeciesId",
                         column: x => x.SpeciesId,
-                        principalTable: "SpeciesList",
+                        principalTable: "Species",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -71,11 +68,6 @@ namespace AnimalAllies.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "character varying(350)", maxLength: 350, nullable: false),
-                    Color = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    HealthInformation = table.Column<string>(type: "text", nullable: false),
-                    Weight = table.Column<double>(type: "double precision", nullable: false),
-                    Height = table.Column<double>(type: "double precision", nullable: false),
                     IsCastrated = table.Column<bool>(type: "boolean", nullable: false),
                     BirthDate = table.Column<DateOnly>(type: "date", nullable: false),
                     IsVaccinated = table.Column<bool>(type: "boolean", nullable: false),
@@ -87,14 +79,16 @@ namespace AnimalAllies.Infrastructure.Migrations
                     flat_number = table.Column<int>(type: "integer", maxLength: 20, nullable: false),
                     house_number = table.Column<int>(type: "integer", maxLength: 30, nullable: false),
                     help_status = table.Column<string>(type: "text", nullable: false),
+                    PetDetails_Color = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    PetDetails_Description = table.Column<string>(type: "character varying(1500)", maxLength: 1500, nullable: false),
+                    PetDetails_Height = table.Column<double>(type: "double precision", nullable: false),
+                    PetDetails_Weight = table.Column<double>(type: "double precision", nullable: false),
                     phone_number = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false),
                     Requisites = table.Column<string>(type: "jsonb", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Pets", x => x.Id);
-                    table.CheckConstraint("CK_Pet_Height", "\"Height\" > 0");
-                    table.CheckConstraint("CK_Pet_Weight", "\"Weight\" > 0");
                     table.ForeignKey(
                         name: "FK_Pets_Volunteers_VolunteerId",
                         column: x => x.VolunteerId,
@@ -148,7 +142,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                 name: "PetPhotos");
 
             migrationBuilder.DropTable(
-                name: "SpeciesList");
+                name: "Species");
 
             migrationBuilder.DropTable(
                 name: "Pets");

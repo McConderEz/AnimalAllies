@@ -23,9 +23,6 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
             .ToTable(t =>
         {
             t.HasCheckConstraint("CK_Volunteer_WorkExperience", "\"WorkExperience\" >= 0");
-            t.HasCheckConstraint("CK_Volunteer_PetsNeedsHelp", "\"PetsNeedsHelp\" >= 0");
-            t.HasCheckConstraint("CK_Volunteer_PetsSearchingHome", "\"PetsSearchingHome\" >= 0");
-            t.HasCheckConstraint("CK_Volunteer_PetsFoundHome", "\"PetsFoundHome\" >= 0");
         });
         
         builder.Property(x => x.Description)

@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AnimalAllies.Infrastructure.Migrations
 {
     [DbContext(typeof(AnimalAlliesDbContext))]
-    [Migration("20240815103427_Init")]
+    [Migration("20240817000628_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -58,23 +58,6 @@ namespace AnimalAllies.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Color")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(350)
-                        .HasColumnType("character varying(350)");
-
-                    b.Property<string>("HealthInformation")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("Height")
-                        .HasColumnType("double precision");
-
                     b.Property<bool>("IsCastrated")
                         .HasColumnType("boolean");
 
@@ -91,9 +74,6 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                     b.Property<Guid?>("VolunteerId")
                         .HasColumnType("uuid");
-
-                    b.Property<double>("Weight")
-                        .HasColumnType("double precision");
 
                     b.ComplexProperty<Dictionary<string, object>>("Address", "AnimalAllies.Domain.Models.Pet.Address#Address", b1 =>
                         {
@@ -132,6 +112,27 @@ namespace AnimalAllies.Infrastructure.Migrations
                                 .HasColumnName("help_status");
                         });
 
+                    b.ComplexProperty<Dictionary<string, object>>("PetDetails", "AnimalAllies.Domain.Models.Pet.PetDetails#PetDetails", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("Color")
+                                .IsRequired()
+                                .HasMaxLength(50)
+                                .HasColumnType("character varying(50)");
+
+                            b1.Property<string>("Description")
+                                .IsRequired()
+                                .HasMaxLength(1500)
+                                .HasColumnType("character varying(1500)");
+
+                            b1.Property<double>("Height")
+                                .HasColumnType("double precision");
+
+                            b1.Property<double>("Weight")
+                                .HasColumnType("double precision");
+                        });
+
                     b.ComplexProperty<Dictionary<string, object>>("Phone", "AnimalAllies.Domain.Models.Pet.Phone#PhoneNumber", b1 =>
                         {
                             b1.IsRequired();
@@ -147,12 +148,7 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                     b.HasIndex("VolunteerId");
 
-                    b.ToTable("Pets", t =>
-                        {
-                            t.HasCheckConstraint("CK_Pet_Height", "\"Height\" > 0");
-
-                            t.HasCheckConstraint("CK_Pet_Weight", "\"Weight\" > 0");
-                        });
+                    b.ToTable("Pets");
                 });
 
             modelBuilder.Entity("AnimalAllies.Domain.Models.PetPhoto", b =>
@@ -190,7 +186,7 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SpeciesList");
+                    b.ToTable("Species");
                 });
 
             modelBuilder.Entity("AnimalAllies.Domain.Models.Volunteer", b =>
@@ -200,8 +196,8 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(350)
-                        .HasColumnType("character varying(350)");
+                        .HasMaxLength(1500)
+                        .HasColumnType("character varying(1500)");
 
                     b.Property<int>("WorkExperience")
                         .HasColumnType("integer");
@@ -244,12 +240,6 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                     b.ToTable("Volunteers", t =>
                         {
-                            t.HasCheckConstraint("CK_Volunteer_PetsFoundHome", "\"PetsFoundHome\" >= 0");
-
-                            t.HasCheckConstraint("CK_Volunteer_PetsNeedsHelp", "\"PetsNeedsHelp\" >= 0");
-
-                            t.HasCheckConstraint("CK_Volunteer_PetsSearchingHome", "\"PetsSearchingHome\" >= 0");
-
                             t.HasCheckConstraint("CK_Volunteer_WorkExperience", "\"WorkExperience\" >= 0");
                         });
                 });

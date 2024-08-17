@@ -17,6 +17,18 @@ public class PetPhoto: Entity<PetPhotoId>
 
     public void SetMain() => IsMain = !IsMain;
 
+    public Result UpdatePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || path.Length > Constraints.Constraints.MAX_PATH_LENGHT)
+        {
+            return Result.Failure(new Error("Invalid input",
+                $"{path} cannot be null or have length more than {Constraints.Constraints.MAX_PATH_LENGHT}"));
+        }
+
+        Path = path;
+        return Result.Success();
+    }
+
     public static Result<PetPhoto> Create(PetPhotoId petPhotoId,string path, bool isMain)
     {
         if (string.IsNullOrWhiteSpace(path) || path.Length > Constraints.Constraints.MAX_PATH_LENGHT)

@@ -17,6 +17,18 @@ public class Species: Entity<SpeciesId>
     public IReadOnlyList<Breed> Breeds => _breeds;
     public void AddBreeds(List<Breed> breeds) => _breeds.AddRange(breeds);
 
+    public Result UpdateName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name) || name.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
+        {
+            return Result.Failure(new Error("Invalid input",
+                $"{name} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
+        }
+
+        Name = name;
+        return Result.Success();
+    }
+
     public static Result<Species> Create(SpeciesId speciesId,string name, List<Breed> breeds)
     {
         if (string.IsNullOrWhiteSpace(name) || name.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
