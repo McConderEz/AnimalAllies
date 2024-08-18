@@ -7,7 +7,7 @@ public static class Errors
         public static Error ValueIsInvalid(string? name = null)
         {
             var label = name ?? "value";
-            return Error.Validation("Invalid,input", $"{label} is invalid");
+            return Error.Validation("Invalid.input", $"{label} is invalid");
         }
 
         public static Error NotFound(Guid? id = null)

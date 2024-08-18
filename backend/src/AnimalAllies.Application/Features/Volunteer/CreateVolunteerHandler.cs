@@ -21,13 +21,18 @@ public class CreateVolunteerHandler
         var result = await validator.ValidateAsync(request, cancellationToken);
 
         var phoneNumber = PhoneNumber.Create(request.PhoneNumber);
+        var email = Email.Create(request.Email);
 
         if (phoneNumber.IsFailure)
             return Errors.General.ValueIsInvalid();
+        
+        if (email.IsFailure)
+            return Errors.General.ValueIsInvalid();
 
-        var volunteer = await _repository.GetByPhoneNumber(phoneNumber.Value);
+        var volunteerByPhoneNumber = await _repository.GetByPhoneNumber(phoneNumber.Value);
+        var volunteerByEmail = await _repository.GetByEmail(email.Value);
 
-        if (volunteer.Value != null)
+        if (!volunteerByPhoneNumber.IsFailure || !volunteerByEmail.IsFailure)
             return Errors.Volunteer.AlreadyExist();
         
         if (result.Errors.Any())

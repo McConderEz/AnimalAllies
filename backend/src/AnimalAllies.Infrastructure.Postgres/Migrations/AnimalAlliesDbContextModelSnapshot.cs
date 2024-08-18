@@ -66,7 +66,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                     b.Property<bool>("IsVaccinated")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("VolunteerId")
+                    b.Property<Guid?>("volunteer_id")
                         .HasColumnType("uuid");
 
                     b.ComplexProperty<Dictionary<string, object>>("Address", "AnimalAllies.Domain.Models.Pet.Address#Address", b1 =>
@@ -162,7 +162,7 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VolunteerId");
+                    b.HasIndex("volunteer_id");
 
                     b.ToTable("pets", (string)null);
                 });
@@ -292,7 +292,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                 {
                     b.HasOne("AnimalAllies.Domain.Models.Volunteer", null)
                         .WithMany("Pets")
-                        .HasForeignKey("VolunteerId");
+                        .HasForeignKey("volunteer_id");
 
                     b.OwnsMany("AnimalAllies.Domain.ValueObjects.Requisite", "Requisites", b1 =>
                         {
@@ -326,47 +326,81 @@ namespace AnimalAllies.Infrastructure.Migrations
 
             modelBuilder.Entity("AnimalAllies.Domain.Models.Volunteer", b =>
                 {
-                    b.OwnsMany("AnimalAllies.Domain.ValueObjects.Requisite", "Requisites", b1 =>
+                    b.OwnsOne("AnimalAllies.Domain.ValueObjects.VolunteerDetails", "Details", b1 =>
                         {
                             b1.Property<Guid>("VolunteerId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
-
-                            b1.HasKey("VolunteerId", "Id");
+                            b1.HasKey("VolunteerId");
 
                             b1.ToTable("volunteers");
 
-                            b1.ToJson("Requisites");
+                            b1.ToJson("Details");
 
                             b1.WithOwner()
                                 .HasForeignKey("VolunteerId");
+
+                            b1.OwnsMany("AnimalAllies.Domain.ValueObjects.SocialNetwork", "SocialNetworks", b2 =>
+                                {
+                                    b2.Property<Guid>("VolunteerDetailsVolunteerId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<int>("Id")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("integer");
+
+                                    b2.Property<string>("Title")
+                                        .IsRequired()
+                                        .HasMaxLength(100)
+                                        .HasColumnType("character varying(100)");
+
+                                    b2.Property<string>("Url")
+                                        .IsRequired()
+                                        .HasMaxLength(2048)
+                                        .HasColumnType("character varying(2048)");
+
+                                    b2.HasKey("VolunteerDetailsVolunteerId", "Id");
+
+                                    b2.ToTable("volunteers");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("VolunteerDetailsVolunteerId");
+                                });
+
+                            b1.OwnsMany("AnimalAllies.Domain.ValueObjects.Requisite", "Requisites", b2 =>
+                                {
+                                    b2.Property<Guid>("VolunteerDetailsVolunteerId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<int>("Id")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("integer");
+
+                                    b2.Property<string>("Description")
+                                        .IsRequired()
+                                        .HasMaxLength(1500)
+                                        .HasColumnType("character varying(1500)");
+
+                                    b2.Property<string>("Title")
+                                        .IsRequired()
+                                        .HasMaxLength(100)
+                                        .HasColumnType("character varying(100)");
+
+                                    b2.HasKey("VolunteerDetailsVolunteerId", "Id");
+
+                                    b2.ToTable("volunteers");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("VolunteerDetailsVolunteerId");
+                                });
+
+                            b1.Navigation("Requisites");
+
+                            b1.Navigation("SocialNetworks");
                         });
 
-                    b.OwnsMany("AnimalAllies.Domain.ValueObjects.SocialNetwork", "SocialNetworks", b1 =>
-                        {
-                            b1.Property<Guid>("VolunteerId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
-
-                            b1.HasKey("VolunteerId", "Id");
-
-                            b1.ToTable("volunteers");
-
-                            b1.ToJson("SocialNetworks");
-
-                            b1.WithOwner()
-                                .HasForeignKey("VolunteerId");
-                        });
-
-                    b.Navigation("Requisites");
-
-                    b.Navigation("SocialNetworks");
+                    b.Navigation("Details")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("AnimalAllies.Domain.Models.Pet", b =>

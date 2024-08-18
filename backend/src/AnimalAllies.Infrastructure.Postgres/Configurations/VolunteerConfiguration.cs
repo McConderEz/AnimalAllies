@@ -65,11 +65,35 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
                 .HasMaxLength(50);
         });
 
-        builder.OwnsMany(x => x.SocialNetworks, b => b.ToJson());
-        builder.OwnsMany(x => x.Requisites, b => b.ToJson());
+        builder.OwnsOne(v => v.Details, d =>
+        {
+            d.ToJson();
+
+            d.OwnsMany(d => d.SocialNetworks, s =>
+            {
+                s.Property(sn => sn.Url)
+                    .IsRequired()
+                    .HasMaxLength(Constraints.MAX_URL_LENGTH);
+                s.Property(sn => sn.Title)
+                    .IsRequired()
+                    .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
+            });
+            
+            d.OwnsMany(d => d.Requisites, r =>
+            {
+                r.Property(r => r.Description)
+                    .IsRequired()
+                    .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH);
+                r.Property(r => r.Title)
+                    .IsRequired()
+                    .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
+            });
+            
+        });
         
         builder.HasMany(x => x.Pets)
             .WithOne()
+            .HasForeignKey("volunteer_id")
             .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

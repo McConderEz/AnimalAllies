@@ -35,8 +35,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                     patronymic = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     second_name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     phone_number = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false),
-                    Requisites = table.Column<string>(type: "jsonb", nullable: true),
-                    SocialNetworks = table.Column<string>(type: "jsonb", nullable: true)
+                    Details = table.Column<string>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,7 +71,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                     BirthDate = table.Column<DateOnly>(type: "date", nullable: false),
                     IsVaccinated = table.Column<bool>(type: "boolean", nullable: false),
                     BreedName = table.Column<string>(type: "text", nullable: false),
-                    VolunteerId = table.Column<Guid>(type: "uuid", nullable: true),
+                    volunteer_id = table.Column<Guid>(type: "uuid", nullable: true),
                     city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     district = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     flat_number = table.Column<int>(type: "integer", maxLength: 20, nullable: false),
@@ -91,8 +90,8 @@ namespace AnimalAllies.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_pets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_pets_volunteers_VolunteerId",
-                        column: x => x.VolunteerId,
+                        name: "FK_pets_volunteers_volunteer_id",
+                        column: x => x.volunteer_id,
                         principalTable: "volunteers",
                         principalColumn: "Id");
                 });
@@ -128,9 +127,9 @@ namespace AnimalAllies.Infrastructure.Migrations
                 column: "PetId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_pets_VolunteerId",
+                name: "IX_pets_volunteer_id",
                 table: "pets",
-                column: "VolunteerId");
+                column: "volunteer_id");
         }
 
         /// <inheritdoc />

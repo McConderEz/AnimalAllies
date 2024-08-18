@@ -6,9 +6,7 @@ namespace AnimalAllies.Domain.Models;
 
 public class Volunteer: Entity<VolunteerId>
 {
-    private readonly List<Requisite> _requisites = [];
     private readonly List<Pet> _pets = [];
-    private readonly List<SocialNetwork> _socialNetworks = [];
 
     private Volunteer(VolunteerId id) : base(id)
     {
@@ -21,9 +19,8 @@ public class Volunteer: Entity<VolunteerId>
         Email email,
         VolunteerDescription volunteerDescription,
         int workExperience,
+        VolunteerDetails details,
         PhoneNumber phone,
-        List<SocialNetwork> socialNetworks,
-        List<Requisite> requisites,
         List<Pet> pets)
     : base(volunteerId)
     {
@@ -31,9 +28,8 @@ public class Volunteer: Entity<VolunteerId>
         Email = email;
         Description = volunteerDescription;
         WorkExperience = workExperience;
+        Details = details;
         Phone = phone;
-        AddSocialNetworks(socialNetworks);
-        AddRequisites(requisites);
         AddPets(pets);
     }
     
@@ -41,21 +37,16 @@ public class Volunteer: Entity<VolunteerId>
     public Email Email { get; private set; }
     public VolunteerDescription Description { get; private set; }
     public int WorkExperience { get; private set; }
+    public PhoneNumber Phone { get; private set; }
+    public VolunteerDetails Details { get; private set; }
+    public IReadOnlyList<Pet> Pets => _pets;
+    
+    public void AddPets(List<Pet> pets) => _pets.AddRange(pets);
 
     public int PetsNeedsHelp() => _pets.Count(x => x.HelpStatus == HelpStatus.NeedsHelp);
     public int PetsSearchingHome() => _pets.Count(x => x.HelpStatus == HelpStatus.SearchingHome);
     public int PetsFoundHome() => _pets.Count(x => x.HelpStatus == HelpStatus.FoundHome);
     
-    public PhoneNumber Phone { get; private set; }
-    public List<SocialNetwork> SocialNetworks => _socialNetworks;
-
-    public IReadOnlyList<Requisite> Requisites => _requisites;
-    public IReadOnlyList<Pet> Pets => _pets;
-
-    public void AddRequisites(List<Requisite> requisites) => _requisites.AddRange(requisites);
-    public void AddPets(List<Pet> pets) => _pets.AddRange(pets);
-    public void AddSocialNetworks(List<SocialNetwork> socialNetworks) => _socialNetworks.AddRange(socialNetworks);
-
     public Result UpdateWorkExperience(int workExperience)
     {
         if (workExperience < 0 || workExperience > Constraints.Constraints.MAX_EXP_VALUE)
@@ -101,8 +92,8 @@ public class Volunteer: Entity<VolunteerId>
         string description,
         int workExperience,
         string phoneNumber,
-        List<SocialNetwork>? socialNetworks,
-        List<Requisite>? requisites,
+        List<SocialNetwork> socialNetworks,
+        List<Requisite> requisites,
         List<Pet>? pets)
     {
         var volunteerDescription = VolunteerDescription.Create(description);
@@ -139,15 +130,16 @@ public class Volunteer: Entity<VolunteerId>
             return Result<Volunteer>.Failure(phone.Error);
         }
 
+        var details = VolunteerDetails.Create(requisites, socialNetworks);
+        
         var volunteer = new Volunteer(
             volunteerId,
             fullName.Value,
             emailVO.Value,
             volunteerDescription.Value,
             workExperience,
+            details.Value,
             phone.Value,
-            socialNetworks ?? [],
-            requisites ?? [],
             pets ?? []);
 
         return Result<Volunteer>.Success(volunteer);
