@@ -27,13 +27,13 @@ public class FullName : ValueObject
     public static Result<FullName> Create(string firstName,string secondName, string patronymic)
     {
         if (string.IsNullOrWhiteSpace(firstName) || !ValidationRegex.IsMatch(firstName))
-            return Result<FullName>.Failure(new Error("Invalid input",$"{nameof(firstName)} incorrect format"));
+            return Result<FullName>.Failure(Errors.General.ValueIsInvalid(firstName));
 
         if (string.IsNullOrWhiteSpace(secondName) || !ValidationRegex.IsMatch(secondName))
-            return Result<FullName>.Failure(new Error("Invalid input",$"{nameof(secondName)} incorrect format"));
+            return Result<FullName>.Failure(Errors.General.ValueIsInvalid(secondName));
 
         if (string.IsNullOrWhiteSpace(patronymic) || !ValidationRegex.IsMatch(patronymic))
-            return Result<FullName>.Failure(new Error("Invalid input",$"{nameof(patronymic)} incorrect format"));
+            return Result<FullName>.Failure(Errors.General.ValueIsInvalid(patronymic));
 
         return Result<FullName>.Success(new FullName(firstName, secondName, patronymic));
     }

@@ -21,8 +21,7 @@ public class PetPhoto: Entity<PetPhotoId>
     {
         if (string.IsNullOrWhiteSpace(path) || path.Length > Constraints.Constraints.MAX_PATH_LENGHT)
         {
-            return Result.Failure(new Error("Invalid input",
-                $"{path} cannot be null or have length more than {Constraints.Constraints.MAX_PATH_LENGHT}"));
+            return Result.Failure(Errors.General.ValueIsRequired(path));
         }
 
         Path = path;
@@ -33,8 +32,7 @@ public class PetPhoto: Entity<PetPhotoId>
     {
         if (string.IsNullOrWhiteSpace(path) || path.Length > Constraints.Constraints.MAX_PATH_LENGHT)
         {
-            return Result<PetPhoto>.Failure(new Error("Invalid input",
-                $"{path} cannot be null or have length more than {Constraints.Constraints.MAX_PATH_LENGHT}"));
+            return Result<PetPhoto>.Failure(Errors.General.ValueIsRequired(path));
         }
 
         return Result<PetPhoto>.Success(new PetPhoto(petPhotoId,path, isMain));

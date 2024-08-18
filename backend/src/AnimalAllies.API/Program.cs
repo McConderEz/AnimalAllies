@@ -1,3 +1,4 @@
+using AnimalAllies.Application;
 using AnimalAllies.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;

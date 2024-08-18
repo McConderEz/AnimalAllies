@@ -18,7 +18,8 @@ public class Volunteer: Entity<VolunteerId>
     private Volunteer(
         VolunteerId volunteerId,
         FullName fullName,
-        string description,
+        Email email,
+        VolunteerDescription volunteerDescription,
         int workExperience,
         PhoneNumber phone,
         List<SocialNetwork> socialNetworks,
@@ -27,7 +28,8 @@ public class Volunteer: Entity<VolunteerId>
     : base(volunteerId)
     {
         FullName = fullName;
-        Description = description;
+        Email = email;
+        Description = volunteerDescription;
         WorkExperience = workExperience;
         Phone = phone;
         AddSocialNetworks(socialNetworks);
@@ -36,7 +38,8 @@ public class Volunteer: Entity<VolunteerId>
     }
     
     public FullName FullName { get; private set;}
-    public string Description { get; private set; }
+    public Email Email { get; private set; }
+    public VolunteerDescription Description { get; private set; }
     public int WorkExperience { get; private set; }
 
     public int PetsNeedsHelp() => _pets.Count(x => x.HelpStatus == HelpStatus.NeedsHelp);
@@ -57,7 +60,7 @@ public class Volunteer: Entity<VolunteerId>
     {
         if (workExperience < 0 || workExperience > Constraints.Constraints.MAX_EXP_VALUE)
         {
-            return Result.Failure(new Error("Invalid input",
+            return Result.Failure(Error.Validation("Invalid.input",
                 $"workExp cannot be less than 0 or more than {Constraints.Constraints.MAX_EXP_VALUE}"));
         }
 
@@ -65,16 +68,9 @@ public class Volunteer: Entity<VolunteerId>
         return Result.Success();
     }
 
-    public Result UpdateDescription(string description)
+    public Result UpdateDescription(VolunteerDescription description)
     {
-        if (string.IsNullOrWhiteSpace(description) ||
-            description.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
-        {
-            return Result.Failure(new Error("Invalid Input",
-                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_DESCRIPTION_LENGTH}"));
-        }
-
-        Description = description;
+        this.Description = description;
         return Result.Success();
     }
     
@@ -90,11 +86,18 @@ public class Volunteer: Entity<VolunteerId>
         return Result.Success();
     }
     
+    public Result UpdateEmail(Email email)
+    {
+        this.Email = email;
+        return Result.Success();
+    }
+    
     public static Result<Volunteer> Create(
         VolunteerId volunteerId,
         string firstName,
         string secondName,
         string patronymic,
+        string email,
         string description,
         int workExperience,
         string phoneNumber,
@@ -102,16 +105,16 @@ public class Volunteer: Entity<VolunteerId>
         List<Requisite>? requisites,
         List<Pet>? pets)
     {
-        if (string.IsNullOrWhiteSpace(description) ||
-            description.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
+        var volunteerDescription = VolunteerDescription.Create(description);
+
+        if (volunteerDescription.IsFailure)
         {
-            return Result<Volunteer>.Failure(new Error("Invalid Input",
-                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_DESCRIPTION_LENGTH}"));
+            return Result<Volunteer>.Failure(volunteerDescription.Error);
         }
         
         if (workExperience < Constraints.Constraints.MIN_VALUE)
         {
-            return Result<Volunteer>.Failure(new Error("Invalid Input",$"{workExperience} cannot be less than {Constraints.Constraints.MIN_VALUE}"));
+            return Result<Volunteer>.Failure(Errors.General.ValueIsInvalid(nameof(workExperience)));
         }
 
         var fullName = FullName.Create(firstName, secondName, patronymic);
@@ -120,6 +123,14 @@ public class Volunteer: Entity<VolunteerId>
         {
             return Result<Volunteer>.Failure(fullName.Error);
         }
+
+        var emailVO = ValueObjects.Email.Create(email);
+
+        if (emailVO.IsFailure)
+        {
+            return Result<Volunteer>.Failure(emailVO.Error);
+        }
+        
 
         var phone = PhoneNumber.Create(phoneNumber);
 
@@ -131,7 +142,8 @@ public class Volunteer: Entity<VolunteerId>
         var volunteer = new Volunteer(
             volunteerId,
             fullName.Value,
-            description,
+            emailVO.Value,
+            volunteerDescription.Value,
             workExperience,
             phone.Value,
             socialNetworks ?? [],

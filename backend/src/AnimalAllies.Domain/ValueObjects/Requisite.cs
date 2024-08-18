@@ -22,14 +22,12 @@ public class Requisite : ValueObject
     {
         if(string.IsNullOrWhiteSpace(title) || title.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Result<Requisite>.Failure(new Error("Invalid input",
-                $"{title} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
+            return Result<Requisite>.Failure(Errors.General.ValueIsRequired(title));
         }
         
         if(string.IsNullOrWhiteSpace(description) || title.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Result<Requisite>.Failure(new Error("Invalid input",
-                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
+            return Result<Requisite>.Failure(Errors.General.ValueIsRequired(description));
         }
 
         var requisite = new Requisite(title, description);

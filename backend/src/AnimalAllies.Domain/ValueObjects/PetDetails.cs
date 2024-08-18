@@ -32,32 +32,27 @@ public class PetDetails : ValueObject
     {
         if (string.IsNullOrWhiteSpace(description) || description.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
         {
-            return Result<PetDetails>.Failure(new Error("Invalid input",
-                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_DESCRIPTION_LENGTH}"));
+            return Result<PetDetails>.Failure(Errors.General.ValueIsRequired(description));
         }
         
         if (string.IsNullOrWhiteSpace(color) || color.Length > Constraints.Constraints.MAX_PET_COLOR_LENGTH)
         {
-            return Result<PetDetails>.Failure(new Error("Invalid input",
-                $"{color} cannot be null or have length more than {Constraints.Constraints.MAX_PET_COLOR_LENGTH}"));
+            return Result<PetDetails>.Failure(Errors.General.ValueIsRequired(color));
         }
         
         if (string.IsNullOrWhiteSpace(healthInformation) || healthInformation.Length > Constraints.Constraints.MAX_PET_COLOR_LENGTH)
         {
-            return Result<PetDetails>.Failure(new Error("Invalid input",
-                $"{healthInformation} cannot be null or have length more than {Constraints.Constraints.MAX_PET_INFORMATION_LENGTH}"));
+            return Result<PetDetails>.Failure(Errors.General.ValueIsRequired(healthInformation));
         }
         
         if (weight > Constraints.Constraints.MIN_VALUE)
         {
-            return Result<PetDetails>.Failure(new Error("Invalid input",
-                $"{weight} must be more than {Constraints.Constraints.MIN_VALUE}"));
+            return Result<PetDetails>.Failure(Errors.General.ValueIsInvalid(nameof(weight)));
         }
         
         if (height > Constraints.Constraints.MIN_VALUE)
         {
-            return Result<PetDetails>.Failure(new Error("Invalid input",
-                $"{height} must be more than {Constraints.Constraints.MIN_VALUE}"));
+            return Result<PetDetails>.Failure(Errors.General.ValueIsRequired(nameof(height)));
         }
 
         return Result<PetDetails>.Success(new PetDetails(description, color, healthInformation, weight, height));

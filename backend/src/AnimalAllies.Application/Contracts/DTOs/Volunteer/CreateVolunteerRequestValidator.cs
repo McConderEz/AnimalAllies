@@ -33,6 +33,9 @@ public class CreateVolunteerRequestValidator: AbstractValidator<CreateVolunteerR
 
         RuleFor(x => x.PhoneNumber)
             .Matches(PhoneNumber.ValidationRegex);
+        
+        RuleFor(x => x.Email)
+            .Matches(Email.ValidationRegex);
 
         RuleFor(x => x.SocialNetworks)
             .ForEach(validator =>

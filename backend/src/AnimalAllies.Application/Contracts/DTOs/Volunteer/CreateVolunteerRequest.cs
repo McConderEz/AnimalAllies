@@ -7,6 +7,7 @@ public record CreateVolunteerRequest(
     string FirstName,
     string SecondName,
     string Patronymic,
+    string Email,
     string Description,
     int WorkExperience,
     string PhoneNumber,

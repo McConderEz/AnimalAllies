@@ -10,6 +10,7 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
 {
     public void Configure(EntityTypeBuilder<Pet> builder)
     {
+        builder.ToTable("pets");
         builder.HasKey(x => x.Id);
         
         builder.Property(x => x.Id)
@@ -17,9 +18,19 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
                 id => id.Id,
                 Id => PetId.Create(Id));
 
-        builder.Property(x => x.Name)
-            .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
-            .IsRequired();
+        builder.ComplexProperty(x => x.SpeciesID, b =>
+        {
+            b.IsRequired();
+            b.Property(x => x.Id).HasColumnName("species_id");
+        });
+
+        builder.ComplexProperty(x => x.Name, b =>
+        {
+            b.IsRequired();
+            b.Property(x => x.Value)
+                .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
+                .HasColumnName("name");
+        });
 
         builder.ComplexProperty(x => x.PetDetails, b =>
         {
@@ -30,9 +41,11 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
             b.Property(x => x.Color)
                 .HasMaxLength(Constraints.MAX_PET_COLOR_LENGTH);
 
-            b.Property(x => x.Weight);
+            b.Property(x => x.Weight)
+                .HasColumnName("weight");
 
-            b.Property(x => x.Height);
+            b.Property(x => x.Height)
+                .HasColumnName("height");
         });
             
 

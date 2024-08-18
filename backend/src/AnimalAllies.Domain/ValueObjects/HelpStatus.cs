@@ -24,13 +24,13 @@ public class HelpStatus:ValueObject
     public static Result<HelpStatus> Create(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
-            return Result<HelpStatus>.Failure(new Error("Invalid input",$"{nameof(input)} cannot be null"));
+            return Result<HelpStatus>.Failure(Errors.General.ValueIsRequired(input));
 
         var status = input.Trim().ToLower();
 
         if(_all.Any(s => s.Value.ToLower() == status) == false)
         {
-            return Result<HelpStatus>.Failure(new Error("Invalid input",$"{status} is not correct"));
+            return Result<HelpStatus>.Failure(Errors.General.ValueIsInvalid(input));
         }
 
         return Result<HelpStatus>.Success(new HelpStatus(input));

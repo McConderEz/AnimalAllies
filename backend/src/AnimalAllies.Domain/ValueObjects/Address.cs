@@ -24,10 +24,10 @@ public class Address : ValueObject
     public static Result<Address> Create(string city, string district, int houseNumber, int flatNumber)
     {
         if (string.IsNullOrWhiteSpace(city) || city.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
-            return Result<Address>.Failure(new Error("Invalid input",$"{nameof(city)} incorrect format"));
+            return Result<Address>.Failure(Errors.General.ValueIsRequired(city));
 
         if (string.IsNullOrWhiteSpace(district) || district.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
-            return Result<Address>.Failure(new Error("Invalid input",$"{nameof(district)} incorrect format"));
+            return Result<Address>.Failure(Errors.General.ValueIsRequired(district));
 
         var address = new Address(city, district, houseNumber, flatNumber);
 

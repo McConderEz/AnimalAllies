@@ -21,14 +21,12 @@ public class SocialNetwork: ValueObject
     {
         if (string.IsNullOrWhiteSpace(title) || title.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Result<SocialNetwork>.Failure(new Error("Invalid input",
-                $"{title} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
+            return Result<SocialNetwork>.Failure(Errors.General.ValueIsRequired(title));
         }
 
         if (string.IsNullOrWhiteSpace(url) || url.Length > Constraints.Constraints.MAX_URL_LENGTH)
         {
-            return Result<SocialNetwork>.Failure(new Error("Invalid input",
-                $"{url} cannot be null or have length more than {Constraints.Constraints.MAX_URL_LENGTH}"));
+            return Result<SocialNetwork>.Failure(Errors.General.ValueIsRequired(url));
         }
 
         return Result<SocialNetwork>.Success(new SocialNetwork(title, url));

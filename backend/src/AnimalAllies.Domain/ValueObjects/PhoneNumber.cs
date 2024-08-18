@@ -20,7 +20,7 @@ public class PhoneNumber : ValueObject
     public static Result<PhoneNumber> Create(string number)
     {
         if (string.IsNullOrWhiteSpace(number) || !ValidationRegex.IsMatch(number))
-            return Result<PhoneNumber>.Failure(new Error("Invalid input",$"{nameof(number)} incorrect format"));
+            return Result<PhoneNumber>.Failure(Errors.General.ValueIsRequired(number));
 
         var phoneNumber = new PhoneNumber(number);
 

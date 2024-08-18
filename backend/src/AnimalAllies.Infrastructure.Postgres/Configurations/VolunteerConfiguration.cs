@@ -11,6 +11,7 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
 {
     public void Configure(EntityTypeBuilder<Volunteer> builder)
     {
+        builder.ToTable("volunteers");
         builder.HasKey(x => x.Id);
         
         
@@ -25,9 +26,12 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
             t.HasCheckConstraint("CK_Volunteer_WorkExperience", "\"WorkExperience\" >= 0");
         });
         
-        builder.Property(x => x.Description)
-            .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH)
-            .IsRequired();
+        builder.ComplexProperty(x => x.Description, b =>
+        {
+            b.IsRequired();
+            b.Property(x => x.Value)
+                .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH);
+        });
 
         builder.Property(x => x.WorkExperience)
             .IsRequired();
@@ -38,6 +42,13 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
             p.Property(x => x.Number)
                 .HasColumnName("phone_number")
                 .HasMaxLength(14);
+        });
+        
+        builder.ComplexProperty(x => x.Email, p =>
+        {
+            p.IsRequired();
+            p.Property(x => x.Value)
+                .HasColumnName("email");
         });
 
         builder.ComplexProperty(x => x.FullName, f =>

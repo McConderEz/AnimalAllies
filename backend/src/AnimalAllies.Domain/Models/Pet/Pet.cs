@@ -13,7 +13,7 @@ public class Pet : Entity<PetId>
 
     private Pet(
         PetId petId,
-        string name,
+        Name name,
         PetDetails petDetails,
         bool isCastrated,
         DateOnly birthDate,
@@ -21,7 +21,7 @@ public class Pet : Entity<PetId>
         Address address,
         PhoneNumber phone,
         HelpStatus status,
-        int speciesID,
+        SpeciesId speciesID,
         string breedName,
         List<Requisite> requisites,
         List<PetPhoto> petPhotos)
@@ -41,7 +41,7 @@ public class Pet : Entity<PetId>
         AddPetPhotos(petPhotos);
     }
 
-    public string Name { get; private set; }
+    public Name Name { get; private set; }
     public PetDetails PetDetails { get; private set; }
     public bool IsCastrated { get; private set; } = false;
     public DateOnly BirthDate { get; private set; }
@@ -49,7 +49,7 @@ public class Pet : Entity<PetId>
     public Address Address { get; private set; }
     public PhoneNumber Phone { get; private set; }
     public HelpStatus HelpStatus { get; private set; }
-    public int SpeciesID { get; private set; }
+    public SpeciesId SpeciesID { get; private set; }
     public string BreedName { get; private set; }
     public DateTime CreationTime { get; } = DateTime.Now;
 
@@ -82,20 +82,8 @@ public class Pet : Entity<PetId>
         return Result.Success();
     }
 
-    public Result UpdatePetDetails(PetDetails petDetails)
+    public Result UpdateName(Name name)
     {
-        this.PetDetails = petDetails;
-        return Result.Success();
-    }
-
-    public Result UpdateName(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name) || name.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
-        {
-            return Result.Failure(new Error("Invalid input",
-                $"{name} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
-        }
-
         Name = name;
         return Result.Success();
     }
@@ -117,28 +105,29 @@ public static Result<Pet> Create(
         int flatNumber,
         string phone,
         string status,
-        int speciesID,
+        SpeciesId speciesID,
         string breedName,
         List<Requisite> requisites,
         List<PetPhoto> petPhotos)
     {
-        if (string.IsNullOrWhiteSpace(name) || name.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
-        {
-            return Result<Pet>.Failure(new Error("Invalid input",
-                $"{name} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
-        }
         
         if (birthDate > DateOnly.FromDateTime(DateTime.Now))
         {
-            return Result<Pet>.Failure(new Error("Invalid input",$"{birthDate} cannot be more than {DateOnly.FromDateTime(DateTime.Now)}"));
+            return Result<Pet>.Failure(Errors.General.ValueIsInvalid(nameof(birthDate)));
         }
 
         if (string.IsNullOrWhiteSpace(breedName) || breedName.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Result<Pet>.Failure(new Error("Invalid input",
-                $"{breedName} cannot be null or have length more than {Constraints.Constraints.MAX_VALUE_LENGTH}"));
+            return Result<Pet>.Failure(Errors.General.ValueIsInvalid(nameof(breedName)));
         }
 
+        var nameVo = Name.Create(name);
+
+        if (nameVo.IsFailure)
+        {
+            return Result<Pet>.Failure(nameVo.Error);
+        }
+        
         var address = ValueObjects.Address.Create(city, district, houseNumber, flatNumber);
         var phoneNumber = PhoneNumber.Create(phone);
         var helpStatus = ValueObjects.HelpStatus.Create(status);
@@ -166,7 +155,7 @@ public static Result<Pet> Create(
 
         var pet = new Pet(
             petId,
-            name,
+            nameVo.Value,
             petDetails.Value,
             isCastrated,
             birthDate,

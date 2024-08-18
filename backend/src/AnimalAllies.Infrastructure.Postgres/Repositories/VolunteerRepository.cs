@@ -1,5 +1,7 @@
 using AnimalAllies.Application.Common;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace AnimalAllies.Infrastructure.Repositories;
@@ -17,7 +19,7 @@ public class VolunteerRepository: IVolunteerRepository
     {
 
         if (entity == null)
-            return Result<VolunteerId>.Failure(new Error("Null argument", "Entity is null"));
+            return Result<VolunteerId>.Failure(Errors.General.Null(nameof(entity)));
         
         await _context.Volunteers.AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
@@ -35,15 +37,46 @@ public class VolunteerRepository: IVolunteerRepository
         throw new NotImplementedException();
     }
 
-    public Task<Volunteer> GetById(Guid id)
+    public async Task<Result<Volunteer>> GetById(VolunteerId id)
     {
-        throw new NotImplementedException();
+        var volunteer = await _context.Volunteers
+            .Include(x => x.Pets)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (volunteer == null)
+            return Result<Volunteer>.Failure(Errors.General.NotFound(id.Id));
+
+        return Result<Volunteer>.Success(volunteer);
     }
 
-    public Task<List<Volunteer>> Get()
+    public async Task<Result<Volunteer>> GetByPhoneNumber(PhoneNumber phone)
     {
-        throw new NotImplementedException();
+        
+        var volunteer = await _context.Volunteers.FirstOrDefaultAsync(x => x.Phone == phone);
+
+        if (volunteer == null)
+            return Result<Volunteer>.Failure(Errors.General.NotFound());
+
+        return Result<Volunteer>.Success(volunteer);
+        
     }
 
-    
+    public async Task<Result<Volunteer>> GetByEmail(Email email)
+    {
+        var volunteer = await _context.Volunteers
+            .Include(x => x.Pets)
+            .FirstOrDefaultAsync(x => x.Email == email);
+
+        if (volunteer == null)
+            return Result<Volunteer>.Failure(Errors.General.NotFound());
+
+        return Result<Volunteer>.Success(volunteer);
+    }
+
+    public async Task<Result<List<Volunteer>>> Get()
+    {
+        var volunteers = await _context.Volunteers.ToListAsync();
+
+        return Result<List<Volunteer>>.Success(volunteers);
+    }
 }
