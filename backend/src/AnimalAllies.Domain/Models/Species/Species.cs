@@ -1,4 +1,5 @@
 using AnimalAllies.Domain.Constraints;
+using AnimalAllies.Domain.Shared;
 using AnimalAllies.Domain.ValueObjects;
 
 namespace AnimalAllies.Domain.Models;

@@ -1,6 +1,7 @@
 
+using AnimalAllies.Domain.Shared;
 using AnimalAllies.Domain.ValueObjects;
-using ValueObject = AnimalAllies.Domain.ValueObjects.ValueObject;
+using ValueObject = AnimalAllies.Domain.Shared.ValueObject;
 
 namespace AnimalAllies.Domain.Models;
 

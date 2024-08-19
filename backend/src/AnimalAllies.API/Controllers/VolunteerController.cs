@@ -1,10 +1,5 @@
 using AnimalAllies.API.Extensions;
-using AnimalAllies.API.Response;
-using AnimalAllies.Application.Abstractions;
-using AnimalAllies.Application.Contracts.DTOs.Volunteer;
 using AnimalAllies.Application.Features.Volunteer;
-using AnimalAllies.Domain.Models;
-using AnimalAllies.Domain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnimalAllies.API.Controllers;

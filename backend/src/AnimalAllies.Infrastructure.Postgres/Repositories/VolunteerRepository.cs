@@ -1,8 +1,10 @@
-using AnimalAllies.Application.Common;
+using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Models.Volunteer;
+using AnimalAllies.Domain.Shared;
 using AnimalAllies.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
+
 
 namespace AnimalAllies.Infrastructure.Repositories;
 
@@ -17,10 +19,6 @@ public class VolunteerRepository: IVolunteerRepository
     
     public async Task<Result<VolunteerId>> Create(Volunteer entity, CancellationToken cancellationToken = default)
     {
-
-        if (entity == null)
-            return Result<VolunteerId>.Failure(Errors.General.Null(nameof(entity)));
-        
         await _context.Volunteers.AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
         return entity.Id;

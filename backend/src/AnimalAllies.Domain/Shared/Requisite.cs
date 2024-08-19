@@ -1,8 +1,7 @@
-
 using AnimalAllies.Domain.Models;
-using ValueObject = AnimalAllies.Domain.ValueObjects.ValueObject;
+using ValueObject = AnimalAllies.Domain.Shared.ValueObject;
 
-namespace AnimalAllies.Domain.ValueObjects;
+namespace AnimalAllies.Domain.Shared;
 
 public class Requisite : ValueObject
 {

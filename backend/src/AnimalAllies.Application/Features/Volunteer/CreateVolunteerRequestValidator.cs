@@ -1,8 +1,9 @@
 using AnimalAllies.Domain.Constraints;
+using AnimalAllies.Domain.Shared;
 using AnimalAllies.Domain.ValueObjects;
 using FluentValidation;
 
-namespace AnimalAllies.Application.Contracts.DTOs.Volunteer;
+namespace AnimalAllies.Application.Features.Volunteer;
 
 public class CreateVolunteerRequestValidator: AbstractValidator<CreateVolunteerRequest>
 {

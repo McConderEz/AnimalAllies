@@ -1,6 +1,7 @@
 using System.Data;
 using AnimalAllies.Domain.Constraints;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -20,12 +21,6 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
                 id => id.Id,
                 id => VolunteerId.Create(id));
         
-        builder
-            .ToTable(t =>
-        {
-            t.HasCheckConstraint("CK_Volunteer_WorkExperience", "\"WorkExperience\" >= 0");
-        });
-        
         builder.ComplexProperty(x => x.Description, b =>
         {
             b.IsRequired();
@@ -33,9 +28,13 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
                 .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH);
         });
 
-        builder.Property(x => x.WorkExperience)
-            .IsRequired();
-        
+        builder.ComplexProperty(x => x.WorkExperience, we =>
+        {
+            we.IsRequired();
+            we.Property(x => x.Value)
+                .HasColumnName("work_experience");
+        });
+
         builder.ComplexProperty(x => x.Phone, p =>
         {
             p.IsRequired();
@@ -53,23 +52,24 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
 
         builder.ComplexProperty(x => x.FullName, f =>
         {
-            f.IsRequired();
             f.Property(x => x.FirstName)
                 .HasColumnName("first_name")
-                .HasMaxLength(50);
+                .HasMaxLength(50)
+                .IsRequired();
             f.Property(x => x.SecondName)
                 .HasColumnName("second_name")
-                .HasMaxLength(50);
+                .HasMaxLength(50)
+                .IsRequired();
             f.Property(x => x.Patronymic)
                 .HasColumnName("patronymic")
-                .HasMaxLength(50);
+                .IsRequired(false);
         });
 
-        builder.OwnsOne(v => v.Details, d =>
+        builder.OwnsOne(v => v.SocialNetworks, sn =>
         {
-            d.ToJson();
+            sn.ToJson();
 
-            d.OwnsMany(d => d.SocialNetworks, s =>
+            sn.OwnsMany(d => d.SocialNetworks, s =>
             {
                 s.Property(sn => sn.Url)
                     .IsRequired()
@@ -79,12 +79,18 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
                     .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
             });
             
-            d.OwnsMany(d => d.Requisites, r =>
+        });
+        
+        builder.OwnsOne(v => v.Requisites, r =>
+        {
+            r.ToJson();
+
+            r.OwnsMany(d => d.Requisites, s =>
             {
-                r.Property(r => r.Description)
+                s.Property(sn => sn.Description)
                     .IsRequired()
                     .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH);
-                r.Property(r => r.Title)
+                s.Property(sn => sn.Title)
                     .IsRequired()
                     .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
             });

@@ -1,6 +1,8 @@
-using AnimalAllies.Application.Common;
-using AnimalAllies.Application.Contracts.DTOs.Volunteer;
+using System.ComponentModel;
+using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Models.Volunteer;
+using AnimalAllies.Domain.Shared;
 using AnimalAllies.Domain.ValueObjects;
 
 namespace AnimalAllies.Application.Features.Volunteer;
@@ -20,47 +22,40 @@ public class CreateVolunteerHandler
         var validator = new CreateVolunteerRequestValidator();
         var result = await validator.ValidateAsync(request, cancellationToken);
 
-        var phoneNumber = PhoneNumber.Create(request.PhoneNumber);
-        var email = Email.Create(request.Email);
-
-        if (phoneNumber.IsFailure)
-            return Errors.General.ValueIsInvalid();
+        if (result.Errors.Any())
+            return Result<VolunteerId>.Failure(Error.Failure("Result.failure", result.ToString("\n")));
         
-        if (email.IsFailure)
-            return Errors.General.ValueIsInvalid();
+        var phoneNumber = PhoneNumber.Create(request.PhoneNumber).Value;
+        var email = Email.Create(request.Email).Value;
 
-        var volunteerByPhoneNumber = await _repository.GetByPhoneNumber(phoneNumber.Value);
-        var volunteerByEmail = await _repository.GetByEmail(email.Value);
+        var volunteerByPhoneNumber = await _repository.GetByPhoneNumber(phoneNumber);
+        var volunteerByEmail = await _repository.GetByEmail(email);
 
         if (!volunteerByPhoneNumber.IsFailure || !volunteerByEmail.IsFailure)
             return Errors.Volunteer.AlreadyExist();
         
-        if (result.Errors.Any())
-            return Result<VolunteerId>.Failure(Error.Failure("Result.failure", result.ToString("\n")));
+        var fullName = FullName.Create(request.FirstName, request.SecondName, request.Patronymic).Value;
+        var description = VolunteerDescription.Create(request.Description).Value;
+        var workExperience = WorkExperience.Create(request.WorkExperience).Value;
         
         var socialNetworks = request.SocialNetworks
             .Select(x => SocialNetwork.Create(x.name, x.url).Value).ToList();
         var requisites = request.Requisites
             .Select(x => Requisite.Create(x.title, x.description).Value).ToList();
-        
-        var volunteerEntity = Domain.Models.Volunteer.Create(
-            VolunteerId.NewGuid(),
-            request.FirstName,
-            request.SecondName,
-            request.Patronymic,
-            request.Email,
-            request.Description,
-            request.WorkExperience,
-            request.PhoneNumber,
-            socialNetworks,
-            requisites,
-            null);
 
-        if (volunteerEntity.IsFailure)
-        {
-            return Result<VolunteerId>.Failure(volunteerEntity.Error!);
-        }
+        var volunteerSocialNetworks = new VolunteerSocialNetworks(socialNetworks);
+        var volunteerRequisites = new VolunteerRequisites(requisites);
         
-        return await _repository.Create(volunteerEntity.Value, cancellationToken);
+        var volunteerEntity = new Domain.Models.Volunteer.Volunteer(
+            VolunteerId.NewGuid(),
+            fullName,
+            email,
+            description,
+            workExperience,
+            phoneNumber,
+            volunteerSocialNetworks,
+            volunteerRequisites);
+        
+        return await _repository.Create(volunteerEntity, cancellationToken);
     }
 }

@@ -1,41 +1,35 @@
 
 
+using AnimalAllies.Domain.Shared;
+using AnimalAllies.Domain.ValueObjects;
+
 namespace AnimalAllies.Domain.Models;
 
-public class PetPhoto: Entity<PetPhotoId>
+public class PetPhoto: ValueObject
 {
-    private PetPhoto(PetPhotoId id) : base(id) {}
-    private PetPhoto(PetPhotoId petPhotoId,string path, bool isMain)
-    :base(petPhotoId)
+    public string Path { get; }
+    public bool IsMain { get; }
+    
+    private PetPhoto(){}
+    private PetPhoto(string path, bool isMain)
     {
         Path = path;
         IsMain = isMain;
     }
 
-    public string Path { get; private set; }
-    public bool IsMain { get; private set; } = false;
-
-    public void SetMain() => IsMain = !IsMain;
-
-    public Result UpdatePath(string path)
-    {
-        if (string.IsNullOrWhiteSpace(path) || path.Length > Constraints.Constraints.MAX_PATH_LENGHT)
-        {
-            return Result.Failure(Errors.General.ValueIsRequired(path));
-        }
-
-        Path = path;
-        return Result.Success();
-    }
-
-    public static Result<PetPhoto> Create(PetPhotoId petPhotoId,string path, bool isMain)
+    public static Result<PetPhoto> Create(string path, bool isMain)
     {
         if (string.IsNullOrWhiteSpace(path) || path.Length > Constraints.Constraints.MAX_PATH_LENGHT)
         {
             return Result<PetPhoto>.Failure(Errors.General.ValueIsRequired(path));
         }
 
-        return Result<PetPhoto>.Success(new PetPhoto(petPhotoId,path, isMain));
+        return Result<PetPhoto>.Success(new PetPhoto(path, isMain));
     }
 
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Path;
+        yield return IsMain;
+    }
 }

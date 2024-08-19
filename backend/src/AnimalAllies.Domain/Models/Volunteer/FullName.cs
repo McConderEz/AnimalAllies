@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Shared;
 
 
 namespace AnimalAllies.Domain.ValueObjects;
@@ -13,10 +14,10 @@ public class FullName : ValueObject
 
     public string FirstName { get; }
     public string SecondName { get; }
-    public string Patronymic { get; } 
+    public string? Patronymic { get; } 
 
     private FullName(){}
-    private FullName(string firstName, string secondName, string patronymic)
+    private FullName(string firstName, string secondName, string? patronymic)
     {
         FirstName = firstName;
         SecondName = secondName;
@@ -24,16 +25,13 @@ public class FullName : ValueObject
     }
     
     
-    public static Result<FullName> Create(string firstName,string secondName, string patronymic)
+    public static Result<FullName> Create(string firstName,string secondName, string? patronymic)
     {
         if (string.IsNullOrWhiteSpace(firstName) || !ValidationRegex.IsMatch(firstName))
             return Result<FullName>.Failure(Errors.General.ValueIsInvalid(firstName));
 
         if (string.IsNullOrWhiteSpace(secondName) || !ValidationRegex.IsMatch(secondName))
             return Result<FullName>.Failure(Errors.General.ValueIsInvalid(secondName));
-
-        if (string.IsNullOrWhiteSpace(patronymic) || !ValidationRegex.IsMatch(patronymic))
-            return Result<FullName>.Failure(Errors.General.ValueIsInvalid(patronymic));
 
         return Result<FullName>.Success(new FullName(firstName, secondName, patronymic));
     }

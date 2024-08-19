@@ -1,4 +1,6 @@
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Models.Pet;
+using AnimalAllies.Domain.Models.Volunteer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -32,6 +34,5 @@ public class AnimalAlliesDbContext: DbContext
 
     public DbSet<Volunteer> Volunteers { get; set; } = null!;
     public DbSet<Pet> Pets { get; set; } = null!;
-    public DbSet<PetPhoto> PetPhotos { get; set; } = null!;
     public DbSet<Species> Species { get; set; } = null!;
 }
