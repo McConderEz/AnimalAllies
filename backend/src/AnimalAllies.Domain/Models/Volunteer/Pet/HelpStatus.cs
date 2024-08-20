@@ -25,9 +25,7 @@ public class HelpStatus:ValueObject
         if (string.IsNullOrWhiteSpace(input))
             return Errors.General.ValueIsRequired(input);
 
-        var status = input.Trim().ToLower();
-
-        if(_all.Any(s => s.Value.ToLower() == status) == false)
+        if(_all.Any(s => s.Value.ToLower() == input) == false)
         {
             return Errors.General.ValueIsInvalid(input);
         }

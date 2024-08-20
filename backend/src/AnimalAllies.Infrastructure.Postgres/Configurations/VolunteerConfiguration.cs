@@ -40,7 +40,7 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
             p.IsRequired();
             p.Property(x => x.Number)
                 .HasColumnName("phone_number")
-                .HasMaxLength(14);
+                .HasMaxLength(Constraints.MAX_PHONENUMBER_LENGTH);
         });
         
         builder.ComplexProperty(x => x.Email, p =>
@@ -54,11 +54,11 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
         {
             f.Property(x => x.FirstName)
                 .HasColumnName("first_name")
-                .HasMaxLength(50)
+                .HasMaxLength(Constraints.MIDDLE_NAME_LENGTH)
                 .IsRequired();
             f.Property(x => x.SecondName)
                 .HasColumnName("second_name")
-                .HasMaxLength(50)
+                .HasMaxLength(Constraints.MIDDLE_NAME_LENGTH)
                 .IsRequired();
             f.Property(x => x.Patronymic)
                 .HasColumnName("patronymic")

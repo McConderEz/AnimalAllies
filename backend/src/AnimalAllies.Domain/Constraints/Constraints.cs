@@ -12,4 +12,5 @@ public static partial class Constraints
     public static readonly int MAX_PATH_LENGHT = 260;
     public static readonly int MAX_EXP_VALUE = 90;
     public static readonly int MAX_PHONENUMBER_LENGTH = 14;
+    public static readonly int MIDDLE_NAME_LENGTH = 50;
 }

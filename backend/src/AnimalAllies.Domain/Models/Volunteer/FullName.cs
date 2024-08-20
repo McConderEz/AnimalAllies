@@ -28,10 +28,10 @@ public class FullName : ValueObject
     public static Result<FullName> Create(string firstName,string secondName, string? patronymic)
     {
         if (string.IsNullOrWhiteSpace(firstName) || !ValidationRegex.IsMatch(firstName))
-            Errors.General.ValueIsInvalid(firstName);
+            return Errors.General.ValueIsInvalid(firstName);
 
         if (string.IsNullOrWhiteSpace(secondName) || !ValidationRegex.IsMatch(secondName))
-            Errors.General.ValueIsInvalid(secondName);
+            return Errors.General.ValueIsInvalid(secondName);
 
         return new FullName(firstName, secondName, patronymic);
     }
