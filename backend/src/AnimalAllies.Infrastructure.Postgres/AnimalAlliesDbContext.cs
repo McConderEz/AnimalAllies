@@ -1,4 +1,7 @@
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Models.Species;
+using AnimalAllies.Domain.Models.Volunteer;
+using AnimalAllies.Domain.Models.Volunteer.Pet;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -27,11 +30,10 @@ public class AnimalAlliesDbContext: DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AnimalAlliesDbContext).Assembly);
     }
 
-    public static readonly ILoggerFactory CreateLoggerFactory
+    private static readonly ILoggerFactory CreateLoggerFactory
         = LoggerFactory.Create(builder => { builder.AddConsole(); });
-    
-    public DbSet<Volunteer> Volunteers { get; set; }
-    public DbSet<Pet> Pets { get; set; }
-    public DbSet<PetPhoto> PetPhotos { get; set; }
-    public DbSet<Species> Species { get; set; }
+
+    public DbSet<Volunteer> Volunteers { get; set; } = null!;
+    public DbSet<Pet> Pets { get; set; } = null!;
+    public DbSet<Species> Species { get; set; } = null!;
 }

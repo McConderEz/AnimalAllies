@@ -1,80 +1,69 @@
-using System.Reflection;
+using AnimalAllies.Domain.Models.Volunteer.Pet;
+using AnimalAllies.Domain.Shared;
 using AnimalAllies.Domain.ValueObjects;
 
-
-namespace AnimalAllies.Domain.Models;
+namespace AnimalAllies.Domain.Models.Volunteer;
 
 public class Volunteer: Entity<VolunteerId>
 {
-    private readonly List<Requisite> _requisites = [];
-    private readonly List<Pet> _pets = [];
-    private readonly List<SocialNetwork> _socialNetworks = [];
+    private readonly List<Pet.Pet> _pets = [];
 
-    private Volunteer(VolunteerId id) : base(id)
-    {
-        
-    }
+    private Volunteer(VolunteerId id) : base(id){}
     
-    private Volunteer(
+    public Volunteer(
         VolunteerId volunteerId,
         FullName fullName,
-        string description,
-        int workExperience,
+        Email email,
+        VolunteerDescription volunteerDescription,
+        WorkExperience workExperience,
         PhoneNumber phone,
-        List<SocialNetwork> socialNetworks,
-        List<Requisite> requisites,
-        List<Pet> pets)
+        VolunteerSocialNetworks socialNetworks,
+        VolunteerRequisites requisites)
     : base(volunteerId)
     {
         FullName = fullName;
-        Description = description;
+        Email = email;
+        Description = volunteerDescription;
         WorkExperience = workExperience;
         Phone = phone;
-        AddSocialNetworks(socialNetworks);
-        AddRequisites(requisites);
-        AddPets(pets);
+        SocialNetworks = socialNetworks;
+        Requisites = requisites;
     }
     
     public FullName FullName { get; private set;}
-    public string Description { get; private set; }
-    public int WorkExperience { get; private set; }
+    public Email Email { get; private set; }
+    public PhoneNumber Phone { get; private set; }
+    public VolunteerDescription Description { get; private set; }
+    public WorkExperience WorkExperience { get; private set; }
+    public VolunteerRequisites Requisites { get; private set; }
+    public VolunteerSocialNetworks SocialNetworks { get; private set; }
+    public IReadOnlyList<Pet.Pet> Pets => _pets;
+    
+    public void AddPets(List<Pet.Pet> pets) => _pets.AddRange(pets);
 
     public int PetsNeedsHelp() => _pets.Count(x => x.HelpStatus == HelpStatus.NeedsHelp);
     public int PetsSearchingHome() => _pets.Count(x => x.HelpStatus == HelpStatus.SearchingHome);
     public int PetsFoundHome() => _pets.Count(x => x.HelpStatus == HelpStatus.FoundHome);
     
-    public PhoneNumber Phone { get; private set; }
-    public List<SocialNetwork> SocialNetworks => _socialNetworks;
-
-    public IReadOnlyList<Requisite> Requisites => _requisites;
-    public IReadOnlyList<Pet> Pets => _pets;
-
-    public void AddRequisites(List<Requisite> requisites) => _requisites.AddRange(requisites);
-    public void AddPets(List<Pet> pets) => _pets.AddRange(pets);
-    public void AddSocialNetworks(List<SocialNetwork> socialNetworks) => _socialNetworks.AddRange(socialNetworks);
-
-    public Result UpdateWorkExperience(int workExperience)
+    public Result UpdateSocialNetworks(VolunteerSocialNetworks socialNetworks)
     {
-        if (workExperience < 0 || workExperience > Constraints.Constraints.MAX_EXP_VALUE)
-        {
-            return Result.Failure(new Error("Invalid input",
-                $"workExp cannot be less than 0 or more than {Constraints.Constraints.MAX_EXP_VALUE}"));
-        }
-
+        SocialNetworks = socialNetworks;
+        return Result.Success();
+    }
+    public Result UpdateRequisites(VolunteerRequisites requisites)
+    {
+        Requisites = requisites;
+        return Result.Success();
+    }
+    public Result UpdateWorkExperience(WorkExperience workExperience)
+    {
         WorkExperience = workExperience;
         return Result.Success();
     }
 
-    public Result UpdateDescription(string description)
+    public Result UpdateDescription(VolunteerDescription description)
     {
-        if (string.IsNullOrWhiteSpace(description) ||
-            description.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
-        {
-            return Result.Failure(new Error("Invalid Input",
-                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_DESCRIPTION_LENGTH}"));
-        }
-
-        Description = description;
+        this.Description = description;
         return Result.Success();
     }
     
@@ -90,55 +79,11 @@ public class Volunteer: Entity<VolunteerId>
         return Result.Success();
     }
     
-    public static Result<Volunteer> Create(
-        VolunteerId volunteerId,
-        string firstName,
-        string secondName,
-        string patronymic,
-        string description,
-        int workExperience,
-        string phoneNumber,
-        List<SocialNetwork>? socialNetworks,
-        List<Requisite>? requisites,
-        List<Pet>? pets)
+    public Result UpdateEmail(Email email)
     {
-        if (string.IsNullOrWhiteSpace(description) ||
-            description.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
-        {
-            return Result<Volunteer>.Failure(new Error("Invalid Input",
-                $"{description} cannot be null or have length more than {Constraints.Constraints.MAX_DESCRIPTION_LENGTH}"));
-        }
-        
-        if (workExperience < Constraints.Constraints.MIN_VALUE)
-        {
-            return Result<Volunteer>.Failure(new Error("Invalid Input",$"{workExperience} cannot be less than {Constraints.Constraints.MIN_VALUE}"));
-        }
-
-        var fullName = FullName.Create(firstName, secondName, patronymic);
-
-        if (fullName.IsFailure)
-        {
-            return Result<Volunteer>.Failure(fullName.Error);
-        }
-
-        var phone = PhoneNumber.Create(phoneNumber);
-
-        if (phone.IsFailure)
-        {
-            return Result<Volunteer>.Failure(phone.Error);
-        }
-
-        var volunteer = new Volunteer(
-            volunteerId,
-            fullName.Value,
-            description,
-            workExperience,
-            phone.Value,
-            socialNetworks ?? [],
-            requisites ?? [],
-            pets ?? []);
-
-        return Result<Volunteer>.Success(volunteer);
+        this.Email = email;
+        return Result.Success();
     }
+    
 
 }

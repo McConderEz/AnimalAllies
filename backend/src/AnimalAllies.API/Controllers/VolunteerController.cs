@@ -1,32 +1,43 @@
-using AnimalAllies.Application.Abstractions;
-using AnimalAllies.Application.Contracts.DTOs.Volunteer;
+using AnimalAllies.API.Extensions;
+using AnimalAllies.API.Response;
+using AnimalAllies.Application.Features.Volunteer;
 using AnimalAllies.Domain.Models;
-using AnimalAllies.Domain.ValueObjects;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnimalAllies.API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class VolunteerController: ControllerBase
+public class VolunteerController: ApplicationController
 {
-    private readonly IVolunteerService _volunteerService;
-
-    public VolunteerController(IVolunteerService volunteerService)
-    {
-        _volunteerService = volunteerService;
-    }
-
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateVolunteerRequest request)
-    {
-        var response = await _volunteerService.Create(request);
+    public async Task<IActionResult> Create(
+        [FromServices] CreateVolunteerHandler handler,
+        [FromServices] IValidator<CreateVolunteerRequest> validator,
+        [FromBody] CreateVolunteerRequest request,
+        CancellationToken cancellationToken = default)
+    { 
+        var result = await validator.ValidateAsync(request, cancellationToken);
 
-        if (response.IsFailure)
+        if (result.IsValid == false)
         {
-            return BadRequest();
+            var validationErrors = result.Errors;
+
+            var errors = from validationError in validationErrors
+                let error = Error.Validation(validationError.ErrorCode, validationError.ErrorMessage)
+                select new ResponseError(error.ErrorCode, error.ErrorMessage, validationError.PropertyName);
+
+            var envelope = Envelope.Error(errors);
+
+            return BadRequest(envelope);
         }
         
-        return Ok(response);
+        var response = await handler.Handle(request, cancellationToken);
+        
+        if (response.IsFailure)
+        {
+            return response.Error.ToErrorResponse();
+        }
+        
+        return Ok(response.Value);
     }
 }

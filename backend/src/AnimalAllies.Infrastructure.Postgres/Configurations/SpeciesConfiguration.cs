@@ -1,5 +1,6 @@
 using AnimalAllies.Domain.Constraints;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Models.Species;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,6 +10,7 @@ public class SpeciesConfiguration: IEntityTypeConfiguration<Species>
 {
     public void Configure(EntityTypeBuilder<Species> builder)
     {
+        builder.ToTable("species");
         builder.HasKey(x => x.Id);
         
         builder.Property(x => x.Id)
@@ -16,9 +18,12 @@ public class SpeciesConfiguration: IEntityTypeConfiguration<Species>
                 id => id.Id,
                 Id => SpeciesId.Create(Id));
 
-        builder.Property(x => x.Name)
-            .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
-            .IsRequired();
+        builder.ComplexProperty(x => x.Name, b =>
+        {
+            b.IsRequired();
+            b.Property(x => x.Value)
+                .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
+        });
         
         builder.HasMany(x => x.Breeds)
             .WithOne()

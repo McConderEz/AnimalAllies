@@ -1,5 +1,7 @@
 using AnimalAllies.Domain.Constraints;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Models.Species;
+using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -10,6 +12,7 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
 {
     public void Configure(EntityTypeBuilder<Pet> builder)
     {
+        builder.ToTable("pets");
         builder.HasKey(x => x.Id);
         
         builder.Property(x => x.Id)
@@ -17,9 +20,25 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
                 id => id.Id,
                 Id => PetId.Create(Id));
 
-        builder.Property(x => x.Name)
-            .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
-            .IsRequired();
+        builder.ComplexProperty(x => x.AnimalType, b =>
+        {
+            b.IsRequired();
+            b.Property(x => x.SpeciesId)
+                .HasColumnName("species_id")
+                .HasConversion(
+                    id => id.Id,
+                    id => SpeciesId.Create(id));
+            b.Property(x => x.BreedId)
+                .HasColumnName("breed_id");
+        });
+
+        builder.ComplexProperty(x => x.Name, b =>
+        {
+            b.IsRequired();
+            b.Property(x => x.Value)
+                .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
+                .HasColumnName("name");
+        });
 
         builder.ComplexProperty(x => x.PetDetails, b =>
         {
@@ -27,39 +46,57 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
             b.Property(x => x.Description)
                 .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH);
 
-            b.Property(x => x.Color)
-                .HasMaxLength(Constraints.MAX_PET_COLOR_LENGTH);
+            b.Property(x => x.BirthDate)
+                .HasColumnName("birth_date");
 
-            b.Property(x => x.Weight);
-
-            b.Property(x => x.Height);
+            b.Property(x => x.CreationTime)
+                .HasColumnName("creation_time");
         });
-            
+
+        builder.ComplexProperty(x => x.PetPhysicCharacteristics, ppc =>
+        {
+            ppc.IsRequired();
+
+            ppc.Property(x => x.Color)
+                .HasMaxLength(Constraints.MAX_PET_COLOR_LENGTH)
+                .HasColumnName("color");
+            ppc.Property(x => x.HealthInformation)
+                .HasMaxLength(Constraints.MAX_PET_INFORMATION_LENGTH)
+                .HasColumnName("health_information");
+            ppc.Property(x => x.Height)
+                .HasColumnName("height");
+            ppc.Property(x => x.Weight)
+                .HasColumnName("weight");
+            ppc.Property(x => x.IsCastrated)
+                .HasColumnName("is_castrated");
+            ppc.Property(x => x.IsVaccinated)
+                .HasColumnName("is_vaccinated");
+        });
 
         builder.ComplexProperty(x => x.Address, a =>
         {
             a.IsRequired();
             a.Property(x => x.City)
                 .HasColumnName("city")
-                .HasMaxLength(100);
-            a.Property(x => x.District)
-                .HasColumnName("district")
-                .HasMaxLength(100);
-            a.Property(x => x.HouseNumber)
-                .HasColumnName("house_number")
-                .HasMaxLength(30);
-            a.Property(x => x.FlatNumber)
-                .HasColumnName("flat_number")
-                .HasMaxLength(20);
+                .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
+            a.Property(x => x.Street)
+                .HasColumnName("street")
+                .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
+            a.Property(x => x.State)
+                .HasColumnName("state")
+                .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
+            a.Property(x => x.ZipCode)
+                .HasColumnName("zip_code")
+                .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
             
         });
 
-        builder.ComplexProperty(x => x.Phone, p =>
+        builder.ComplexProperty(x => x.PhoneNumber, p =>
         {
             p.IsRequired();
             p.Property(x => x.Number)
                 .HasColumnName("phone_number")
-                .HasMaxLength(14);
+                .HasMaxLength(Constraints.MAX_PHONENUMBER_LENGTH);
         });
 
         builder.ComplexProperty(x => x.HelpStatus, h =>
@@ -69,13 +106,39 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
                 .HasColumnName("help_status");
         });
 
+        builder.OwnsOne(x => x.PetPhotoDetails, ppb =>
+        {
+            ppb.ToJson();
+
+            ppb.OwnsMany(x => x.PetPhotos, ppb =>
+            {
+                ppb.Property(x => x.Path)
+                    .HasMaxLength(Constraints.MAX_PATH_LENGHT)
+                    .HasColumnName("path")
+                    .IsRequired();
+                ppb.Property(x => x.IsMain)
+                    .HasColumnName("is_main")
+                    .IsRequired();
+            });
+        });
+        
         
 
-        builder.HasMany(x => x.PetPhotos)
-            .WithOne()
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.OwnsMany(x => x.Requisites, b => b.ToJson());
+        builder.OwnsOne(x => x.Requisites, rb =>
+        {
+            rb.ToJson();
+            rb.OwnsMany(x => x.Requisites, r =>
+            {
+                r.Property(x => x.Title)
+                    .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
+                    .HasColumnName("title")
+                    .IsRequired();
+                r.Property(x => x.Description)
+                    .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH)
+                    .HasColumnName("description")
+                    .IsRequired();
+            });
+        });
 
     }
 }
