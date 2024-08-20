@@ -1,8 +1,6 @@
-using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
 
-namespace AnimalAllies.Domain.ValueObjects;
+namespace AnimalAllies.Domain.Models.Volunteer.Pet;
 
 public class PetPhysicCharacteristics : ValueObject
 {
@@ -37,25 +35,25 @@ public class PetPhysicCharacteristics : ValueObject
         
         if (string.IsNullOrWhiteSpace(color) || color.Length > Constraints.Constraints.MAX_PET_COLOR_LENGTH)
         {
-            return Result<PetPhysicCharacteristics>.Failure(Errors.General.ValueIsRequired(color));
+            return Errors.General.ValueIsRequired(color);
         }
         
         if (string.IsNullOrWhiteSpace(healthInformation) || healthInformation.Length > Constraints.Constraints.MAX_PET_COLOR_LENGTH)
         {
-            return Result<PetPhysicCharacteristics>.Failure(Errors.General.ValueIsRequired(healthInformation));
+            return Errors.General.ValueIsRequired(healthInformation);
         }
         
         if (weight > Constraints.Constraints.MIN_VALUE)
         {
-            return Result<PetPhysicCharacteristics>.Failure(Errors.General.ValueIsInvalid(nameof(weight)));
+            return Errors.General.ValueIsInvalid(nameof(weight));
         }
         
         if (height > Constraints.Constraints.MIN_VALUE)
         {
-            return Result<PetPhysicCharacteristics>.Failure(Errors.General.ValueIsRequired(nameof(height)));
+            return Errors.General.ValueIsRequired(nameof(height));
         }
 
-        return Result<PetPhysicCharacteristics>.Success(new PetPhysicCharacteristics(color, healthInformation, weight, height, isCastrated, isVaccinated));
+        return (new PetPhysicCharacteristics(color, healthInformation, weight, height, isCastrated, isVaccinated));
     }
     
     protected override IEnumerable<object> GetEqualityComponents()

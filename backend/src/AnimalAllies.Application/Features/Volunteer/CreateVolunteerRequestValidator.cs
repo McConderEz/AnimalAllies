@@ -1,4 +1,7 @@
+using System.Xml.Linq;
+using AnimalAllies.Application.Validators;
 using AnimalAllies.Domain.Constraints;
+using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
 using AnimalAllies.Domain.ValueObjects;
 using FluentValidation;
@@ -9,61 +12,36 @@ public class CreateVolunteerRequestValidator: AbstractValidator<CreateVolunteerR
 {
     public CreateVolunteerRequestValidator()
     {
-        RuleFor(x => x.FirstName)
-            .NotNull()
-            .NotEmpty().WithMessage("FirstName cannot be empty")
-            .MaximumLength(Constraints.MAX_VALUE_LENGTH);
-        
-        RuleFor(x => x.SecondName)
-            .NotNull()
-            .NotEmpty().WithMessage("SecondName cannot be empty")
-            .MaximumLength(Constraints.MAX_VALUE_LENGTH);
-        
-        RuleFor(x => x.Patronymic)
-            .NotNull()
-            .NotEmpty().WithMessage("Patronymic cannot be empty")
-            .MaximumLength(Constraints.MAX_VALUE_LENGTH);
-        
+        RuleFor(x => new { x.FirstName, x.SecondName, x.Patronymic })
+            .MustBeValueObject(x => FullName.Create(x.FirstName, x.SecondName, x.Patronymic));
+
         RuleFor(x => x.Description)
-            .NotNull()
-            .NotEmpty().WithMessage("Description cannot be empty")
-            .MaximumLength(Constraints.MAX_DESCRIPTION_LENGTH);
+            .MustBeValueObject(VolunteerDescription.Create);
 
         RuleFor(x => x.WorkExperience)
-            .GreaterThanOrEqualTo(0);
+            .MustBeValueObject(WorkExperience.Create);
 
         RuleFor(x => x.PhoneNumber)
-            .Matches(PhoneNumber.ValidationRegex);
+            .MustBeValueObject(PhoneNumber.Create);
         
         RuleFor(x => x.Email)
-            .Matches(Email.ValidationRegex);
+            .MustBeValueObject(Email.Create);
 
         RuleFor(x => x.SocialNetworks)
             .ForEach(validator =>
                 validator.ChildRules(socialNetwork =>
                 {
-                    socialNetwork.RuleFor(x => x.name)
-                        .NotNull()
-                        .NotEmpty()
-                        .MaximumLength(Constraints.MAX_VALUE_LENGTH);
-                    socialNetwork.RuleFor(x => x.url)
-                        .NotNull()
-                        .NotEmpty()
-                        .MaximumLength(Constraints.MAX_URL_LENGTH);
+                    socialNetwork.RuleFor(x => new { x.title, x.url })
+                        .MustBeValueObject(x => SocialNetwork.Create(x.title, x.url));
                 }));
         
         RuleFor(x => x.Requisites)
             .ForEach(validator =>
                 validator.ChildRules(requisite =>
                 {
-                    requisite.RuleFor(x => x.title)
-                        .NotNull()
-                        .NotEmpty()
-                        .MaximumLength(Constraints.MAX_VALUE_LENGTH);
-                    requisite.RuleFor(x => x.description)
-                        .NotNull()
-                        .NotEmpty()
-                        .MaximumLength(Constraints.MAX_DESCRIPTION_LENGTH);
+                    requisite.RuleFor(x => new { x.title, x.description })
+                        .MustBeValueObject(x => Requisite.Create(x.title, x.description));
+
                 }));
 
     }

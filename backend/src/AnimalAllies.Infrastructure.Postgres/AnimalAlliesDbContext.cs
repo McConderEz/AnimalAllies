@@ -1,6 +1,7 @@
 using AnimalAllies.Domain.Models;
-using AnimalAllies.Domain.Models.Pet;
+using AnimalAllies.Domain.Models.Species;
 using AnimalAllies.Domain.Models.Volunteer;
+using AnimalAllies.Domain.Models.Volunteer.Pet;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

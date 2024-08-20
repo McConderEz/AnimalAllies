@@ -1,6 +1,6 @@
 using AnimalAllies.Domain.Constraints;
 using AnimalAllies.Domain.Models;
-using AnimalAllies.Domain.Models.Pet;
+using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -19,10 +19,13 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
                 id => id.Id,
                 Id => PetId.Create(Id));
 
-        builder.ComplexProperty(x => x.SpeciesId, b =>
+        builder.ComplexProperty(x => x.AnimalType, b =>
         {
             b.IsRequired();
-            b.Property(x => x.Id).HasColumnName("species_id");
+            b.Property(x => x.SpeciesId)
+                .HasColumnName("species_id");
+            b.Property(x => x.BreedId)
+                .HasColumnName("breed_id");
         });
 
         builder.ComplexProperty(x => x.Name, b =>

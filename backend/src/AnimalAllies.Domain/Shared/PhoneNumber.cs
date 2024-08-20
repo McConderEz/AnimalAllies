@@ -21,11 +21,11 @@ public class PhoneNumber : ValueObject
     public static Result<PhoneNumber> Create(string number)
     {
         if (string.IsNullOrWhiteSpace(number) || !ValidationRegex.IsMatch(number))
-            return Result<PhoneNumber>.Failure(Errors.General.ValueIsRequired(number));
+            return Errors.General.ValueIsRequired(number);
 
         var phoneNumber = new PhoneNumber(number);
 
-        return Result<PhoneNumber>.Success(phoneNumber);
+        return phoneNumber;
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

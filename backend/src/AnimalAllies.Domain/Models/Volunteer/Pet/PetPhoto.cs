@@ -1,9 +1,6 @@
-
-
 using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
 
-namespace AnimalAllies.Domain.Models;
+namespace AnimalAllies.Domain.Models.Volunteer.Pet;
 
 public class PetPhoto: ValueObject
 {
@@ -21,7 +18,7 @@ public class PetPhoto: ValueObject
     {
         if (string.IsNullOrWhiteSpace(path) || path.Length > Constraints.Constraints.MAX_PATH_LENGHT)
         {
-            return Result<PetPhoto>.Failure(Errors.General.ValueIsRequired(path));
+            Errors.General.ValueIsRequired(path);
         }
 
         return Result<PetPhoto>.Success(new PetPhoto(path, isMain));

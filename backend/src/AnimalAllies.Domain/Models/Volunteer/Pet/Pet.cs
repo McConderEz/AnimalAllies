@@ -1,7 +1,7 @@
+using AnimalAllies.Domain.Models.Species;
 using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
 
-namespace AnimalAllies.Domain.Models.Pet;
+namespace AnimalAllies.Domain.Models.Volunteer.Pet;
 
 public class Pet : Entity<PetId>
 {
@@ -18,8 +18,7 @@ public class Pet : Entity<PetId>
         Address address,
         PhoneNumber phoneNumber,
         HelpStatus helpStatus,
-        SpeciesId speciesId,
-        string breedName)
+        AnimalType animalType)
         : base(petId)
     {
         Name = name;
@@ -28,8 +27,7 @@ public class Pet : Entity<PetId>
         Address = address;
         PhoneNumber= phoneNumber;
         HelpStatus = helpStatus;
-        SpeciesId = speciesId;
-        BreedName = breedName;
+        AnimalType = animalType;
     }
 
     public Name Name { get; private set; }
@@ -38,8 +36,7 @@ public class Pet : Entity<PetId>
     public Address Address { get; private set; }
     public PhoneNumber PhoneNumber { get; private set; }
     public HelpStatus HelpStatus { get; private set; }
-    public SpeciesId SpeciesId { get; private set; }
-    public string BreedName { get; private set; }
+    public AnimalType AnimalType { get; private set; }
     public PetRequisites Requisites { get; private set; }
     public PetPhotoDetails PetPhotoDetails { get; private set; }
     
@@ -69,4 +66,9 @@ public class Pet : Entity<PetId>
         return Result.Success();
     }
 
+    public Result UpdateAnimalType(AnimalType animalType)
+    {
+        AnimalType = animalType;
+        return Result.Success();
+    }
 }

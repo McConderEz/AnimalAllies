@@ -18,7 +18,7 @@ public class Name : ValueObject
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Result<Name>.Failure(Errors.General.ValueIsRequired(value));
+            return Errors.General.ValueIsRequired(value);
         }
 
         return Result<Name>.Success(new Name(value));

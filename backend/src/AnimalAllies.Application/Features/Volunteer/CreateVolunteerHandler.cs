@@ -18,13 +18,6 @@ public class CreateVolunteerHandler
     
     public async Task<Result<VolunteerId>> Handle(CreateVolunteerRequest request, CancellationToken cancellationToken = default)
     {
-
-        var validator = new CreateVolunteerRequestValidator();
-        var result = await validator.ValidateAsync(request, cancellationToken);
-
-        if (result.Errors.Any())
-            return Result<VolunteerId>.Failure(Error.Failure("Result.failure", result.ToString("\n")));
-        
         var phoneNumber = PhoneNumber.Create(request.PhoneNumber).Value;
         var email = Email.Create(request.Email).Value;
 
@@ -39,10 +32,11 @@ public class CreateVolunteerHandler
         var workExperience = WorkExperience.Create(request.WorkExperience).Value;
         
         var socialNetworks = request.SocialNetworks
-            .Select(x => SocialNetwork.Create(x.name, x.url).Value).ToList();
+            .Select(x => SocialNetwork.Create(x.title, x.url).Value).ToList();
+        
         var requisites = request.Requisites
             .Select(x => Requisite.Create(x.title, x.description).Value).ToList();
-
+        
         var volunteerSocialNetworks = new VolunteerSocialNetworks(socialNetworks);
         var volunteerRequisites = new VolunteerRequisites(requisites);
         

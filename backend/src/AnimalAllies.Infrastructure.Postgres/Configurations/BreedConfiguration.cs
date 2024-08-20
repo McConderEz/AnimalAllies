@@ -1,5 +1,6 @@
 using AnimalAllies.Domain.Constraints;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Models.Species.Breed;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

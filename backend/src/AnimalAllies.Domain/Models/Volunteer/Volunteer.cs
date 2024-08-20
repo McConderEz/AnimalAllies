@@ -1,3 +1,4 @@
+using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.Shared;
 using AnimalAllies.Domain.ValueObjects;
 

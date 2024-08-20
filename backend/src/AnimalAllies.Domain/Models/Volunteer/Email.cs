@@ -26,7 +26,7 @@ public class Email: ValueObject
             return Errors.General.ValueIsInvalid(email);
         }
 
-        return Result<Email>.Success(new Email(email));
+        return new Email(email);
     }
     
     protected override IEnumerable<object> GetEqualityComponents()

@@ -28,12 +28,12 @@ public class FullName : ValueObject
     public static Result<FullName> Create(string firstName,string secondName, string? patronymic)
     {
         if (string.IsNullOrWhiteSpace(firstName) || !ValidationRegex.IsMatch(firstName))
-            return Result<FullName>.Failure(Errors.General.ValueIsInvalid(firstName));
+            Errors.General.ValueIsInvalid(firstName);
 
         if (string.IsNullOrWhiteSpace(secondName) || !ValidationRegex.IsMatch(secondName))
-            return Result<FullName>.Failure(Errors.General.ValueIsInvalid(secondName));
+            Errors.General.ValueIsInvalid(secondName);
 
-        return Result<FullName>.Success(new FullName(firstName, secondName, patronymic));
+        return new FullName(firstName, secondName, patronymic);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

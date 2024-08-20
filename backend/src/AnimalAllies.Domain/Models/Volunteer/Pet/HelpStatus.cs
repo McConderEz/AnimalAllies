@@ -1,8 +1,6 @@
-
-using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Shared;
 
-namespace AnimalAllies.Domain.ValueObjects;
+namespace AnimalAllies.Domain.Models.Volunteer.Pet;
 
 public class HelpStatus:ValueObject
 {
@@ -25,16 +23,16 @@ public class HelpStatus:ValueObject
     public static Result<HelpStatus> Create(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
-            return Result<HelpStatus>.Failure(Errors.General.ValueIsRequired(input));
+            return Errors.General.ValueIsRequired(input);
 
         var status = input.Trim().ToLower();
 
         if(_all.Any(s => s.Value.ToLower() == status) == false)
         {
-            return Result<HelpStatus>.Failure(Errors.General.ValueIsInvalid(input));
+            return Errors.General.ValueIsInvalid(input);
         }
 
-        return Result<HelpStatus>.Success(new HelpStatus(input));
+        return new HelpStatus(input);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

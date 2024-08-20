@@ -18,10 +18,10 @@ public class VolunteerDescription : ValueObject
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
         {
-            return Result<VolunteerDescription>.Failure(Errors.General.ValueIsRequired(value));
+            return Errors.General.ValueIsRequired(value);
         }
 
-        return Result<VolunteerDescription>.Success(new VolunteerDescription(value));
+        return new VolunteerDescription(value);
     }
     
     protected override IEnumerable<object> GetEqualityComponents()

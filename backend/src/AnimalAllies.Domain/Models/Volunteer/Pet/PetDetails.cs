@@ -1,7 +1,6 @@
-using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Shared;
 
-namespace AnimalAllies.Domain.ValueObjects;
+namespace AnimalAllies.Domain.Models.Volunteer.Pet;
 
 public class PetDetails: ValueObject
 {
@@ -23,15 +22,15 @@ public class PetDetails: ValueObject
         if (string.IsNullOrWhiteSpace(description) ||
             description.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
         {
-            return Result<PetDetails>.Failure(Errors.General.ValueIsRequired(description));
+            return Errors.General.ValueIsRequired(description);
         }
         
         if (birthDate > DateOnly.FromDateTime(DateTime.Now))
         {
-            return Result<PetDetails>.Failure(Errors.General.ValueIsInvalid(nameof(birthDate)));
+            return Errors.General.ValueIsInvalid(nameof(birthDate));
         }
 
-        return Result<PetDetails>.Success(new PetDetails(description, birthDate, creationTime));
+        return new PetDetails(description, birthDate, creationTime);
     }
     
     protected override IEnumerable<object> GetEqualityComponents()

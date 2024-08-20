@@ -21,17 +21,15 @@ public class Requisite : ValueObject
     {
         if(string.IsNullOrWhiteSpace(title) || title.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Result<Requisite>.Failure(Errors.General.ValueIsRequired(title));
+            return Errors.General.ValueIsRequired(title);
         }
         
         if(string.IsNullOrWhiteSpace(description) || title.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Result<Requisite>.Failure(Errors.General.ValueIsRequired(description));
+            return Errors.General.ValueIsRequired(description);
         }
 
-        var requisite = new Requisite(title, description);
-
-        return Result<Requisite>.Success(requisite);
+        return new Requisite(title, description);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
