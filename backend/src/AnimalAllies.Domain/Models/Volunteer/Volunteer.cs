@@ -17,8 +17,8 @@ public class Volunteer: Entity<VolunteerId>
         VolunteerDescription volunteerDescription,
         WorkExperience workExperience,
         PhoneNumber phone,
-        VolunteerSocialNetworks? socialNetworks,
-        VolunteerRequisites? requisites)
+        VolunteerSocialNetworks socialNetworks,
+        VolunteerRequisites requisites)
     : base(volunteerId)
     {
         FullName = fullName;
@@ -35,8 +35,8 @@ public class Volunteer: Entity<VolunteerId>
     public PhoneNumber Phone { get; private set; }
     public VolunteerDescription Description { get; private set; }
     public WorkExperience WorkExperience { get; private set; }
-    public VolunteerRequisites? Requisites { get; private set; }
-    public VolunteerSocialNetworks? SocialNetworks { get; private set; }
+    public VolunteerRequisites Requisites { get; private set; }
+    public VolunteerSocialNetworks SocialNetworks { get; private set; }
     public IReadOnlyList<Pet.Pet> Pets => _pets;
     
     public void AddPets(List<Pet.Pet> pets) => _pets.AddRange(pets);

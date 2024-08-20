@@ -71,10 +71,10 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
 
             sn.OwnsMany(d => d.SocialNetworks, s =>
             {
-                s.Property(sn => sn.Url)
+                s.Property(x => x.Url)
                     .IsRequired()
                     .HasMaxLength(Constraints.MAX_URL_LENGTH);
-                s.Property(sn => sn.Title)
+                s.Property(x => x.Title)
                     .IsRequired()
                     .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
             });

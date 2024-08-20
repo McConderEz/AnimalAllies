@@ -19,7 +19,7 @@ public class AnimalType: ValueObject
     
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return SpeciesId;
+        yield return SpeciesId.Id;
         yield return BreedId;
     }
 }

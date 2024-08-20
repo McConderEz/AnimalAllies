@@ -1,5 +1,6 @@
 using AnimalAllies.Domain.Constraints;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Models.Species;
 using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,10 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
         {
             b.IsRequired();
             b.Property(x => x.SpeciesId)
-                .HasColumnName("species_id");
+                .HasColumnName("species_id")
+                .HasConversion(
+                    id => id.Id,
+                    id => SpeciesId.Create(id));
             b.Property(x => x.BreedId)
                 .HasColumnName("breed_id");
         });

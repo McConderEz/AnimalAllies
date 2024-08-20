@@ -23,7 +23,7 @@ namespace AnimalAllies.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("AnimalAllies.Domain.Models.Breed", b =>
+            modelBuilder.Entity("AnimalAllies.Domain.Models.Species.Breed.Breed", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -31,7 +31,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                     b.Property<Guid?>("SpeciesId")
                         .HasColumnType("uuid");
 
-                    b.ComplexProperty<Dictionary<string, object>>("Name", "AnimalAllies.Domain.Models.Breed.Name#Name", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("Name", "AnimalAllies.Domain.Models.Species.Breed.Breed.Name#Name", b1 =>
                         {
                             b1.IsRequired();
 
@@ -48,19 +48,35 @@ namespace AnimalAllies.Infrastructure.Migrations
                     b.ToTable("breeds", (string)null);
                 });
 
-            modelBuilder.Entity("AnimalAllies.Domain.Models.Pet.Pet", b =>
+            modelBuilder.Entity("AnimalAllies.Domain.Models.Species.Species", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("BreedName")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.ComplexProperty<Dictionary<string, object>>("Name", "AnimalAllies.Domain.Models.Species.Species.Name#Name", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)");
+                        });
+
+                    b.HasKey("Id");
+
+                    b.ToTable("species", (string)null);
+                });
+
+            modelBuilder.Entity("AnimalAllies.Domain.Models.Volunteer.Pet.Pet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("volunteer_id")
                         .HasColumnType("uuid");
 
-                    b.ComplexProperty<Dictionary<string, object>>("Address", "AnimalAllies.Domain.Models.Pet.Pet.Address#Address", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("Address", "AnimalAllies.Domain.Models.Volunteer.Pet.Pet.Address#Address", b1 =>
                         {
                             b1.IsRequired();
 
@@ -89,7 +105,20 @@ namespace AnimalAllies.Infrastructure.Migrations
                                 .HasColumnName("zip_code");
                         });
 
-                    b.ComplexProperty<Dictionary<string, object>>("HelpStatus", "AnimalAllies.Domain.Models.Pet.Pet.HelpStatus#HelpStatus", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("AnimalType", "AnimalAllies.Domain.Models.Volunteer.Pet.Pet.AnimalType#AnimalType", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<Guid>("BreedId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("breed_id");
+
+                            b1.Property<Guid>("SpeciesId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("species_id");
+                        });
+
+                    b.ComplexProperty<Dictionary<string, object>>("HelpStatus", "AnimalAllies.Domain.Models.Volunteer.Pet.Pet.HelpStatus#HelpStatus", b1 =>
                         {
                             b1.IsRequired();
 
@@ -99,7 +128,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                                 .HasColumnName("help_status");
                         });
 
-                    b.ComplexProperty<Dictionary<string, object>>("Name", "AnimalAllies.Domain.Models.Pet.Pet.Name#Name", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("Name", "AnimalAllies.Domain.Models.Volunteer.Pet.Pet.Name#Name", b1 =>
                         {
                             b1.IsRequired();
 
@@ -110,7 +139,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                                 .HasColumnName("name");
                         });
 
-                    b.ComplexProperty<Dictionary<string, object>>("PetDetails", "AnimalAllies.Domain.Models.Pet.Pet.PetDetails#PetDetails", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("PetDetails", "AnimalAllies.Domain.Models.Volunteer.Pet.Pet.PetDetails#PetDetails", b1 =>
                         {
                             b1.IsRequired();
 
@@ -128,7 +157,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                                 .HasColumnType("character varying(1500)");
                         });
 
-                    b.ComplexProperty<Dictionary<string, object>>("PetPhysicCharacteristics", "AnimalAllies.Domain.Models.Pet.Pet.PetPhysicCharacteristics#PetPhysicCharacteristics", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("PetPhysicCharacteristics", "AnimalAllies.Domain.Models.Volunteer.Pet.Pet.PetPhysicCharacteristics#PetPhysicCharacteristics", b1 =>
                         {
                             b1.IsRequired();
 
@@ -161,7 +190,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                                 .HasColumnName("weight");
                         });
 
-                    b.ComplexProperty<Dictionary<string, object>>("PhoneNumber", "AnimalAllies.Domain.Models.Pet.Pet.PhoneNumber#PhoneNumber", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("PhoneNumber", "AnimalAllies.Domain.Models.Volunteer.Pet.Pet.PhoneNumber#PhoneNumber", b1 =>
                         {
                             b1.IsRequired();
 
@@ -172,40 +201,11 @@ namespace AnimalAllies.Infrastructure.Migrations
                                 .HasColumnName("phone_number");
                         });
 
-                    b.ComplexProperty<Dictionary<string, object>>("SpeciesId", "AnimalAllies.Domain.Models.Pet.Pet.SpeciesId#SpeciesId", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<Guid>("Id")
-                                .HasColumnType("uuid")
-                                .HasColumnName("species_id");
-                        });
-
                     b.HasKey("Id");
 
                     b.HasIndex("volunteer_id");
 
                     b.ToTable("pets", (string)null);
-                });
-
-            modelBuilder.Entity("AnimalAllies.Domain.Models.Species", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.ComplexProperty<Dictionary<string, object>>("Name", "AnimalAllies.Domain.Models.Species.Name#Name", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("character varying(100)");
-                        });
-
-                    b.HasKey("Id");
-
-                    b.ToTable("species", (string)null);
                 });
 
             modelBuilder.Entity("AnimalAllies.Domain.Models.Volunteer.Volunteer", b =>
@@ -279,21 +279,21 @@ namespace AnimalAllies.Infrastructure.Migrations
                     b.ToTable("volunteers", (string)null);
                 });
 
-            modelBuilder.Entity("AnimalAllies.Domain.Models.Breed", b =>
+            modelBuilder.Entity("AnimalAllies.Domain.Models.Species.Breed.Breed", b =>
                 {
-                    b.HasOne("AnimalAllies.Domain.Models.Species", null)
+                    b.HasOne("AnimalAllies.Domain.Models.Species.Species", null)
                         .WithMany("Breeds")
                         .HasForeignKey("SpeciesId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("AnimalAllies.Domain.Models.Pet.Pet", b =>
+            modelBuilder.Entity("AnimalAllies.Domain.Models.Volunteer.Pet.Pet", b =>
                 {
                     b.HasOne("AnimalAllies.Domain.Models.Volunteer.Volunteer", null)
                         .WithMany("Pets")
                         .HasForeignKey("volunteer_id");
 
-                    b.OwnsOne("AnimalAllies.Domain.Models.Pet.PetPhotoDetails", "PetPhotoDetails", b1 =>
+                    b.OwnsOne("AnimalAllies.Domain.Models.Volunteer.Pet.PetPhotoDetails", "PetPhotoDetails", b1 =>
                         {
                             b1.Property<Guid>("PetId")
                                 .HasColumnType("uuid");
@@ -307,7 +307,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("PetId");
 
-                            b1.OwnsMany("AnimalAllies.Domain.Models.PetPhoto", "PetPhotos", b2 =>
+                            b1.OwnsMany("AnimalAllies.Domain.Models.Volunteer.Pet.PetPhoto", "PetPhotos", b2 =>
                                 {
                                     b2.Property<Guid>("PetPhotoDetailsPetId")
                                         .HasColumnType("uuid");
@@ -337,7 +337,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                             b1.Navigation("PetPhotos");
                         });
 
-                    b.OwnsOne("AnimalAllies.Domain.Models.Pet.PetRequisites", "Requisites", b1 =>
+                    b.OwnsOne("AnimalAllies.Domain.Models.Volunteer.Pet.PetRequisites", "Requisites", b1 =>
                         {
                             b1.Property<Guid>("PetId")
                                 .HasColumnType("uuid");
@@ -480,12 +480,14 @@ namespace AnimalAllies.Infrastructure.Migrations
                             b1.Navigation("SocialNetworks");
                         });
 
-                    b.Navigation("Requisites");
+                    b.Navigation("Requisites")
+                        .IsRequired();
 
-                    b.Navigation("SocialNetworks");
+                    b.Navigation("SocialNetworks")
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("AnimalAllies.Domain.Models.Species", b =>
+            modelBuilder.Entity("AnimalAllies.Domain.Models.Species.Species", b =>
                 {
                     b.Navigation("Breeds");
                 });
