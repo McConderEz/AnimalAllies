@@ -35,8 +35,8 @@ namespace AnimalAllies.Infrastructure.Migrations
                     second_name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     phone_number = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false),
                     work_experience = table.Column<int>(type: "integer", nullable: false),
-                    Requisites = table.Column<string>(type: "jsonb", nullable: false),
-                    SocialNetworks = table.Column<string>(type: "jsonb", nullable: false)
+                    requisites = table.Column<string>(type: "jsonb", nullable: false),
+                    social_networks = table.Column<string>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,8 +86,8 @@ namespace AnimalAllies.Infrastructure.Migrations
                     is_vaccinated = table.Column<bool>(type: "boolean", nullable: false),
                     weight = table.Column<double>(type: "double precision", nullable: false),
                     phone_number = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false),
-                    PetPhotoDetails = table.Column<string>(type: "jsonb", nullable: false),
-                    Requisites = table.Column<string>(type: "jsonb", nullable: false)
+                    pet_photo_details = table.Column<string>(type: "jsonb", nullable: false),
+                    requisites = table.Column<string>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,7 +96,8 @@ namespace AnimalAllies.Infrastructure.Migrations
                         name: "FK_pets_volunteers_volunteer_id",
                         column: x => x.volunteer_id,
                         principalTable: "volunteers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
