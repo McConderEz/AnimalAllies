@@ -27,22 +27,11 @@ public class CreateVolunteerRequestValidator: AbstractValidator<CreateVolunteerR
         RuleFor(x => x.Email)
             .MustBeValueObject(Email.Create);
 
-        RuleFor(x => x.SocialNetworks)
-            .ForEach(validator =>
-                validator.ChildRules(socialNetwork =>
-                {
-                    socialNetwork.RuleFor(x => new { x.title, x.url })
-                        .MustBeValueObject(x => SocialNetwork.Create(x.title, x.url));
-                }));
+        RuleForEach(x => x.SocialNetworks)
+            .MustBeValueObject(x => SocialNetwork.Create(x.Title, x.Url));
         
-        RuleFor(x => x.Requisites)
-            .ForEach(validator =>
-                validator.ChildRules(requisite =>
-                {
-                    requisite.RuleFor(x => new { x.title, x.description })
-                        .MustBeValueObject(x => Requisite.Create(x.title, x.description));
-
-                }));
+        RuleForEach(x => x.Requisites)
+            .MustBeValueObject(x => Requisite.Create(x.Title, x.Description));
 
     }
 }

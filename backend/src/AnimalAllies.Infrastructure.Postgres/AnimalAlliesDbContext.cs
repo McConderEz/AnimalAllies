@@ -34,6 +34,5 @@ public class AnimalAlliesDbContext: DbContext
         = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
     public DbSet<Volunteer> Volunteers { get; set; } = null!;
-    public DbSet<Pet> Pets { get; set; } = null!;
     public DbSet<Species> Species { get; set; } = null!;
 }

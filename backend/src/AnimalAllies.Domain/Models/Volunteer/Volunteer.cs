@@ -55,35 +55,4 @@ public class Volunteer: Entity<VolunteerId>
         Requisites = requisites;
         return Result.Success();
     }
-    public Result UpdateWorkExperience(WorkExperience workExperience)
-    {
-        WorkExperience = workExperience;
-        return Result.Success();
-    }
-
-    public Result UpdateDescription(VolunteerDescription description)
-    {
-        this.Description = description;
-        return Result.Success();
-    }
-    
-    public Result UpdatePhoneNumber(PhoneNumber phoneNumber)
-    {
-        this.Phone = phoneNumber;
-        return Result.Success();
-    }
-    
-    public Result UpdateFullName(FullName fullName)
-    {
-        this.FullName = fullName;
-        return Result.Success();
-    }
-    
-    public Result UpdateEmail(Email email)
-    {
-        this.Email = email;
-        return Result.Success();
-    }
-    
-
 }

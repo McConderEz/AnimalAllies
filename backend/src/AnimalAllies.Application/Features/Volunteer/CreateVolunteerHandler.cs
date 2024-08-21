@@ -18,59 +18,36 @@ public class CreateVolunteerHandler
     
     public async Task<Result<VolunteerId>> Handle(CreateVolunteerRequest request, CancellationToken cancellationToken = default)
     {
-        var phoneNumber = PhoneNumber.Create(request.PhoneNumber);
-
-        if (phoneNumber.IsFailure)
-            return phoneNumber.Error;
+        var phoneNumber = PhoneNumber.Create(request.PhoneNumber).Value;
+        var email = Email.Create(request.Email).Value;
         
-        var email = Email.Create(request.Email);
-
-        if (email.IsFailure)
-            return email.Error;
-
-        var volunteerByPhoneNumber = await _repository.GetByPhoneNumber(phoneNumber.Value);
-        var volunteerByEmail = await _repository.GetByEmail(email.Value);
+        var volunteerByPhoneNumber = await _repository.GetByPhoneNumber(phoneNumber);
+        var volunteerByEmail = await _repository.GetByEmail(email);
 
         if (!volunteerByPhoneNumber.IsFailure || !volunteerByEmail.IsFailure)
             return Errors.Volunteer.AlreadyExist();
         
-        var fullName = FullName.Create(request.FirstName, request.SecondName, request.Patronymic);
-
-        if (fullName.IsFailure)
-            return fullName.Error;
+        var fullName = FullName.Create(request.FirstName, request.SecondName, request.Patronymic).Value;
+        var description = VolunteerDescription.Create(request.Description).Value;
+        var workExperience = WorkExperience.Create(request.WorkExperience).Value;
         
-        var description = VolunteerDescription.Create(request.Description);
-
-        if (description.IsFailure)
-            return description.Error;
-        
-        var workExperience = WorkExperience.Create(request.WorkExperience);
-
-        if (workExperience.IsFailure)
-            return workExperience.Error;
 
         var socialNetworks = request.SocialNetworks
-            .Select(x => SocialNetwork.Create(x.title, x.url));
-
-        if (socialNetworks.Any(x => x.IsFailure))
-            return Errors.General.ValueIsInvalid();
-
+            .Select(x => SocialNetwork.Create(x.Title, x.Url).Value);
         var requisites = request.Requisites
-            .Select(x => Requisite.Create(x.title, x.description));
+            .Select(x => Requisite.Create(x.Title, x.Description).Value);
+
         
-        if(requisites.Any(x => x.IsFailure))
-            return Errors.General.ValueIsInvalid();
-        
-        var volunteerSocialNetworks = new VolunteerSocialNetworks(socialNetworks.Select(x => x.Value));
-        var volunteerRequisites = new VolunteerRequisites(requisites.Select(x => x.Value));
+        var volunteerSocialNetworks = new VolunteerSocialNetworks(socialNetworks);
+        var volunteerRequisites = new VolunteerRequisites(requisites);
         
         var volunteerEntity = new Domain.Models.Volunteer.Volunteer(
             VolunteerId.NewGuid(),
-            fullName.Value,
-            email.Value,
-            description.Value,
-            workExperience.Value,
-            phoneNumber.Value,
+            fullName,
+            email,
+            description,
+            workExperience,
+            phoneNumber,
             volunteerSocialNetworks,
             volunteerRequisites);
         

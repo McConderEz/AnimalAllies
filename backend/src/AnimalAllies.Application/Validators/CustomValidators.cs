@@ -16,7 +16,7 @@ public static class CustomValidators
             if (result.IsSuccess)
                 return;
             
-            context.AddFailure(result.Error.ErrorMessage);
+            context.AddFailure(result.Error.Serialize());
         });
     }
 }

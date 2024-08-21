@@ -1,3 +1,3 @@
 namespace AnimalAllies.Application.Contracts.DTOs;
 
-public record SocialNetworkDto(string title, string url);
+public record SocialNetworkDto(string Title, string Url);
