@@ -67,7 +67,7 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
 
         builder.OwnsOne(v => v.SocialNetworks, sn =>
         {
-            sn.ToJson();
+            sn.ToJson("social_networks");
 
             sn.OwnsMany(d => d.SocialNetworks, s =>
             {
@@ -83,7 +83,7 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
         
         builder.OwnsOne(v => v.Requisites, r =>
         {
-            r.ToJson();
+            r.ToJson("requisites");
 
             r.OwnsMany(d => d.Requisites, s =>
             {
@@ -100,6 +100,6 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
         builder.HasMany(x => x.Pets)
             .WithOne()
             .HasForeignKey("volunteer_id")
-            .OnDelete(DeleteBehavior.ClientSetNull);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

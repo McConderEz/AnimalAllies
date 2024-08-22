@@ -291,7 +291,8 @@ namespace AnimalAllies.Infrastructure.Migrations
                 {
                     b.HasOne("AnimalAllies.Domain.Models.Volunteer.Volunteer", null)
                         .WithMany("Pets")
-                        .HasForeignKey("volunteer_id");
+                        .HasForeignKey("volunteer_id")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.OwnsOne("AnimalAllies.Domain.Models.Volunteer.Pet.PetPhotoDetails", "PetPhotoDetails", b1 =>
                         {
@@ -302,7 +303,7 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                             b1.ToTable("pets");
 
-                            b1.ToJson("PetPhotoDetails");
+                            b1.ToJson("pet_photo_details");
 
                             b1.WithOwner()
                                 .HasForeignKey("PetId");
@@ -346,7 +347,7 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                             b1.ToTable("pets");
 
-                            b1.ToJson("Requisites");
+                            b1.ToJson("requisites");
 
                             b1.WithOwner()
                                 .HasForeignKey("PetId");
@@ -401,7 +402,7 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                             b1.ToTable("volunteers");
 
-                            b1.ToJson("Requisites");
+                            b1.ToJson("requisites");
 
                             b1.WithOwner()
                                 .HasForeignKey("VolunteerId");
@@ -445,7 +446,7 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                             b1.ToTable("volunteers");
 
-                            b1.ToJson("SocialNetworks");
+                            b1.ToJson("social_networks");
 
                             b1.WithOwner()
                                 .HasForeignKey("VolunteerId");

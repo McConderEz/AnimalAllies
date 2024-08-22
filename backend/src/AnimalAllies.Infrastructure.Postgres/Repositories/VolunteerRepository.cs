@@ -50,7 +50,9 @@ public class VolunteerRepository: IVolunteerRepository
     public async Task<Result<Volunteer>> GetByPhoneNumber(PhoneNumber phone)
     {
         
-        var volunteer = await _context.Volunteers.FirstOrDefaultAsync(x => x.Phone == phone);
+        var volunteer = await _context.Volunteers
+            .Include(x => x.Pets)
+            .FirstOrDefaultAsync(x => x.Phone == phone);
 
         if (volunteer == null)
             return Result<Volunteer>.Failure(Errors.General.NotFound());
@@ -61,7 +63,9 @@ public class VolunteerRepository: IVolunteerRepository
 
     public async Task<Result<Volunteer>> GetByEmail(Email email)
     {
-        var volunteer = await _context.Volunteers.FirstOrDefaultAsync(x => x.Email == email);
+        var volunteer = await _context.Volunteers
+            .Include(x => x.Pets)
+            .FirstOrDefaultAsync(x => x.Email == email);
 
         if (volunteer == null)
             return Result<Volunteer>.Failure(Errors.General.NotFound());
