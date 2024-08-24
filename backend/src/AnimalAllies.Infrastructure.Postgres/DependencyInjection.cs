@@ -11,6 +11,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddTransient<IDateTimeProvider, DateTimeProvider>();
+        services.AddScoped<AnimalAlliesDbContext>();
         services.AddScoped<IVolunteerRepository, VolunteerRepository>();
 
         return services;

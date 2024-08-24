@@ -4,19 +4,24 @@ using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
 using AnimalAllies.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer;
 
 public class CreateVolunteerHandler
 {
     private readonly IVolunteerRepository _repository;
+    private readonly ILogger<CreateVolunteerHandler> _logger;
 
-    public CreateVolunteerHandler(IVolunteerRepository repository)
+    public CreateVolunteerHandler(IVolunteerRepository repository,ILogger<CreateVolunteerHandler> logger)
     {
         _repository = repository;
+        _logger = logger;
     }
     
-    public async Task<Result<VolunteerId>> Handle(CreateVolunteerRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result<VolunteerId>> Handle(
+        CreateVolunteerRequest request,
+        CancellationToken cancellationToken = default)
     {
         var phoneNumber = PhoneNumber.Create(request.PhoneNumber).Value;
         var email = Email.Create(request.Email).Value;
@@ -27,7 +32,7 @@ public class CreateVolunteerHandler
         if (!volunteerByPhoneNumber.IsFailure || !volunteerByEmail.IsFailure)
             return Errors.Volunteer.AlreadyExist();
         
-        var fullName = FullName.Create(request.FirstName, request.SecondName, request.Patronymic).Value;
+        var fullName = FullName.Create(request.FullName.FirstName, request.FullName.SecondName, request.FullName.Patronymic).Value;
         var description = VolunteerDescription.Create(request.Description).Value;
         var workExperience = WorkExperience.Create(request.WorkExperience).Value;
         
@@ -41,8 +46,10 @@ public class CreateVolunteerHandler
         var volunteerSocialNetworks = new VolunteerSocialNetworks(socialNetworks);
         var volunteerRequisites = new VolunteerRequisites(requisites);
         
+        var volunteerId = VolunteerId.NewGuid();
+        
         var volunteerEntity = new Domain.Models.Volunteer.Volunteer(
-            VolunteerId.NewGuid(),
+            volunteerId,
             fullName,
             email,
             description,
@@ -50,6 +57,8 @@ public class CreateVolunteerHandler
             phoneNumber,
             volunteerSocialNetworks,
             volunteerRequisites);
+        
+        _logger.LogInformation("Created volunteer {fullName} with id {volunteerId}", fullName, volunteerId.Id);
         
         return await _repository.Create(volunteerEntity, cancellationToken);
     }

@@ -1,11 +1,10 @@
 using AnimalAllies.Application.Contracts.DTOs;
+using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 
 namespace AnimalAllies.Application.Features.Volunteer;
 
 public record CreateVolunteerRequest(
-    string FirstName,
-    string SecondName,
-    string? Patronymic,
+    FullNameDto FullName,
     string Email,
     string Description,
     int WorkExperience,
