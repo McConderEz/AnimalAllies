@@ -1,4 +1,5 @@
 using AnimalAllies.API.Extensions;
+using AnimalAllies.API.Middlewares;
 using AnimalAllies.API.Validation;
 using AnimalAllies.Application;
 using AnimalAllies.Infrastructure;
@@ -45,6 +46,8 @@ builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
+
+app.UseExceptionMiddleware();
 
 app.UseSerilogRequestLogging();
 
