@@ -10,6 +10,9 @@ public class UpdateVolunteerValidator: AbstractValidator<UpdateVolunteerRequest>
 {
     public UpdateVolunteerValidator()
     {
+        RuleFor(x => x.Id)
+            .NotEmpty();
+        
         RuleFor(x => x.FullName)
             .MustBeValueObject(x => FullName.Create(x.FirstName, x.SecondName, x.Patronymic));
 

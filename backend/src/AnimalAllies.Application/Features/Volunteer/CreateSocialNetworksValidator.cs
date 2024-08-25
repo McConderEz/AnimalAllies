@@ -8,6 +8,9 @@ public class CreateSocialNetworksValidator: AbstractValidator<CreateSocialNetwor
 {
     public CreateSocialNetworksValidator()
     {
+        RuleFor(x => x.Id)
+            .NotEmpty();
+        
         RuleForEach(x => x.SocialNetworks)
             .MustBeValueObject(x => SocialNetwork.Create(x.Title, x.Url));
 

@@ -8,6 +8,9 @@ public class CreateRequisitesValidator: AbstractValidator<CreateRequisitesReques
 {
     public CreateRequisitesValidator()
     {
+        RuleFor(x => x.Id)
+            .NotEmpty();
+        
         RuleForEach(x => x.Requisites)
             .MustBeValueObject(x => Requisite.Create(x.Title, x.Description));
     }

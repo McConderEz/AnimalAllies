@@ -25,7 +25,7 @@ public class VolunteerController: ApplicationController
         return CreatedAtAction("", response.Value);
     }
     
-    [HttpPut("UpdateVolunteer")]
+    [HttpPatch("UpdateVolunteer")]
     public async Task<IActionResult> UpdateVolunteer(
         [FromServices] UpdateVolunteerHandler handler,
         [FromBody] UpdateVolunteerRequest request,
@@ -41,7 +41,7 @@ public class VolunteerController: ApplicationController
         return CreatedAtAction("", response.Value);
     }
     
-    [HttpPut("CreateRequisitesToVolunteer")]
+    [HttpPatch("CreateRequisitesToVolunteer")]
     public async Task<IActionResult> CreateRequisitesToVolunteer(
         [FromServices] CreateRequisitesToVolunteerHandler handler,
         [FromBody] CreateRequisitesRequest request,
@@ -57,7 +57,7 @@ public class VolunteerController: ApplicationController
         return CreatedAtAction("", response.Value);
     }
     
-    [HttpPut("CreateSocialNetworksToVolunteer")]
+    [HttpPatch("CreateSocialNetworksToVolunteer")]
     public async Task<IActionResult> CreateSocialNetworksToVolunteer(
         [FromServices] CreateSocialNetworksToVolunteerHandler handler,
         [FromBody] CreateSocialNetworksRequest request,
