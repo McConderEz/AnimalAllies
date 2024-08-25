@@ -30,9 +30,56 @@ public class VolunteerRepository: IVolunteerRepository
         throw new NotImplementedException();
     }
 
-    public Task Update(Volunteer entity)
+    public async Task<Result<VolunteerId>> Update(Volunteer entity, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        await _context.Volunteers
+            .Where(v => v.Id == entity.Id)
+            .ExecuteUpdateAsync(v => v
+                .SetProperty(x => x.FullName.FirstName, entity.FullName.FirstName)
+                .SetProperty(x => x.FullName.SecondName, entity.FullName.SecondName)
+                .SetProperty(x => x.FullName.Patronymic, entity.FullName.Patronymic)
+                .SetProperty(x => x.Email.Value, entity.Email.Value)
+                .SetProperty(x => x.Phone.Number, entity.Phone.Number)
+                .SetProperty(x => x.Description.Value, entity.Description.Value)
+                .SetProperty(x => x.WorkExperience.Value, entity.WorkExperience.Value),
+                cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return entity.Id;
+    }
+
+    public async Task<Result<VolunteerId>> AddRequisites(
+        VolunteerId id,
+        VolunteerRequisites requisites, 
+        CancellationToken cancellationToken = default)
+    {
+        var volunteer = await _context.Volunteers.FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
+
+        if (volunteer == null)
+            return Errors.General.NotFound();
+
+        volunteer.UpdateRequisites(requisites);
+        
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return id;
+    }
+
+    public async Task<Result<VolunteerId>> AddSocialNetworks(
+        VolunteerId id,
+        VolunteerSocialNetworks socialNetworks,
+        CancellationToken cancellationToken = default)
+    {
+        var volunteer = await _context.Volunteers.FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
+
+        if (volunteer == null)
+            return Errors.General.NotFound();
+
+        volunteer.UpdateSocialNetworks(socialNetworks);
+        
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return id;
     }
 
     public async Task<Result<Volunteer>> GetById(VolunteerId id)

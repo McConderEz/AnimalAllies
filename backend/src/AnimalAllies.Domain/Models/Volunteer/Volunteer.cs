@@ -55,4 +55,20 @@ public class Volunteer: Entity<VolunteerId>
         Requisites = requisites;
         return Result.Success();
     }
+
+    public Result UpdateInfo(
+        FullName? fullName,
+        Email? email,
+        PhoneNumber? phoneNumber,
+        VolunteerDescription? description,
+        WorkExperience? workExperience)
+    {
+        FullName = fullName ?? FullName;
+        Email = email ?? Email;
+        Phone = phoneNumber ?? Phone;
+        Description = description ?? Description;
+        WorkExperience = workExperience ?? WorkExperience;
+
+        return Result.Success();
+    }
 }

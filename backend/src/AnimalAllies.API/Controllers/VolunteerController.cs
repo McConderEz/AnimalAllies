@@ -24,4 +24,52 @@ public class VolunteerController: ApplicationController
         
         return CreatedAtAction("", response.Value);
     }
+    
+    [HttpPut("UpdateVolunteer")]
+    public async Task<IActionResult> UpdateVolunteer(
+        [FromServices] UpdateVolunteerHandler handler,
+        [FromBody] UpdateVolunteerRequest request,
+        CancellationToken cancellationToken = default)
+    { 
+        var response = await handler.Handle(request, cancellationToken);
+        
+        if (response.IsFailure)
+        {
+            return response.Error.ToErrorResponse();
+        }
+        
+        return CreatedAtAction("", response.Value);
+    }
+    
+    [HttpPut("CreateRequisitesToVolunteer")]
+    public async Task<IActionResult> CreateRequisitesToVolunteer(
+        [FromServices] CreateRequisitesToVolunteerHandler handler,
+        [FromBody] CreateRequisitesRequest request,
+        CancellationToken cancellationToken = default)
+    { 
+        var response = await handler.Handle(request, cancellationToken);
+        
+        if (response.IsFailure)
+        {
+            return response.Error.ToErrorResponse();
+        }
+        
+        return CreatedAtAction("", response.Value);
+    }
+    
+    [HttpPut("CreateSocialNetworksToVolunteer")]
+    public async Task<IActionResult> CreateSocialNetworksToVolunteer(
+        [FromServices] CreateSocialNetworksToVolunteerHandler handler,
+        [FromBody] CreateSocialNetworksRequest request,
+        CancellationToken cancellationToken = default)
+    { 
+        var response = await handler.Handle(request, cancellationToken);
+        
+        if (response.IsFailure)
+        {
+            return response.Error.ToErrorResponse();
+        }
+        
+        return CreatedAtAction("", response.Value);
+    }
 }
