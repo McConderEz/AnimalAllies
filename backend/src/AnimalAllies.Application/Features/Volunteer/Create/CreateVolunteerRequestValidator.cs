@@ -4,15 +4,12 @@ using AnimalAllies.Domain.Shared;
 using AnimalAllies.Domain.ValueObjects;
 using FluentValidation;
 
-namespace AnimalAllies.Application.Features.Volunteer;
+namespace AnimalAllies.Application.Features.Volunteer.Create;
 
-public class UpdateVolunteerValidator: AbstractValidator<UpdateVolunteerRequest>
+public class CreateVolunteerRequestValidator: AbstractValidator<CreateVolunteerRequest>
 {
-    public UpdateVolunteerValidator()
+    public CreateVolunteerRequestValidator()
     {
-        RuleFor(x => x.Id)
-            .NotEmpty();
-        
         RuleFor(x => x.FullName)
             .MustBeValueObject(x => FullName.Create(x.FirstName, x.SecondName, x.Patronymic));
 
@@ -27,5 +24,12 @@ public class UpdateVolunteerValidator: AbstractValidator<UpdateVolunteerRequest>
         
         RuleFor(x => x.Email)
             .MustBeValueObject(Email.Create);
+
+        RuleForEach(x => x.SocialNetworks)
+            .MustBeValueObject(x => SocialNetwork.Create(x.Title, x.Url));
+        
+        RuleForEach(x => x.Requisites)
+            .MustBeValueObject(x => Requisite.Create(x.Title, x.Description));
+
     }
 }

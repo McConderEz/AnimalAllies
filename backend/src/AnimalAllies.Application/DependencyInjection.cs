@@ -1,4 +1,6 @@
 using AnimalAllies.Application.Features.Volunteer;
+using AnimalAllies.Application.Features.Volunteer.Create;
+using AnimalAllies.Application.Features.Volunteer.Update;
 using Microsoft.Extensions.DependencyInjection;
 using FluentValidation;
 

@@ -25,68 +25,24 @@ public class VolunteerRepository: IVolunteerRepository
         
     }
 
-    public Task Delete(Guid id)
+    public Task Delete(Volunteer entity, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
     public async Task<Result<VolunteerId>> Update(Volunteer entity, CancellationToken cancellationToken = default)
     {
-        await _context.Volunteers
-            .Where(v => v.Id == entity.Id)
-            .ExecuteUpdateAsync(v => v
-                .SetProperty(x => x.FullName.FirstName, entity.FullName.FirstName)
-                .SetProperty(x => x.FullName.SecondName, entity.FullName.SecondName)
-                .SetProperty(x => x.FullName.Patronymic, entity.FullName.Patronymic)
-                .SetProperty(x => x.Email.Value, entity.Email.Value)
-                .SetProperty(x => x.Phone.Number, entity.Phone.Number)
-                .SetProperty(x => x.Description.Value, entity.Description.Value)
-                .SetProperty(x => x.WorkExperience.Value, entity.WorkExperience.Value),
-                cancellationToken);
+        _context.Volunteers.Attach(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
         return entity.Id;
     }
-
-    public async Task<Result<VolunteerId>> AddRequisites(
-        VolunteerId id,
-        VolunteerRequisites requisites, 
-        CancellationToken cancellationToken = default)
-    {
-        var volunteer = await _context.Volunteers.FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
-
-        if (volunteer == null)
-            return Errors.General.NotFound();
-
-        volunteer.UpdateRequisites(requisites);
-        
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return id;
-    }
-
-    public async Task<Result<VolunteerId>> AddSocialNetworks(
-        VolunteerId id,
-        VolunteerSocialNetworks socialNetworks,
-        CancellationToken cancellationToken = default)
-    {
-        var volunteer = await _context.Volunteers.FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
-
-        if (volunteer == null)
-            return Errors.General.NotFound();
-
-        volunteer.UpdateSocialNetworks(socialNetworks);
-        
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return id;
-    }
-
-    public async Task<Result<Volunteer>> GetById(VolunteerId id)
+    
+    public async Task<Result<Volunteer>> GetById(VolunteerId id, CancellationToken cancellationToken = default)
     {
         var volunteer = await _context.Volunteers
             .Include(x => x.Pets)
-            .FirstOrDefaultAsync(x => x.Id == id);
+            .FirstOrDefaultAsync(x => x.Id == id,cancellationToken);
 
         if (volunteer == null)
             return Result<Volunteer>.Failure(Errors.General.NotFound(id.Id));
@@ -94,12 +50,13 @@ public class VolunteerRepository: IVolunteerRepository
         return Result<Volunteer>.Success(volunteer);
     }
 
-    public async Task<Result<Volunteer>> GetByPhoneNumber(PhoneNumber phone)
+    public async Task<Result<Volunteer>> GetByPhoneNumber(
+        PhoneNumber phone, CancellationToken cancellationToken = default)
     {
         
         var volunteer = await _context.Volunteers
             .Include(x => x.Pets)
-            .FirstOrDefaultAsync(x => x.Phone == phone);
+            .FirstOrDefaultAsync(x => x.Phone == phone, cancellationToken);
 
         if (volunteer == null)
             return Result<Volunteer>.Failure(Errors.General.NotFound());
@@ -108,11 +65,11 @@ public class VolunteerRepository: IVolunteerRepository
         
     }
 
-    public async Task<Result<Volunteer>> GetByEmail(Email email)
+    public async Task<Result<Volunteer>> GetByEmail(Email email, CancellationToken cancellationToken = default)
     {
         var volunteer = await _context.Volunteers
             .Include(x => x.Pets)
-            .FirstOrDefaultAsync(x => x.Email == email);
+            .FirstOrDefaultAsync(x => x.Email == email,cancellationToken);
 
         if (volunteer == null)
             return Result<Volunteer>.Failure(Errors.General.NotFound());
@@ -120,9 +77,9 @@ public class VolunteerRepository: IVolunteerRepository
         return Result<Volunteer>.Success(volunteer);
     }
 
-    public async Task<Result<List<Volunteer>>> Get()
+    public async Task<Result<List<Volunteer>>> Get(CancellationToken cancellationToken = default)
     {
-        var volunteers = await _context.Volunteers.ToListAsync();
+        var volunteers = await _context.Volunteers.ToListAsync(cancellationToken);
 
         return Result<List<Volunteer>>.Success(volunteers);
     }

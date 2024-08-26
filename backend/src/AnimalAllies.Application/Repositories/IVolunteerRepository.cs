@@ -8,18 +8,10 @@ namespace AnimalAllies.Application.Repositories;
 public interface IVolunteerRepository
 {
     Task<Result<VolunteerId>> Create(Volunteer entity, CancellationToken cancellationToken = default);
-    Task Delete(Guid id);
+    Task Delete(Volunteer entity, CancellationToken cancellationToken = default);
     Task<Result<VolunteerId>> Update(Volunteer entity, CancellationToken cancellationToken = default);
-    Task<Result<VolunteerId>> AddRequisites(
-        VolunteerId id,
-        VolunteerRequisites requisites,
-        CancellationToken cancellationToken = default);
-    Task<Result<VolunteerId>> AddSocialNetworks(
-        VolunteerId id,
-        VolunteerSocialNetworks socialNetworks,
-        CancellationToken cancellationToken = default);
-    Task<Result<Volunteer>> GetById(VolunteerId id);
-    Task<Result<Volunteer>> GetByPhoneNumber(PhoneNumber phone);
-    Task<Result<Volunteer>> GetByEmail(Email email);
-    Task<Result<List<Volunteer>>> Get();
+    Task<Result<Volunteer>> GetById(VolunteerId id, CancellationToken cancellationToken = default);
+    Task<Result<Volunteer>> GetByPhoneNumber(PhoneNumber phone, CancellationToken cancellationToken = default);
+    Task<Result<Volunteer>> GetByEmail(Email email, CancellationToken cancellationToken = default);
+    Task<Result<List<Volunteer>>> Get(CancellationToken cancellationToken = default);
 }

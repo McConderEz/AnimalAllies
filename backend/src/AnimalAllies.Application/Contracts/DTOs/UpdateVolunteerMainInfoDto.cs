@@ -1,11 +1,8 @@
-
 using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
-using AnimalAllies.Domain.Models;
 
-namespace AnimalAllies.Application.Features.Volunteer;
+namespace AnimalAllies.Application.Contracts.DTOs;
 
-public record UpdateVolunteerRequest(
-    Guid Id,
+public record UpdateVolunteerMainInfoDto(
     FullNameDto FullName,
     string Email,
     string Description,

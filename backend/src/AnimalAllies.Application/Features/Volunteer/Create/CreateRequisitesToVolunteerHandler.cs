@@ -1,10 +1,11 @@
+using AnimalAllies.Application.Features.Volunteer.Update;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Shared;
 using AnimalAllies.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
-namespace AnimalAllies.Application.Features.Volunteer;
+namespace AnimalAllies.Application.Features.Volunteer.Create;
 
 public class CreateRequisitesToVolunteerHandler
 {
@@ -28,13 +29,17 @@ public class CreateRequisitesToVolunteerHandler
         if (volunteer.IsFailure)
             return Errors.General.NotFound();
 
-        var requisites = request.Requisites
+        var requisites = request.Dto.Requisites
             .Select(x => Requisite.Create(x.Title, x.Description).Value);
 
         var volunteerRequisites = new VolunteerRequisites(requisites);
+
+        volunteer.Value.UpdateRequisites(volunteerRequisites);
+
+        var result = await _repository.Update(volunteer.Value, cancellationToken);
         
         _logger.LogInformation("volunteer with id {volunteerId} updated volunteer requisites",  request.Id);
-        
-        return await _repository.AddRequisites(VolunteerId.Create(request.Id), volunteerRequisites, cancellationToken);
+
+        return result;
     }
 }
