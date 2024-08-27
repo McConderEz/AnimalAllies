@@ -44,8 +44,12 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
     public int PetsNeedsHelp() => _pets.Count(x => x.HelpStatus == HelpStatus.NeedsHelp);
     public int PetsSearchingHome() => _pets.Count(x => x.HelpStatus == HelpStatus.SearchingHome);
     public int PetsFoundHome() => _pets.Count(x => x.HelpStatus == HelpStatus.FoundHome);
-    
-    public void SetIsDelete() => _isDeleted = !_isDeleted;
+
+    public void SetIsDelete()
+    {
+        _isDeleted = !_isDeleted;
+        _pets.ForEach(x => x.SetIsDelete());
+    }
     
     public Result UpdateSocialNetworks(VolunteerSocialNetworks socialNetworks)
     {

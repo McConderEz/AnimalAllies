@@ -1,7 +1,6 @@
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Shared;
 using AnimalAllies.Infrastructure.Common;
-using AnimalAllies.Infrastructure.Interceptors;
 using AnimalAllies.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
