@@ -1,10 +1,13 @@
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Shared;
 
 namespace AnimalAllies.Domain.Models.Species;
 
-public class Species: Entity<SpeciesId>
+public class Species: Entity<SpeciesId>, ISoftDeletable
 {
     private readonly List<Breed.Breed> _breeds = [];
+    private bool _isDeleted = false;
+    
     private Species(){}
     public Species(SpeciesId speciesId,Name name)
         : base(speciesId)
@@ -21,5 +24,7 @@ public class Species: Entity<SpeciesId>
         Name = name;
         return Result.Success();
     }
-    
+
+    public void SetIsDelete() => _isDeleted = !_isDeleted;
+
 }

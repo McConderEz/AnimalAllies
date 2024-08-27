@@ -1,11 +1,12 @@
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Models.Species;
 using AnimalAllies.Domain.Shared;
 
 namespace AnimalAllies.Domain.Models.Volunteer.Pet;
 
-public class Pet : Entity<PetId>
+public class Pet : Entity<PetId>, ISoftDeletable
 {
-
+    private bool _isDeleted = false;
     private Pet(PetId id) : base(id)
     {
     }
@@ -40,35 +41,6 @@ public class Pet : Entity<PetId>
     public PetRequisites Requisites { get; private set; }
     public PetPhotoDetails PetPhotoDetails { get; private set; }
     
+    public void SetIsDelete() => _isDeleted = !_isDeleted;
     
-
-    public Result UpdateAddress(Address address)
-    {
-        Address = address;
-        return Result.Success();
-    }
-
-    public Result UpdatePhoneNumber(PhoneNumber phoneNumber)
-    {
-        PhoneNumber = phoneNumber;
-        return Result.Success();
-    }
-
-    public Result UpdateHelpStatus(HelpStatus helpStatus)
-    {
-        HelpStatus = helpStatus;
-        return Result.Success();
-    }
-
-    public Result UpdateName(Name name)
-    {
-        Name = name;
-        return Result.Success();
-    }
-
-    public Result UpdateAnimalType(AnimalType animalType)
-    {
-        AnimalType = animalType;
-        return Result.Success();
-    }
 }

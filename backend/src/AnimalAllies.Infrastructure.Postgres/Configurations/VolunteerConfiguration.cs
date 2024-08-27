@@ -2,7 +2,6 @@ using System.Data;
 using AnimalAllies.Domain.Constraints;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
-using AnimalAllies.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -101,5 +100,9 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
             .WithOne()
             .HasForeignKey("volunteer_id")
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property<bool>("_isDeleted")
+            .UsePropertyAccessMode(PropertyAccessMode.Field)
+            .HasColumnName("is_deleted");
     }
 }

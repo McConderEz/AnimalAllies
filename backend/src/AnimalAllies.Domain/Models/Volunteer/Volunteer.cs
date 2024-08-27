@@ -1,13 +1,13 @@
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
 
 namespace AnimalAllies.Domain.Models.Volunteer;
 
-public class Volunteer: Entity<VolunteerId>
+public class Volunteer: Entity<VolunteerId>, ISoftDeletable
 {
     private readonly List<Pet.Pet> _pets = [];
-
+    private bool _isDeleted = false;
     private Volunteer(VolunteerId id) : base(id){}
     
     public Volunteer(
@@ -44,6 +44,8 @@ public class Volunteer: Entity<VolunteerId>
     public int PetsNeedsHelp() => _pets.Count(x => x.HelpStatus == HelpStatus.NeedsHelp);
     public int PetsSearchingHome() => _pets.Count(x => x.HelpStatus == HelpStatus.SearchingHome);
     public int PetsFoundHome() => _pets.Count(x => x.HelpStatus == HelpStatus.FoundHome);
+    
+    public void SetIsDelete() => _isDeleted = !_isDeleted;
     
     public Result UpdateSocialNetworks(VolunteerSocialNetworks socialNetworks)
     {

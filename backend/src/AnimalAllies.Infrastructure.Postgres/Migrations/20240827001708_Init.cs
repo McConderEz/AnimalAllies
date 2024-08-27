@@ -16,6 +16,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false),
                     Name_Value = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
@@ -28,6 +29,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false),
                     Description_Value = table.Column<string>(type: "character varying(1500)", maxLength: 1500, nullable: false),
                     email = table.Column<string>(type: "text", nullable: false),
                     first_name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
@@ -49,6 +51,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SpeciesId = table.Column<Guid>(type: "uuid", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false),
                     Name_Value = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
@@ -67,6 +70,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false),
                     volunteer_id = table.Column<Guid>(type: "uuid", nullable: true),
                     city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     state = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),

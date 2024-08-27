@@ -1,9 +1,10 @@
 using AnimalAllies.Domain.Models;
-using ValueObject = AnimalAllies.Domain.Shared.ValueObject;
+using Common_ValueObject = AnimalAllies.Domain.Common.ValueObject;
+using ValueObject = AnimalAllies.Domain.Common.ValueObject;
 
 namespace AnimalAllies.Domain.Shared;
 
-public class Requisite : ValueObject
+public class Requisite : Common_ValueObject
 {
     
     public string Title { get; } 

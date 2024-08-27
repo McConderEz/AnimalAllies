@@ -31,6 +31,10 @@ namespace AnimalAllies.Infrastructure.Migrations
                     b.Property<Guid?>("SpeciesId")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("_isDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
                     b.ComplexProperty<Dictionary<string, object>>("Name", "AnimalAllies.Domain.Models.Species.Breed.Breed.Name#Name", b1 =>
                         {
                             b1.IsRequired();
@@ -53,6 +57,10 @@ namespace AnimalAllies.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("_isDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
                     b.ComplexProperty<Dictionary<string, object>>("Name", "AnimalAllies.Domain.Models.Species.Species.Name#Name", b1 =>
                         {
                             b1.IsRequired();
@@ -72,6 +80,10 @@ namespace AnimalAllies.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("_isDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
 
                     b.Property<Guid?>("volunteer_id")
                         .HasColumnType("uuid");
@@ -212,6 +224,10 @@ namespace AnimalAllies.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("_isDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
 
                     b.ComplexProperty<Dictionary<string, object>>("Description", "AnimalAllies.Domain.Models.Volunteer.Volunteer.Description#VolunteerDescription", b1 =>
                         {
@@ -393,7 +409,7 @@ namespace AnimalAllies.Infrastructure.Migrations
 
             modelBuilder.Entity("AnimalAllies.Domain.Models.Volunteer.Volunteer", b =>
                 {
-                    b.OwnsOne("AnimalAllies.Domain.ValueObjects.VolunteerRequisites", "Requisites", b1 =>
+                    b.OwnsOne("AnimalAllies.Domain.Models.Volunteer.VolunteerRequisites", "Requisites", b1 =>
                         {
                             b1.Property<Guid>("VolunteerId")
                                 .HasColumnType("uuid");
@@ -437,7 +453,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                             b1.Navigation("Requisites");
                         });
 
-                    b.OwnsOne("AnimalAllies.Domain.ValueObjects.VolunteerSocialNetworks", "SocialNetworks", b1 =>
+                    b.OwnsOne("AnimalAllies.Domain.Models.Volunteer.VolunteerSocialNetworks", "SocialNetworks", b1 =>
                         {
                             b1.Property<Guid>("VolunteerId")
                                 .HasColumnType("uuid");
@@ -451,7 +467,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("VolunteerId");
 
-                            b1.OwnsMany("AnimalAllies.Domain.ValueObjects.SocialNetwork", "SocialNetworks", b2 =>
+                            b1.OwnsMany("AnimalAllies.Domain.Models.Volunteer.SocialNetwork", "SocialNetworks", b2 =>
                                 {
                                     b2.Property<Guid>("VolunteerSocialNetworksVolunteerId")
                                         .HasColumnType("uuid");

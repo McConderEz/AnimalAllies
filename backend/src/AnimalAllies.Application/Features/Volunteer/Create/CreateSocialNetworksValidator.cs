@@ -1,5 +1,5 @@
 using AnimalAllies.Application.Validators;
-using AnimalAllies.Domain.ValueObjects;
+using AnimalAllies.Domain.Models.Volunteer;
 using FluentValidation;
 
 namespace AnimalAllies.Application.Features.Volunteer.Create;

@@ -2,7 +2,6 @@ using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.Update;
@@ -51,8 +50,10 @@ public class UpdateVolunteerHandler
             description,
             workExperience);
         
-        _logger.LogInformation("volunteer with title {fullName} and id {volunteerId} updated ", fullName, request.Id);
+        var result = await _repository.Update(volunteer.Value, cancellationToken);
         
-        return await _repository.Update(volunteer.Value, cancellationToken);
+        _logger.LogInformation("volunteer with title {fullName} and id {volunteerId} updated ", fullName, request.Id);
+
+        return result;
     }
 }

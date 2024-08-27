@@ -1,6 +1,4 @@
-using System.Xml;
-
-namespace AnimalAllies.Domain.Models;
+namespace AnimalAllies.Domain.Common;
 
 public abstract class Entity<TId>
     where TId:notnull

@@ -1,8 +1,8 @@
 using AnimalAllies.Application.Features.Volunteer.Update;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.Create;
@@ -10,11 +10,11 @@ namespace AnimalAllies.Application.Features.Volunteer.Create;
 public class CreateRequisitesToVolunteerHandler
 {
     private readonly IVolunteerRepository _repository;
-    private readonly ILogger<UpdateVolunteerHandler> _logger;
+    private readonly ILogger<CreateRequisitesToVolunteerHandler> _logger;
 
     public CreateRequisitesToVolunteerHandler(
         IVolunteerRepository repository,
-        ILogger<UpdateVolunteerHandler> logger)
+        ILogger<CreateRequisitesToVolunteerHandler> logger)
     {
         _repository = repository;
         _logger = logger;

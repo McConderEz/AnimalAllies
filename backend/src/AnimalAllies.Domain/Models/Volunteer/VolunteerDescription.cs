@@ -1,7 +1,6 @@
-using AnimalAllies.Domain.Models;
-using AnimalAllies.Domain.Shared;
+using AnimalAllies.Domain.Common;
 
-namespace AnimalAllies.Domain.ValueObjects;
+namespace AnimalAllies.Domain.Models.Volunteer;
 
 public class VolunteerDescription : ValueObject
 {

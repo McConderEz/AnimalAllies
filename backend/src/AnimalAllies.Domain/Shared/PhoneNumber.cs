@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Models;
-using AnimalAllies.Domain.ValueObjects;
 
 namespace AnimalAllies.Domain.Shared;
 

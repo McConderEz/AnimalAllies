@@ -1,7 +1,7 @@
 using AnimalAllies.Application.Features.Volunteer.Update;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
-using AnimalAllies.Domain.ValueObjects;
+using AnimalAllies.Domain.Models.Volunteer;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.Create;
@@ -9,11 +9,11 @@ namespace AnimalAllies.Application.Features.Volunteer.Create;
 public class CreateSocialNetworksToVolunteerHandler
 {
     private readonly IVolunteerRepository _repository;
-    private readonly ILogger<UpdateVolunteerHandler> _logger;
+    private readonly ILogger<CreateSocialNetworksToVolunteerHandler> _logger;
 
     public CreateSocialNetworksToVolunteerHandler(
         IVolunteerRepository repository,
-        ILogger<UpdateVolunteerHandler> logger)
+        ILogger<CreateSocialNetworksToVolunteerHandler> logger)
     {
         _repository = repository;
         _logger = logger;

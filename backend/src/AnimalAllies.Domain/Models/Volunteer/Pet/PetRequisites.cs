@@ -1,3 +1,4 @@
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Shared;
 
 namespace AnimalAllies.Domain.Models.Volunteer.Pet;
