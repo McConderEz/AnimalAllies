@@ -53,6 +53,6 @@ public class UpdateVolunteerHandler
         
         _logger.LogInformation("volunteer with title {fullName} and id {volunteerId} updated ", fullName, request.Id);
         
-        return await _repository.Update(volunteer.Value, cancellationToken);
+        return await _repository.Save(volunteer.Value, cancellationToken);
     }
 }

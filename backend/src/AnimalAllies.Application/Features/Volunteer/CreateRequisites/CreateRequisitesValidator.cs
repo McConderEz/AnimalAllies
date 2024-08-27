@@ -2,7 +2,7 @@ using AnimalAllies.Application.Validators;
 using AnimalAllies.Domain.Shared;
 using FluentValidation;
 
-namespace AnimalAllies.Application.Features.Volunteer.Create;
+namespace AnimalAllies.Application.Features.Volunteer.CreateRequisites;
 
 public class CreateRequisitesValidator: AbstractValidator<CreateRequisitesRequest>
 {

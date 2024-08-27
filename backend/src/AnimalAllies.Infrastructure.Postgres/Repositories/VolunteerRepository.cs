@@ -30,7 +30,7 @@ public class VolunteerRepository: IVolunteerRepository
         throw new NotImplementedException();
     }
 
-    public async Task<Result<VolunteerId>> Update(Volunteer entity, CancellationToken cancellationToken = default)
+    public async Task<Result<VolunteerId>> Save(Volunteer entity, CancellationToken cancellationToken = default)
     {
         _context.Volunteers.Attach(entity);
         await _context.SaveChangesAsync(cancellationToken);

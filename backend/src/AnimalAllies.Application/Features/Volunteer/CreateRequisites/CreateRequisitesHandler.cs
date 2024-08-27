@@ -5,14 +5,14 @@ using AnimalAllies.Domain.Shared;
 using AnimalAllies.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
-namespace AnimalAllies.Application.Features.Volunteer.Create;
+namespace AnimalAllies.Application.Features.Volunteer.CreateRequisites;
 
-public class CreateRequisitesToVolunteerHandler
+public class CreateRequisitesHandler
 {
     private readonly IVolunteerRepository _repository;
     private readonly ILogger<UpdateVolunteerHandler> _logger;
 
-    public CreateRequisitesToVolunteerHandler(
+    public CreateRequisitesHandler(
         IVolunteerRepository repository,
         ILogger<UpdateVolunteerHandler> logger)
     {
@@ -36,7 +36,7 @@ public class CreateRequisitesToVolunteerHandler
 
         volunteer.Value.UpdateRequisites(volunteerRequisites);
 
-        var result = await _repository.Update(volunteer.Value, cancellationToken);
+        var result = await _repository.Save(volunteer.Value, cancellationToken);
         
         _logger.LogInformation("volunteer with id {volunteerId} updated volunteer requisites",  request.Id);
 

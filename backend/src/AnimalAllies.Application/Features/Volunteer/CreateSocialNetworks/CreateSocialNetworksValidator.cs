@@ -2,7 +2,7 @@ using AnimalAllies.Application.Validators;
 using AnimalAllies.Domain.ValueObjects;
 using FluentValidation;
 
-namespace AnimalAllies.Application.Features.Volunteer.Create;
+namespace AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
 
 public class CreateSocialNetworksValidator: AbstractValidator<CreateSocialNetworksRequest>
 {

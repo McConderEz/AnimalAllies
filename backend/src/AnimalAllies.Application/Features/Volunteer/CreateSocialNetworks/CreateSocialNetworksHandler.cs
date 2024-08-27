@@ -4,14 +4,14 @@ using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
-namespace AnimalAllies.Application.Features.Volunteer.Create;
+namespace AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
 
-public class CreateSocialNetworksToVolunteerHandler
+public class CreateSocialNetworksHandler
 {
     private readonly IVolunteerRepository _repository;
     private readonly ILogger<UpdateVolunteerHandler> _logger;
 
-    public CreateSocialNetworksToVolunteerHandler(
+    public CreateSocialNetworksHandler(
         IVolunteerRepository repository,
         ILogger<UpdateVolunteerHandler> logger)
     {
@@ -35,7 +35,7 @@ public class CreateSocialNetworksToVolunteerHandler
 
         volunteer.Value.UpdateSocialNetworks(volunteerSocialNetworks);
         
-        var result = await _repository.Update(volunteer.Value, cancellationToken);
+        var result = await _repository.Save(volunteer.Value, cancellationToken);
         
         _logger.LogInformation("volunteer with id {volunteerId} updated social networks",  request.Id);
 
