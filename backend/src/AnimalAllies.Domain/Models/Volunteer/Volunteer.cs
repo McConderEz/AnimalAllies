@@ -1,11 +1,14 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using AnimalAllies.Domain.Models.Common;
 using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
 
 namespace AnimalAllies.Domain.Models.Volunteer;
 
-public class Volunteer: Entity<VolunteerId>
+public class Volunteer: Entity<VolunteerId>, ISoftDeletable
 {
+    private bool _isDeleted = false;
     private readonly List<Pet.Pet> _pets = [];
 
     private Volunteer(VolunteerId id) : base(id){}
@@ -71,4 +74,6 @@ public class Volunteer: Entity<VolunteerId>
 
         return Result.Success();
     }
+
+    public void SetIsDelete() => _isDeleted = !_isDeleted;
 }

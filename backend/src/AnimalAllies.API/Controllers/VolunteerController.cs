@@ -5,6 +5,8 @@ using AnimalAllies.Application.Features.Volunteer;
 using AnimalAllies.Application.Features.Volunteer.Create;
 using AnimalAllies.Application.Features.Volunteer.CreateRequisites;
 using AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
+using AnimalAllies.Application.Features.Volunteer.Delete;
+using AnimalAllies.Application.Features.Volunteer.DeleteVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Update;
 using AnimalAllies.Domain.Models;
 using FluentValidation;
@@ -96,6 +98,32 @@ public class VolunteerController: ApplicationController
 
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
+        if (validationResult.IsValid == false)
+        {
+            return validationResult.ToValidationErrorResponse();
+        }
+        
+        var response = await handler.Handle(request, cancellationToken);
+        
+        if (response.IsFailure)
+        {
+            return response.Error.ToErrorResponse();
+        }
+        
+        return Ok(response.Value);
+    }
+    
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteVolunteer(
+        [FromRoute] Guid id,
+        [FromServices] DeleteVolunteerHandler handler,
+        [FromServices] IValidator<DeleteVolunteerRequest> validator,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new DeleteVolunteerRequest(id);
+
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        
         if (validationResult.IsValid == false)
         {
             return validationResult.ToValidationErrorResponse();

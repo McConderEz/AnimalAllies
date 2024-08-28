@@ -1,5 +1,6 @@
 using AnimalAllies.API.Response;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Results;

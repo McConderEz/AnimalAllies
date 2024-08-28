@@ -1,4 +1,5 @@
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Shared;
 using FluentValidation;
 
 namespace AnimalAllies.Application.Validators;

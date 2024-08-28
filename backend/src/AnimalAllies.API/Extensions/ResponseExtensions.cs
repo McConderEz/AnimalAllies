@@ -1,5 +1,6 @@
 using AnimalAllies.API.Response;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Shared;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 

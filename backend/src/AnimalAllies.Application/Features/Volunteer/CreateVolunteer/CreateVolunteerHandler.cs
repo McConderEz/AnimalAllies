@@ -2,7 +2,6 @@ using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.Create;
@@ -42,8 +41,8 @@ public class CreateVolunteerHandler
             .Select(x => Requisite.Create(x.Title, x.Description).Value);
 
         
-        var volunteerSocialNetworks = new VolunteerSocialNetworks(socialNetworks);
-        var volunteerRequisites = new VolunteerRequisites(requisites);
+        var volunteerSocialNetworks = new VolunteerSocialNetworks(socialNetworks.ToList());
+        var volunteerRequisites = new VolunteerRequisites(requisites.ToList());
         
         var volunteerId = VolunteerId.NewGuid();
         

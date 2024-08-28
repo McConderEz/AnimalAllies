@@ -25,6 +25,10 @@ public class SpeciesConfiguration: IEntityTypeConfiguration<Species>
                 .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
         });
         
+        builder.Property<bool>("_isDeleted")
+            .UsePropertyAccessMode(PropertyAccessMode.Field)
+            .HasColumnName("is_deleted");
+        
         builder.HasMany(x => x.Breeds)
             .WithOne()
             .OnDelete(DeleteBehavior.Cascade);

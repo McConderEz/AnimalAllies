@@ -2,7 +2,6 @@ using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 

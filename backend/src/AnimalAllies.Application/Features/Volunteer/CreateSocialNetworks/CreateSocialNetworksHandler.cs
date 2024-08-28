@@ -1,7 +1,8 @@
 using AnimalAllies.Application.Features.Volunteer.Update;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
-using AnimalAllies.Domain.ValueObjects;
+using AnimalAllies.Domain.Models.Volunteer;
+using AnimalAllies.Domain.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
@@ -31,7 +32,7 @@ public class CreateSocialNetworksHandler
         var socialNetworks = request.Dto.SocialNetworks
             .Select(x => SocialNetwork.Create(x.Title, x.Url).Value);
 
-        var volunteerSocialNetworks = new VolunteerSocialNetworks(socialNetworks);
+        var volunteerSocialNetworks = new VolunteerSocialNetworks(socialNetworks.ToList());
 
         volunteer.Value.UpdateSocialNetworks(volunteerSocialNetworks);
         

@@ -1,7 +1,6 @@
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
 
 namespace AnimalAllies.Application.Repositories;
 

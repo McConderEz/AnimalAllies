@@ -1,5 +1,5 @@
+using AnimalAllies.Domain.Models.Common;
 using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
 
 namespace AnimalAllies.Domain.Models.Volunteer;
 

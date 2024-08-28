@@ -1,9 +1,8 @@
 using System.Text.RegularExpressions;
-using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Models.Common;
 using AnimalAllies.Domain.Shared;
 
-
-namespace AnimalAllies.Domain.ValueObjects;
+namespace AnimalAllies.Domain.Models.Volunteer;
 
 public class FullName : ValueObject
 {

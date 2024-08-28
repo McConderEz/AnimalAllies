@@ -1,8 +1,8 @@
-
-using AnimalAllies.Domain.Models;
+using System.Text.Json.Serialization;
+using AnimalAllies.Domain.Models.Common;
 using AnimalAllies.Domain.Shared;
 
-namespace AnimalAllies.Domain.ValueObjects;
+namespace AnimalAllies.Domain.Models.Volunteer;
 
 public class SocialNetwork: ValueObject
 {
@@ -11,6 +11,7 @@ public class SocialNetwork: ValueObject
 
     private SocialNetwork(){}
     
+    [JsonConstructor]
     private SocialNetwork(string title, string url)
     {
         Title = title;
