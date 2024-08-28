@@ -1,7 +1,7 @@
 using AnimalAllies.Application.Contracts.DTOs;
 using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 
-namespace AnimalAllies.Application.Features.Volunteer;
+namespace AnimalAllies.Application.Features.Volunteer.Create;
 
 public record CreateVolunteerRequest(
     FullNameDto FullName,

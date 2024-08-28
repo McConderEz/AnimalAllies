@@ -25,21 +25,24 @@ public class VolunteerRepository: IVolunteerRepository
         
     }
 
-    public Task Delete(Guid id)
+    public Task Delete(Volunteer entity, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task Update(Volunteer entity)
+    public async Task<Result<VolunteerId>> Save(Volunteer entity, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
-    }
+        _context.Volunteers.Attach(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
-    public async Task<Result<Volunteer>> GetById(VolunteerId id)
+        return entity.Id;
+    }
+    
+    public async Task<Result<Volunteer>> GetById(VolunteerId id, CancellationToken cancellationToken = default)
     {
         var volunteer = await _context.Volunteers
             .Include(x => x.Pets)
-            .FirstOrDefaultAsync(x => x.Id == id);
+            .FirstOrDefaultAsync(x => x.Id == id,cancellationToken);
 
         if (volunteer == null)
             return Result<Volunteer>.Failure(Errors.General.NotFound(id.Id));
@@ -47,12 +50,13 @@ public class VolunteerRepository: IVolunteerRepository
         return Result<Volunteer>.Success(volunteer);
     }
 
-    public async Task<Result<Volunteer>> GetByPhoneNumber(PhoneNumber phone)
+    public async Task<Result<Volunteer>> GetByPhoneNumber(
+        PhoneNumber phone, CancellationToken cancellationToken = default)
     {
         
         var volunteer = await _context.Volunteers
             .Include(x => x.Pets)
-            .FirstOrDefaultAsync(x => x.Phone == phone);
+            .FirstOrDefaultAsync(x => x.Phone == phone, cancellationToken);
 
         if (volunteer == null)
             return Result<Volunteer>.Failure(Errors.General.NotFound());
@@ -61,11 +65,11 @@ public class VolunteerRepository: IVolunteerRepository
         
     }
 
-    public async Task<Result<Volunteer>> GetByEmail(Email email)
+    public async Task<Result<Volunteer>> GetByEmail(Email email, CancellationToken cancellationToken = default)
     {
         var volunteer = await _context.Volunteers
             .Include(x => x.Pets)
-            .FirstOrDefaultAsync(x => x.Email == email);
+            .FirstOrDefaultAsync(x => x.Email == email,cancellationToken);
 
         if (volunteer == null)
             return Result<Volunteer>.Failure(Errors.General.NotFound());
@@ -73,9 +77,9 @@ public class VolunteerRepository: IVolunteerRepository
         return Result<Volunteer>.Success(volunteer);
     }
 
-    public async Task<Result<List<Volunteer>>> Get()
+    public async Task<Result<List<Volunteer>>> Get(CancellationToken cancellationToken = default)
     {
-        var volunteers = await _context.Volunteers.ToListAsync();
+        var volunteers = await _context.Volunteers.ToListAsync(cancellationToken);
 
         return Result<List<Volunteer>>.Success(volunteers);
     }

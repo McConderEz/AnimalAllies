@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
@@ -6,7 +5,7 @@ using AnimalAllies.Domain.Shared;
 using AnimalAllies.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
-namespace AnimalAllies.Application.Features.Volunteer;
+namespace AnimalAllies.Application.Features.Volunteer.Create;
 
 public class CreateVolunteerHandler
 {
@@ -26,8 +25,8 @@ public class CreateVolunteerHandler
         var phoneNumber = PhoneNumber.Create(request.PhoneNumber).Value;
         var email = Email.Create(request.Email).Value;
         
-        var volunteerByPhoneNumber = await _repository.GetByPhoneNumber(phoneNumber);
-        var volunteerByEmail = await _repository.GetByEmail(email);
+        var volunteerByPhoneNumber = await _repository.GetByPhoneNumber(phoneNumber,cancellationToken);
+        var volunteerByEmail = await _repository.GetByEmail(email,cancellationToken);
 
         if (!volunteerByPhoneNumber.IsFailure || !volunteerByEmail.IsFailure)
             return Errors.Volunteer.AlreadyExist();
@@ -58,8 +57,10 @@ public class CreateVolunteerHandler
             volunteerSocialNetworks,
             volunteerRequisites);
         
-        _logger.LogInformation("Created volunteer {fullName} with id {volunteerId}", fullName, volunteerId.Id);
+        var result = await _repository.Create(volunteerEntity, cancellationToken);
         
-        return await _repository.Create(volunteerEntity, cancellationToken);
+        _logger.LogInformation("Created volunteer {fullName} with id {volunteerId}", fullName, volunteerId.Id);
+
+        return result;
     }
 }
