@@ -2,6 +2,7 @@ using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Species;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Models.Volunteer.Pet;
+using AnimalAllies.Infrastructure.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,8 @@ public class AnimalAlliesDbContext: DbContext
             .UseNpgsql(_configuration.GetConnectionString("DefaultConnection"))
             .UseLoggerFactory(CreateLoggerFactory)
             .EnableSensitiveDataLogging();
+
+        optionsBuilder.AddInterceptors(new SoftDeleteInterceptor());
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

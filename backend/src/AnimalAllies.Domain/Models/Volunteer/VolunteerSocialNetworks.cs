@@ -1,17 +1,20 @@
-using AnimalAllies.Domain.Shared;
+using System.Text.Json.Serialization;
+using AnimalAllies.Domain.Models.Common;
 
-namespace AnimalAllies.Domain.ValueObjects;
+namespace AnimalAllies.Domain.Models.Volunteer;
 
 public class VolunteerSocialNetworks : ValueObject
 {
+    [JsonPropertyName("SocialNetworks")]
     public IReadOnlyList<SocialNetwork> SocialNetworks { get; }
 
     
     private VolunteerSocialNetworks(){}
 
-    public VolunteerSocialNetworks(IEnumerable<SocialNetwork> socialNetworks)
+    [JsonConstructor]
+    public VolunteerSocialNetworks(IReadOnlyList<SocialNetwork> socialNetworks)
     {
-        SocialNetworks = socialNetworks.ToList();
+        SocialNetworks = socialNetworks;
     }
     
     protected override IEnumerable<object> GetEqualityComponents()

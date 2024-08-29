@@ -1,4 +1,4 @@
-namespace AnimalAllies.Domain.Shared;
+namespace AnimalAllies.Domain.Models.Common;
 
 public interface IDateTimeProvider
 {

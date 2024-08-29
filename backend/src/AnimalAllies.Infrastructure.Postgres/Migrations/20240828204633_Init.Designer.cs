@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AnimalAllies.Infrastructure.Migrations
 {
     [DbContext(typeof(AnimalAlliesDbContext))]
-    [Migration("20240821204755_Init")]
+    [Migration("20240828204633_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -33,6 +33,10 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                     b.Property<Guid?>("SpeciesId")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("_isDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
 
                     b.ComplexProperty<Dictionary<string, object>>("Name", "AnimalAllies.Domain.Models.Species.Breed.Breed.Name#Name", b1 =>
                         {
@@ -56,6 +60,10 @@ namespace AnimalAllies.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("_isDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
                     b.ComplexProperty<Dictionary<string, object>>("Name", "AnimalAllies.Domain.Models.Species.Species.Name#Name", b1 =>
                         {
                             b1.IsRequired();
@@ -75,6 +83,10 @@ namespace AnimalAllies.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("_isDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
 
                     b.Property<Guid?>("volunteer_id")
                         .HasColumnType("uuid");
@@ -215,6 +227,20 @@ namespace AnimalAllies.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Requisites")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("requisites");
+
+                    b.Property<string>("SocialNetworks")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("social_networks");
+
+                    b.Property<bool>("_isDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
 
                     b.ComplexProperty<Dictionary<string, object>>("Description", "AnimalAllies.Domain.Models.Volunteer.Volunteer.Description#VolunteerDescription", b1 =>
                         {
@@ -380,6 +406,8 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                                     b2.ToTable("pets");
 
+                                    b2.HasAnnotation("Relational:JsonPropertyName", "requisites");
+
                                     b2.WithOwner()
                                         .HasForeignKey("PetRequisitesPetId");
                                 });
@@ -391,103 +419,6 @@ namespace AnimalAllies.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Requisites")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("AnimalAllies.Domain.Models.Volunteer.Volunteer", b =>
-                {
-                    b.OwnsOne("AnimalAllies.Domain.ValueObjects.VolunteerRequisites", "Requisites", b1 =>
-                        {
-                            b1.Property<Guid>("VolunteerId")
-                                .HasColumnType("uuid");
-
-                            b1.HasKey("VolunteerId");
-
-                            b1.ToTable("volunteers");
-
-                            b1.ToJson("requisites");
-
-                            b1.WithOwner()
-                                .HasForeignKey("VolunteerId");
-
-                            b1.OwnsMany("AnimalAllies.Domain.Shared.Requisite", "Requisites", b2 =>
-                                {
-                                    b2.Property<Guid>("VolunteerRequisitesVolunteerId")
-                                        .HasColumnType("uuid");
-
-                                    b2.Property<int>("Id")
-                                        .ValueGeneratedOnAdd()
-                                        .HasColumnType("integer");
-
-                                    b2.Property<string>("Description")
-                                        .IsRequired()
-                                        .HasMaxLength(1500)
-                                        .HasColumnType("character varying(1500)");
-
-                                    b2.Property<string>("Title")
-                                        .IsRequired()
-                                        .HasMaxLength(100)
-                                        .HasColumnType("character varying(100)");
-
-                                    b2.HasKey("VolunteerRequisitesVolunteerId", "Id");
-
-                                    b2.ToTable("volunteers");
-
-                                    b2.WithOwner()
-                                        .HasForeignKey("VolunteerRequisitesVolunteerId");
-                                });
-
-                            b1.Navigation("Requisites");
-                        });
-
-                    b.OwnsOne("AnimalAllies.Domain.ValueObjects.VolunteerSocialNetworks", "SocialNetworks", b1 =>
-                        {
-                            b1.Property<Guid>("VolunteerId")
-                                .HasColumnType("uuid");
-
-                            b1.HasKey("VolunteerId");
-
-                            b1.ToTable("volunteers");
-
-                            b1.ToJson("social_networks");
-
-                            b1.WithOwner()
-                                .HasForeignKey("VolunteerId");
-
-                            b1.OwnsMany("AnimalAllies.Domain.ValueObjects.SocialNetwork", "SocialNetworks", b2 =>
-                                {
-                                    b2.Property<Guid>("VolunteerSocialNetworksVolunteerId")
-                                        .HasColumnType("uuid");
-
-                                    b2.Property<int>("Id")
-                                        .ValueGeneratedOnAdd()
-                                        .HasColumnType("integer");
-
-                                    b2.Property<string>("Title")
-                                        .IsRequired()
-                                        .HasMaxLength(100)
-                                        .HasColumnType("character varying(100)");
-
-                                    b2.Property<string>("Url")
-                                        .IsRequired()
-                                        .HasMaxLength(2048)
-                                        .HasColumnType("character varying(2048)");
-
-                                    b2.HasKey("VolunteerSocialNetworksVolunteerId", "Id");
-
-                                    b2.ToTable("volunteers");
-
-                                    b2.WithOwner()
-                                        .HasForeignKey("VolunteerSocialNetworksVolunteerId");
-                                });
-
-                            b1.Navigation("SocialNetworks");
-                        });
-
-                    b.Navigation("Requisites")
-                        .IsRequired();
-
-                    b.Navigation("SocialNetworks")
                         .IsRequired();
                 });
 

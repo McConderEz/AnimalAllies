@@ -1,11 +1,13 @@
+using AnimalAllies.Domain.Models.Common;
 using AnimalAllies.Domain.Models.Species;
 using AnimalAllies.Domain.Shared;
 
 namespace AnimalAllies.Domain.Models.Volunteer.Pet;
 
-public class Pet : Entity<PetId>
+public class Pet : Entity<PetId>, ISoftDeletable
 {
-
+    private bool _isDeleted = false;
+    
     private Pet(PetId id) : base(id)
     {
     }
@@ -71,4 +73,6 @@ public class Pet : Entity<PetId>
         AnimalType = animalType;
         return Result.Success();
     }
+
+    public void Delete() => _isDeleted = !_isDeleted;
 }

@@ -2,7 +2,7 @@ using System.Data;
 using AnimalAllies.Domain.Constraints;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
-using AnimalAllies.Domain.ValueObjects;
+using AnimalAllies.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -65,7 +65,17 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
                 .IsRequired(false);
         });
 
-        builder.OwnsOne(v => v.SocialNetworks, sn =>
+        builder.Property(v => v.Requisites)
+            .HasValueJsonConverter()
+            .HasColumnType("jsonb")
+            .HasColumnName("requisites");
+        
+        builder.Property(v => v.SocialNetworks)
+            .HasValueJsonConverter()
+            .HasColumnType("jsonb")
+            .HasColumnName("social_networks");
+        
+       /* builder.OwnsOne(v => v.SocialNetworks, sn =>
         {
             sn.ToJson("social_networks");
 
@@ -79,9 +89,9 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
                     .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
             });
             
-        });
+        });*/
         
-        builder.OwnsOne(v => v.Requisites, r =>
+        /*builder.OwnsOne(v => v.Requisites, r =>
         {
             r.ToJson("requisites");
 
@@ -95,7 +105,11 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
                     .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
             });
             
-        });
+        });*/
+        
+        builder.Property<bool>("_isDeleted")
+            .UsePropertyAccessMode(PropertyAccessMode.Field)
+            .HasColumnName("is_deleted");
         
         builder.HasMany(x => x.Pets)
             .WithOne()

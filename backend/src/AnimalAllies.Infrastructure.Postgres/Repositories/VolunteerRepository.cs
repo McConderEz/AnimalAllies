@@ -2,7 +2,6 @@ using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -25,9 +24,12 @@ public class VolunteerRepository: IVolunteerRepository
         
     }
 
-    public Task Delete(Volunteer entity, CancellationToken cancellationToken = default)
+    public async Task<Result<VolunteerId>> Delete(Volunteer entity, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        _context.Volunteers.Remove(entity);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return entity.Id;
     }
 
     public async Task<Result<VolunteerId>> Save(Volunteer entity, CancellationToken cancellationToken = default)

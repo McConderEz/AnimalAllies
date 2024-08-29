@@ -1,7 +1,4 @@
-using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
-
-namespace AnimalAllies.Domain.Models;
+namespace AnimalAllies.Domain.Models.Common;
 
 public class BaseId<TId>: ValueObject where TId: notnull
 {

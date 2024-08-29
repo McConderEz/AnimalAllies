@@ -1,4 +1,4 @@
-namespace AnimalAllies.Domain.Models;
+namespace AnimalAllies.Domain.Shared;
 
 public class Result
 {

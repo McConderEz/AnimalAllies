@@ -1,6 +1,4 @@
-using System.Runtime.InteropServices.JavaScript;
-
-namespace AnimalAllies.Domain.Models;
+namespace AnimalAllies.Domain.Shared;
 
 public class Error
 {

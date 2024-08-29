@@ -1,8 +1,8 @@
 using AnimalAllies.Application.Features.Volunteer.Update;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
+using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
-using AnimalAllies.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.CreateRequisites;
@@ -32,7 +32,7 @@ public class CreateRequisitesHandler
         var requisites = request.Dto.Requisites
             .Select(x => Requisite.Create(x.Title, x.Description).Value);
 
-        var volunteerRequisites = new VolunteerRequisites(requisites);
+        var volunteerRequisites = new VolunteerRequisites(requisites.ToList());
 
         volunteer.Value.UpdateRequisites(volunteerRequisites);
 
