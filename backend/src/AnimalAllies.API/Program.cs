@@ -31,7 +31,7 @@ builder.Services.AddHttpLogging(o =>
 });
 
 builder.Services.AddSerilog();
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
 builder.Services.AddFluentValidationAutoValidation(configuration =>
