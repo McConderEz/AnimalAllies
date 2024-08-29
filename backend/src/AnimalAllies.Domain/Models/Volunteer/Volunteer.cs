@@ -75,5 +75,5 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         return Result.Success();
     }
 
-    public void SetIsDelete() => _isDeleted = !_isDeleted;
+    public void Delete() => _isDeleted = !_isDeleted;
 }

@@ -14,7 +14,7 @@ public static class DependencyInjection
         services.AddTransient<IDateTimeProvider, DateTimeProvider>();
         services.AddScoped<AnimalAlliesDbContext>();
         services.AddScoped<IVolunteerRepository, VolunteerRepository>();
-
+        
         return services;
     }
 }
