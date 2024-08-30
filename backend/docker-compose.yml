@@ -2,6 +2,7 @@
   postgres:
     container_name: postgres
     image: postgres:latest
+    restart: always
     environment:
       POSTGRES_DB: "animalAllies"
       POSTGRES_USER: "postgres"
@@ -20,6 +21,18 @@
     ports:
       - 5341:5341
       - 8081:80
+  minio:
+    container_name: minio
+    image: minio/minio
+    ports: 
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - minio-data:/data
+    command: server --console-address ":9001" /data
+    restart: always
+      
 
 volumes:
   postgres-data:
+  minio-data:
