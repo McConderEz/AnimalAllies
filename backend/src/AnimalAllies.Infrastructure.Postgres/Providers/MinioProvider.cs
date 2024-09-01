@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.JavaScript;
 using AnimalAllies.Application.FileProvider;
 using AnimalAllies.Application.Providers;
 using AnimalAllies.Domain.Shared;
@@ -25,12 +26,20 @@ public class MinioProvider: IFileProvider
     {
         try
         {
-            await IsBucketExist(cancellationToken);
+            var isBucketExist = await IsBucketExist(fileData.BucketName,cancellationToken);
+
+            if (isBucketExist.IsFailure)
+            {
+                var makeBucketArgs = new MakeBucketArgs()
+                    .WithBucket(fileData.BucketName);
+
+                await _minioClient.MakeBucketAsync(makeBucketArgs, cancellationToken);
+            }
 
             var path = Guid.NewGuid();
 
             var putObjectArgs = new PutObjectArgs()
-                .WithBucket("photos")
+                .WithBucket(fileData.BucketName)
                 .WithStreamData(fileData.Stream)
                 .WithObjectSize(fileData.Stream.Length)
                 .WithObject(path.ToString());
@@ -49,10 +58,18 @@ public class MinioProvider: IFileProvider
     {
         try
         {
-            await IsBucketExist(cancellationToken);
+            var isBucketExist = await IsBucketExist(fileMetadata.BucketName,cancellationToken);
 
+            if (isBucketExist.IsFailure)
+            {
+                var makeBucketArgs = new MakeBucketArgs()
+                    .WithBucket(fileMetadata.BucketName);
+
+                await _minioClient.MakeBucketAsync(makeBucketArgs, cancellationToken);
+            }
+            
             var objectExistArgs = new PresignedGetObjectArgs()
-                .WithBucket("photos")
+                .WithBucket(fileMetadata.BucketName)
                 .WithObject(fileMetadata.ObjectName)
                 .WithExpiry(60 * 60 * 24);
 
@@ -64,7 +81,7 @@ public class MinioProvider: IFileProvider
             }
 
             var removeObjectArgs = new RemoveObjectArgs()
-                .WithBucket("photos")
+                .WithBucket(fileMetadata.BucketName)
                 .WithObject(fileMetadata.ObjectName);
             
             await _minioClient.RemoveObjectAsync(removeObjectArgs, cancellationToken);
@@ -82,21 +99,23 @@ public class MinioProvider: IFileProvider
     {
         try
         {
-            await IsBucketExist(cancellationToken);
+            var isBucketExist = await IsBucketExist(fileMetadata.BucketName,cancellationToken);
 
-            var objectExistArgs = new PresignedGetObjectArgs()
-                .WithBucket("photos")
-                .WithObject(fileMetadata.ObjectName)
-                .WithExpiry(60 * 60 * 24);
+            if (isBucketExist.IsFailure)
+                return Error.NotFound("bucket.not.found", "bucket doesn`t exist");
 
-            var objectUrl = await _minioClient.PresignedGetObjectAsync(objectExistArgs);
+            var objectExistArgs = new StatObjectArgs()
+                .WithBucket(fileMetadata.BucketName)
+                .WithObject(fileMetadata.ObjectName);
+
+            var objectStat = await _minioClient.StatObjectAsync(objectExistArgs, cancellationToken);
             
-            if (string.IsNullOrWhiteSpace(objectUrl))
+            if (objectStat == null)
             {
                 return Error.NotFound("object.not.found", "File doesn`t exist in minio");
             }
             
-            return objectUrl;
+            return objectStat.ObjectName;
         }
         catch (Exception e)
         {
@@ -105,19 +124,18 @@ public class MinioProvider: IFileProvider
         }
     }
 
-    private async Task IsBucketExist(CancellationToken cancellationToken)
+    private async Task<Result> IsBucketExist(string bucketName,CancellationToken cancellationToken)
     {
         var bucketExistArgs = new BucketExistsArgs()
-            .WithBucket("photos");
+            .WithBucket(bucketName);
 
         var bucketExist = await _minioClient.BucketExistsAsync(bucketExistArgs, cancellationToken);
 
         if (bucketExist == false)
         {
-            var makeBucketArgs = new MakeBucketArgs()
-                .WithBucket("photos");
-
-            await _minioClient.MakeBucketAsync(makeBucketArgs, cancellationToken);
+            return Error.NotFound("bucket.not.found", "Bucket doesn`t exist");
         }
+
+        return Result.Success();
     }
 }
