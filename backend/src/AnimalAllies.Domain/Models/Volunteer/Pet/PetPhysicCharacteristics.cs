@@ -22,7 +22,12 @@ public class PetPhysicCharacteristics : ValueObject
         bool isCastrated,
         bool isVaccinated)
     {
-        
+        Color = color;
+        HealthInformation = healthInformation;
+        Weight = weight;
+        Height = height;
+        IsCastrated = isCastrated;
+        IsVaccinated = isVaccinated;
     }
 
     public static Result<PetPhysicCharacteristics> Create(
@@ -44,12 +49,12 @@ public class PetPhysicCharacteristics : ValueObject
             return Errors.General.ValueIsRequired(healthInformation);
         }
         
-        if (weight > Constraints.Constraints.MIN_VALUE)
+        if (weight < Constraints.Constraints.MIN_VALUE)
         {
             return Errors.General.ValueIsInvalid(nameof(weight));
         }
         
-        if (height > Constraints.Constraints.MIN_VALUE)
+        if (height < Constraints.Constraints.MIN_VALUE)
         {
             return Errors.General.ValueIsRequired(nameof(height));
         }

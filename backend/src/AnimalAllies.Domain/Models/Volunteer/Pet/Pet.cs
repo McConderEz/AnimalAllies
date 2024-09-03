@@ -12,7 +12,7 @@ public class Pet : Entity<PetId>, ISoftDeletable
     {
     }
 
-    private Pet(
+    public Pet(
         PetId petId,
         Name name,
         PetPhysicCharacteristics petPhysicCharacteristics,
@@ -20,7 +20,9 @@ public class Pet : Entity<PetId>, ISoftDeletable
         Address address,
         PhoneNumber phoneNumber,
         HelpStatus helpStatus,
-        AnimalType animalType)
+        AnimalType animalType,
+        PetRequisites requisites,
+        PetPhotoDetails petPhotoDetails)
         : base(petId)
     {
         Name = name;
@@ -30,6 +32,8 @@ public class Pet : Entity<PetId>, ISoftDeletable
         PhoneNumber= phoneNumber;
         HelpStatus = helpStatus;
         AnimalType = animalType;
+        Requisites = requisites;
+        PetPhotoDetails = petPhotoDetails;
     }
 
     public Name Name { get; private set; }
@@ -42,37 +46,6 @@ public class Pet : Entity<PetId>, ISoftDeletable
     public PetRequisites Requisites { get; private set; }
     public PetPhotoDetails PetPhotoDetails { get; private set; }
     
-    
-
-    public Result UpdateAddress(Address address)
-    {
-        Address = address;
-        return Result.Success();
-    }
-
-    public Result UpdatePhoneNumber(PhoneNumber phoneNumber)
-    {
-        PhoneNumber = phoneNumber;
-        return Result.Success();
-    }
-
-    public Result UpdateHelpStatus(HelpStatus helpStatus)
-    {
-        HelpStatus = helpStatus;
-        return Result.Success();
-    }
-
-    public Result UpdateName(Name name)
-    {
-        Name = name;
-        return Result.Success();
-    }
-
-    public Result UpdateAnimalType(AnimalType animalType)
-    {
-        AnimalType = animalType;
-        return Result.Success();
-    }
 
     public void Delete() => _isDeleted = !_isDeleted;
 }

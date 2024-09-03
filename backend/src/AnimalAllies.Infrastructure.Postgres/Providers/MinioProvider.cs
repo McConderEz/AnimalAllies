@@ -13,6 +13,7 @@ namespace AnimalAllies.Infrastructure.Providers;
 
 public class MinioProvider: IFileProvider
 {
+    private const int MAX_DEGREE_OF_PARALLELISM = 10;
     private readonly IMinioClient _minioClient;
     private readonly ILogger<MinioProvider> _logger;
 
@@ -22,11 +23,13 @@ public class MinioProvider: IFileProvider
         _logger = logger;
     }
     
-    public async Task<Result<string>> UploadFile(FileData fileData,CancellationToken cancellationToken = default)
+    public async Task<Result> UploadFiles(FileData fileData,CancellationToken cancellationToken = default)
     {
+        var semaphoreSlim = new SemaphoreSlim(MAX_DEGREE_OF_PARALLELISM);
+
         try
         {
-            var isBucketExist = await IsBucketExist(fileData.BucketName,cancellationToken);
+            var isBucketExist = await IsBucketExist(fileData.BucketName, cancellationToken);
 
             if (isBucketExist.IsFailure)
             {
@@ -36,21 +39,37 @@ public class MinioProvider: IFileProvider
                 await _minioClient.MakeBucketAsync(makeBucketArgs, cancellationToken);
             }
 
-            var path = Guid.NewGuid();
+            List<Task> tasks = [];
+            foreach (var file in fileData.Files)
+            {
+                await semaphoreSlim.WaitAsync(cancellationToken);
 
-            var putObjectArgs = new PutObjectArgs()
-                .WithBucket(fileData.BucketName)
-                .WithStreamData(fileData.Stream)
-                .WithObjectSize(fileData.Stream.Length)
-                .WithObject(path.ToString());
+                var putObjectArgs = new PutObjectArgs()
+                    .WithBucket(fileData.BucketName)
+                    .WithStreamData(file.Stream)
+                    .WithObjectSize(file.Stream.Length)
+                    .WithObject(file.ObjectName);
 
-            var result = await _minioClient.PutObjectAsync(putObjectArgs, cancellationToken);
-            return result.ObjectName;
+                var task = _minioClient.PutObjectAsync(putObjectArgs, cancellationToken);
+
+                semaphoreSlim.Release();
+
+                tasks.Add(task);
+            }
+
+            await Task.WhenAll();
+
+            return Result.Success();
         }
         catch (Exception e)
         {
-            _logger.LogError(e,"Fail to upload file in minio");
+            //TODO: Удаление всех файлов бэкграунд процессом, если один из них с ошибкой
+            _logger.LogError(e, "Fail to upload file in minio");
             return Error.Failure("file.upload", "Fail to upload file in minio");
+        }
+        finally
+        {
+            semaphoreSlim.Release();
         }
     }
 

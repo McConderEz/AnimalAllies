@@ -1,10 +1,9 @@
 using AnimalAllies.Application.Repositories;
-using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
 using Microsoft.Extensions.Logging;
 
-namespace AnimalAllies.Application.Features.Volunteer.Update;
+namespace AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
 
 public class UpdateVolunteerHandler
 {

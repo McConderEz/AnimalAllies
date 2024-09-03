@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AnimalAllies.Domain.Models.Common;
 using AnimalAllies.Domain.Shared;
 
@@ -5,13 +6,15 @@ namespace AnimalAllies.Domain.Models.Volunteer.Pet;
 
 public class PetRequisites : ValueObject
 {
+    [JsonPropertyName("Requisites")]
     public IReadOnlyList<Requisite> Requisites { get; }
     
     private PetRequisites(){}
 
-    private PetRequisites(IEnumerable<Requisite> requisites)
+    [JsonConstructor]
+    public PetRequisites(IReadOnlyList<Requisite> requisites)
     {
-        Requisites = requisites.ToList();
+        Requisites = requisites;
     }
     
     protected override IEnumerable<object> GetEqualityComponents()

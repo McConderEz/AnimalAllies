@@ -1,6 +1,5 @@
 using AnimalAllies.Application.Contracts.DTOs;
-using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 
-namespace AnimalAllies.Application.Features.Volunteer.Update;
+namespace AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
 
 public record UpdateVolunteerRequest(Guid Id, UpdateVolunteerMainInfoDto Dto);

@@ -8,7 +8,7 @@ namespace AnimalAllies.Domain.Models.Volunteer.Pet;
 public class AnimalType: ValueObject
 {
     public SpeciesId SpeciesId { get; }
-    public Guid BreedId { get; }
+    public Guid BreedId { get; } = Guid.Empty;
 
     private AnimalType(){}
 

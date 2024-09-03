@@ -1,4 +1,3 @@
-using AnimalAllies.Application.Features.Volunteer.Delete;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;

@@ -1,13 +1,14 @@
+using AnimalAllies.API.Contracts;
 using AnimalAllies.API.Extensions;
 using AnimalAllies.API.Response;
 using AnimalAllies.Application.Contracts.DTOs;
 using AnimalAllies.Application.Features.Volunteer;
-using AnimalAllies.Application.Features.Volunteer.Create;
+using AnimalAllies.Application.Features.Volunteer.AddPet;
 using AnimalAllies.Application.Features.Volunteer.CreateRequisites;
 using AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
-using AnimalAllies.Application.Features.Volunteer.Delete;
+using AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
 using AnimalAllies.Application.Features.Volunteer.DeleteVolunteer;
-using AnimalAllies.Application.Features.Volunteer.Update;
+using AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
 using AnimalAllies.Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -137,5 +138,54 @@ public class VolunteerController: ApplicationController
         }
         
         return Ok(response.Value);
+    }
+    
+    [HttpPost("{id:guid}/pet")]
+    public async Task<ActionResult> AddPet(
+        [FromRoute] Guid id,
+        [FromForm] AddPetRequest request,
+        [FromServices] AddPetHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+
+        List<CreateFileDto> filesDto = [];
+
+        try
+        {
+            foreach (var file in request.Files)
+            {
+                var stream = file.OpenReadStream();
+
+                filesDto.Add(
+                    new CreateFileDto(stream,file.FileName ,file.ContentType));
+            }
+            
+            var command = new AddPetCommand(
+                id,
+                request.Name,
+                request.PetPhysicCharacteristicsDto,
+                request.PetDetailsDto,
+                request.AddressDto,
+                request.PhoneNumber,
+                request.HelpStatus,
+                request.AnimalTypeDto,
+                request.RequisitesDto,
+                filesDto);
+
+            var result = await handler.Handle(command, cancellationToken);
+
+            if (result.IsFailure)
+                return result.Error.ToErrorResponse();
+
+            return Ok(result.Value);
+
+        }
+        finally
+        {
+            foreach (var fileDto in filesDto)
+            { 
+                await fileDto.Content.DisposeAsync();
+            }
+        }
     }
 }

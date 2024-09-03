@@ -3,7 +3,7 @@ using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
 using FluentValidation;
 
-namespace AnimalAllies.Application.Features.Volunteer.Create;
+namespace AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
 
 public class CreateVolunteerRequestValidator: AbstractValidator<CreateVolunteerRequest>
 {

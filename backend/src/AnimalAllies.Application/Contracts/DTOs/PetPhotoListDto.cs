@@ -1,5 +1,6 @@
+using System.Collections;
 using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 
 namespace AnimalAllies.Application.Contracts.DTOs;
 
-public record SocialNetworkListDto(IEnumerable<SocialNetworkDto> SocialNetworks);
+public record PetPhotoListDto(IEnumerable<PetPhotoDto> PetPhotoDtos);

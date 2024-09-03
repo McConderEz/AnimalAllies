@@ -1,4 +1,4 @@
-using AnimalAllies.Application.Features.Volunteer.Update;
+using AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
