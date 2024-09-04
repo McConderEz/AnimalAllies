@@ -1,9 +1,11 @@
 using AnimalAllies.API.Contracts;
 using AnimalAllies.API.Extensions;
+using AnimalAllies.API.Processors;
 using AnimalAllies.API.Response;
 using AnimalAllies.Application.Contracts.DTOs;
 using AnimalAllies.Application.Features.Volunteer;
 using AnimalAllies.Application.Features.Volunteer.AddPet;
+using AnimalAllies.Application.Features.Volunteer.AddPetPhoto;
 using AnimalAllies.Application.Features.Volunteer.CreateRequisites;
 using AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
 using AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
@@ -143,49 +145,48 @@ public class VolunteerController: ApplicationController
     [HttpPost("{id:guid}/pet")]
     public async Task<ActionResult> AddPet(
         [FromRoute] Guid id,
-        [FromForm] AddPetRequest request,
+        [FromBody] AddPetRequest request,
         [FromServices] AddPetHandler handler,
         CancellationToken cancellationToken = default)
     {
+        var command = new AddPetCommand(
+            id,
+            request.Name,
+            request.PetPhysicCharacteristicsDto,
+            request.PetDetailsDto,
+            request.AddressDto,
+            request.PhoneNumber,
+            request.HelpStatus,
+            request.AnimalTypeDto,
+            request.RequisitesDto);
 
-        List<CreateFileDto> filesDto = [];
+        var result = await handler.Handle(command, cancellationToken);
 
-        try
-        {
-            foreach (var file in request.Files)
-            {
-                var stream = file.OpenReadStream();
+        if (result.IsFailure)
+            return result.Error.ToErrorResponse();
 
-                filesDto.Add(
-                    new CreateFileDto(stream,file.FileName ,file.ContentType));
-            }
-            
-            var command = new AddPetCommand(
-                id,
-                request.Name,
-                request.PetPhysicCharacteristicsDto,
-                request.PetDetailsDto,
-                request.AddressDto,
-                request.PhoneNumber,
-                request.HelpStatus,
-                request.AnimalTypeDto,
-                request.RequisitesDto,
-                filesDto);
+        return Ok(result.Value);
+    }
+    
+    [HttpPost("{volunteerId:guid}/{petId:guid}/petPhoto")]
+    public async Task<ActionResult> AddPetPhoto(
+        [FromRoute] Guid volunteerId,
+        [FromRoute] Guid petId,
+        [FromForm] AddPetPhotosRequest request,
+        [FromServices] AddPetPhotosHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        await using var fileProcessor = new FormFileProcessor();
 
-            var result = await handler.Handle(command, cancellationToken);
+        var fileDtos = fileProcessor.Process(request.Files);
 
-            if (result.IsFailure)
-                return result.Error.ToErrorResponse();
+        var command = new AddPetPhotosCommand(volunteerId, petId, fileDtos);
 
-            return Ok(result.Value);
+        var result = await handler.Handle(command, cancellationToken);
 
-        }
-        finally
-        {
-            foreach (var fileDto in filesDto)
-            { 
-                await fileDto.Content.DisposeAsync();
-            }
-        }
+        if (result.IsFailure)
+            return result.Error.ToErrorResponse();
+        
+        return Ok(result.Value);
     }
 }

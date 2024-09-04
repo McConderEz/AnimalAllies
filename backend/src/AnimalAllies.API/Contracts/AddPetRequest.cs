@@ -12,5 +12,4 @@ public record AddPetRequest(
     string PhoneNumber,
     string HelpStatus,
     AnimalTypeDto AnimalTypeDto,
-    IEnumerable<RequisiteDto> RequisitesDto,
-    IFormFileCollection Files);
+    IEnumerable<RequisiteDto> RequisitesDto);

@@ -74,35 +74,7 @@ public class AddPetHandler
         var requisites =
             new PetRequisites(command.Requisites
                 .Select(r => Requisite.Create(r.Title, r.Description).Value).ToList());
-
         
-        List<FileContent> fileContents = [];
-        foreach (var file in command.Photos)
-        {
-            var extension = Path.GetExtension(file.FileName);
-
-            var filePath = FilePath.Create(Guid.NewGuid(), extension);
-
-            if (filePath.IsFailure)
-                return filePath.Error;
-            
-            var fileContent = new FileContent(
-                file.Content, filePath.Value.Path);
-
-            fileContents.Add(fileContent);
-        }
-
-        var fileData = new FileData(fileContents, BUCKE_NAME);
-
-        var uploadResult = await _fileProvider.UploadFiles(fileData, cancellationToken);
-
-        if (uploadResult.IsFailure)
-            return uploadResult.Error;
-
-        var filePaths = command.Photos
-            .Select(f => FilePath.Create(Guid.NewGuid(), f.FileName).Value);
-        
-        var petPhotoList = new PetPhotoDetails(filePaths.Select(f => new PetPhoto(f, false)));
         
         var pet = new Pet(
             petId,
@@ -114,7 +86,7 @@ public class AddPetHandler
             helpStatus,
             animalType,
             requisites,
-            petPhotoList);
+            null);
 
         volunteerResult.Value.AddPet(pet);
 

@@ -22,7 +22,7 @@ public class Pet : Entity<PetId>, ISoftDeletable
         HelpStatus helpStatus,
         AnimalType animalType,
         PetRequisites requisites,
-        PetPhotoDetails petPhotoDetails)
+        PetPhotoDetails? petPhotoDetails)
         : base(petId)
     {
         Name = name;
@@ -44,8 +44,14 @@ public class Pet : Entity<PetId>, ISoftDeletable
     public HelpStatus HelpStatus { get; private set; }
     public AnimalType AnimalType { get; private set; }
     public PetRequisites Requisites { get; private set; }
-    public PetPhotoDetails PetPhotoDetails { get; private set; }
-    
+    public PetPhotoDetails? PetPhotoDetails { get; private set; }
 
+    public Result AddPhotos(PetPhotoDetails? photos)
+    {
+        PetPhotoDetails = photos;
+
+        return Result.Success();
+    }
+    
     public void Delete() => _isDeleted = !_isDeleted;
 }

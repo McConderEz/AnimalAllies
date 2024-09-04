@@ -12,5 +12,4 @@ public record AddPetCommand(
     string PhoneNumber,
     string HelpStatus,
     AnimalTypeDto AnimalType,
-    IEnumerable<RequisiteDto> Requisites,
-    IEnumerable<CreateFileDto> Photos);
+    IEnumerable<RequisiteDto> Requisites);

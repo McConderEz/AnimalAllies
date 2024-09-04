@@ -1,3 +1,4 @@
+using AnimalAllies.Application.Database;
 using AnimalAllies.Application.Providers;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models.Common;
@@ -21,6 +22,7 @@ public static class DependencyInjection
         services.AddTransient<IDateTimeProvider, DateTimeProvider>();
         services.AddScoped<AnimalAlliesDbContext>();
         services.AddScoped<IVolunteerRepository, VolunteerRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddMinio(configuration);
         

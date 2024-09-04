@@ -1,5 +1,6 @@
 using AnimalAllies.Application.Features.Volunteer;
 using AnimalAllies.Application.Features.Volunteer.AddPet;
+using AnimalAllies.Application.Features.Volunteer.AddPetPhoto;
 using AnimalAllies.Application.Features.Volunteer.CreateRequisites;
 using AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
 using AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
@@ -20,6 +21,7 @@ public static class DependencyInjection
         services.AddScoped<CreateSocialNetworksHandler>();
         services.AddScoped<DeleteVolunteerHandler>();
         services.AddScoped<AddPetHandler>();
+        services.AddScoped<AddPetPhotosHandler>();
         
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
         return services;
