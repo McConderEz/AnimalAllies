@@ -86,7 +86,7 @@ public class AddPetHandler
             helpStatus,
             animalType,
             requisites,
-            null);
+            new PetPhotoDetails([]));
 
         volunteerResult.Value.AddPet(pet);
 

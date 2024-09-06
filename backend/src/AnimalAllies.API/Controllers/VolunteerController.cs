@@ -152,16 +152,7 @@ public class VolunteerController: ApplicationController
         [FromServices] AddPetHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var command = new AddPetCommand(
-            id,
-            request.Name,
-            request.PetPhysicCharacteristicsDto,
-            request.PetDetailsDto,
-            request.AddressDto,
-            request.PhoneNumber,
-            request.HelpStatus,
-            request.AnimalTypeDto,
-            request.RequisitesDto);
+        var command = request.ToCommand(id);
 
         var result = await handler.Handle(command, cancellationToken);
 

@@ -79,13 +79,16 @@ public class AddPetPhotosHandler
 
             pet.Value.AddPhotos(petPhotoList);
 
-            await _volunteerRepository.Save(volunteerResult.Value, cancellationToken);
+            await _unitOfWork.SaveChanges(cancellationToken);
             
             var uploadResult = await _fileProvider.UploadFiles(filesData, cancellationToken);
 
             if (uploadResult.IsFailure)
                 return uploadResult.Error;
             
+            transaction.Commit();
+            
+            _logger.LogInformation("Files uploaded to pet with id - {id}", petId.Id);
 
             return pet.Value.Id.Id;
         }
