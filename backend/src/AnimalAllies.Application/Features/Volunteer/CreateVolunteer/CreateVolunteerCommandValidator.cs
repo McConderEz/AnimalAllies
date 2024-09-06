@@ -5,9 +5,9 @@ using FluentValidation;
 
 namespace AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
 
-public class CreateVolunteerRequestValidator: AbstractValidator<CreateVolunteerRequest>
+public class CreateVolunteerCommandValidator: AbstractValidator<CreateVolunteerCommand>
 {
-    public CreateVolunteerRequestValidator()
+    public CreateVolunteerCommandValidator()
     {
         RuleFor(x => x.FullName)
             .MustBeValueObject(x => FullName.Create(x.FirstName, x.SecondName, x.Patronymic));

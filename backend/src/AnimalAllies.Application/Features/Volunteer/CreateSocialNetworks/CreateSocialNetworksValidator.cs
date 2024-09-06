@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
 
-public class CreateSocialNetworksValidator: AbstractValidator<CreateSocialNetworksRequest>
+public class CreateSocialNetworksValidator: AbstractValidator<CreateSocialNetworksCommand>
 {
     public CreateSocialNetworksValidator()
     {
@@ -12,7 +12,7 @@ public class CreateSocialNetworksValidator: AbstractValidator<CreateSocialNetwor
             .NotEmpty()
             .WithMessage("Id cannot be null");
         
-        RuleForEach(x => x.Dto.SocialNetworks)
+        RuleForEach(x => x.SocialNetworks)
             .MustBeValueObject(x => SocialNetwork.Create(x.Title, x.Url));
 
     }

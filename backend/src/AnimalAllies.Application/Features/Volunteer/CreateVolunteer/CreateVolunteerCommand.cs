@@ -2,7 +2,7 @@ using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 
 namespace AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
 
-public record CreateVolunteerRequest(
+public record CreateVolunteerCommand(
     FullNameDto FullName,
     string Email,
     string Description,

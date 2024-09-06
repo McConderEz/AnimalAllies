@@ -17,7 +17,7 @@ public class CreateVolunteerHandler
     }
     
     public async Task<Result<VolunteerId>> Handle(
-        CreateVolunteerRequest request,
+        CreateVolunteerCommand request,
         CancellationToken cancellationToken = default)
     {
         var phoneNumber = PhoneNumber.Create(request.PhoneNumber).Value;

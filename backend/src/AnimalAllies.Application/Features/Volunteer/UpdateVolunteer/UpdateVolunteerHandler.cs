@@ -17,7 +17,7 @@ public class UpdateVolunteerHandler
     }
     
     public async Task<Result<VolunteerId>> Handle(
-        UpdateVolunteerRequest request,
+        UpdateVolunteerCommand request,
         CancellationToken cancellationToken = default)
     {
         var volunteer = await _repository.GetById(VolunteerId.Create(request.Id),cancellationToken);

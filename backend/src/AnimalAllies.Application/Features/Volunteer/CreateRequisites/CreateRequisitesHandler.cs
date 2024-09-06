@@ -21,7 +21,7 @@ public class CreateRequisitesHandler
     }
     
     public async Task<Result<VolunteerId>> Handle(
-        CreateRequisitesRequest request,
+        CreateRequisitesCommand request,
         CancellationToken cancellationToken = default)
     {
         var volunteer = await _repository.GetById(VolunteerId.Create(request.Id));
@@ -29,7 +29,7 @@ public class CreateRequisitesHandler
         if (volunteer.IsFailure)
             return Errors.General.NotFound();
 
-        var requisites = request.Dto.Requisites
+        var requisites = request.RequisiteDtos
             .Select(x => Requisite.Create(x.Title, x.Description).Value);
 
         var volunteerRequisites = new VolunteerRequisites(requisites.ToList());

@@ -21,7 +21,7 @@ public class CreateSocialNetworksHandler
     }
     
     public async Task<Result<VolunteerId>> Handle(
-        CreateSocialNetworksRequest request,
+        CreateSocialNetworksCommand request,
         CancellationToken cancellationToken = default)
     {
         var volunteer = await _repository.GetById(VolunteerId.Create(request.Id), cancellationToken);
@@ -29,7 +29,7 @@ public class CreateSocialNetworksHandler
         if (volunteer.IsFailure)
             return Errors.General.NotFound();
 
-        var socialNetworks = request.Dto.SocialNetworks
+        var socialNetworks = request.SocialNetworks
             .Select(x => SocialNetwork.Create(x.Title, x.Url).Value);
 
         var volunteerSocialNetworks = new VolunteerSocialNetworks(socialNetworks.ToList());

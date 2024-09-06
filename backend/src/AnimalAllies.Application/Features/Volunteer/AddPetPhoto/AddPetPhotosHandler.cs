@@ -16,7 +16,6 @@ public class AddPetPhotosHandler
 {
     private const string BUCKE_NAME = "photos";
     private readonly IFileProvider _fileProvider;
-    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly ILogger<AddPetPhotosHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
@@ -25,13 +24,11 @@ public class AddPetPhotosHandler
         IFileProvider fileProvider,
         IVolunteerRepository volunteerRepository,
         ILogger<AddPetPhotosHandler> logger,
-        IDateTimeProvider dateTimeProvider,
         IUnitOfWork unitOfWork)
     {
         _fileProvider = fileProvider;
         _volunteerRepository = volunteerRepository;
         _logger = logger;
-        _dateTimeProvider = dateTimeProvider;
         _unitOfWork = unitOfWork;
     }
     
@@ -53,9 +50,9 @@ public class AddPetPhotosHandler
 
             var petId = PetId.Create(command.PetId);
 
-            var pet = volunteerResult.Value.Pets.FirstOrDefault(p => p.Id == petId);
+            var pet = volunteerResult.Value.GetPetById(petId);
 
-            if (pet == null)
+            if (pet.IsFailure)
                 return Errors.General.NotFound(petId.Id);
 
             List<FileData> filesData = [];
@@ -80,7 +77,7 @@ public class AddPetPhotosHandler
             
             var petPhotoList = new PetPhotoDetails(photos);
 
-            pet.AddPhotos(petPhotoList);
+            pet.Value.AddPhotos(petPhotoList);
 
             await _volunteerRepository.Save(volunteerResult.Value, cancellationToken);
             
@@ -90,7 +87,7 @@ public class AddPetPhotosHandler
                 return uploadResult.Error;
             
 
-            return pet.Id.Id;
+            return pet.Value.Id.Id;
         }
         catch (Exception ex)
         {

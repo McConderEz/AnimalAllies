@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
 
-public class UpdateVolunteerValidator: AbstractValidator<UpdateVolunteerRequest>
+public class UpdateVolunteerValidator: AbstractValidator<UpdateVolunteerCommand>
 {
     public UpdateVolunteerValidator()
     {

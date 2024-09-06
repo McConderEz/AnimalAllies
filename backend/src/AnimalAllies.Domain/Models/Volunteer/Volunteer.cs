@@ -63,6 +63,16 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         return Result.Success();
     }
 
+    public  Result<Pet.Pet> GetPetById(PetId id)
+    {
+        var pet = _pets.FirstOrDefault(p => p.Id == id);
+
+        if (pet == null)
+            return Errors.General.NotFound(id.Id);
+
+        return pet;
+    }
+
     public Result UpdateInfo(
         FullName? fullName,
         Email? email,
