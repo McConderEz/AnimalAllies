@@ -71,8 +71,7 @@ public class AddPetPhotosHandler
             }
 
             var photos = filesData
-                .Select(f => f.FilePath)
-                .Select(f => new PetPhoto(f, false))
+                .Select(f => new PetPhoto(f.FilePath, false))
                 .ToList();
             
             var petPhotoList = new PetPhotoDetails(photos);

@@ -14,18 +14,15 @@ namespace AnimalAllies.Application.Features.Volunteer.AddPet;
 public class AddPetHandler
 {
     private const string BUCKE_NAME = "photos";
-    private readonly IFileProvider _fileProvider;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly ILogger<AddPetHandler> _logger;
 
     public AddPetHandler(
-        IFileProvider fileProvider,
         IVolunteerRepository volunteerRepository,
         ILogger<AddPetHandler> logger,
         IDateTimeProvider dateTimeProvider)
     {
-        _fileProvider = fileProvider;
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _dateTimeProvider = dateTimeProvider;
