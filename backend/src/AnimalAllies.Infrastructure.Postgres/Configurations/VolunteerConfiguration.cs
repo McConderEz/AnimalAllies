@@ -75,38 +75,6 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
             .HasColumnType("jsonb")
             .HasColumnName("social_networks");
         
-       /* builder.OwnsOne(v => v.SocialNetworks, sn =>
-        {
-            sn.ToJson("social_networks");
-
-            sn.OwnsMany(d => d.SocialNetworks, s =>
-            {
-                s.Property(x => x.Url)
-                    .IsRequired()
-                    .HasMaxLength(Constraints.MAX_URL_LENGTH);
-                s.Property(x => x.Title)
-                    .IsRequired()
-                    .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
-            });
-            
-        });*/
-        
-        /*builder.OwnsOne(v => v.Requisites, r =>
-        {
-            r.ToJson("requisites");
-
-            r.OwnsMany(d => d.Requisites, s =>
-            {
-                s.Property(sn => sn.Description)
-                    .IsRequired()
-                    .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH);
-                s.Property(sn => sn.Title)
-                    .IsRequired()
-                    .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
-            });
-            
-        });*/
-        
         builder.Property<bool>("_isDeleted")
             .UsePropertyAccessMode(PropertyAccessMode.Field)
             .HasColumnName("is_deleted");

@@ -3,9 +3,9 @@ using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
 using FluentValidation;
 
-namespace AnimalAllies.Application.Features.Volunteer.Update;
+namespace AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
 
-public class UpdateVolunteerValidator: AbstractValidator<UpdateVolunteerRequest>
+public class UpdateVolunteerValidator: AbstractValidator<UpdateVolunteerCommand>
 {
     public UpdateVolunteerValidator()
     {

@@ -1,10 +1,9 @@
 using AnimalAllies.Application.Repositories;
-using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
 using Microsoft.Extensions.Logging;
 
-namespace AnimalAllies.Application.Features.Volunteer.Create;
+namespace AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
 
 public class CreateVolunteerHandler
 {
@@ -18,7 +17,7 @@ public class CreateVolunteerHandler
     }
     
     public async Task<Result<VolunteerId>> Handle(
-        CreateVolunteerRequest request,
+        CreateVolunteerCommand request,
         CancellationToken cancellationToken = default)
     {
         var phoneNumber = PhoneNumber.Create(request.PhoneNumber).Value;

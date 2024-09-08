@@ -1,4 +1,3 @@
-using AnimalAllies.Application.Features.Volunteer.Delete;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
@@ -19,7 +18,7 @@ public class DeleteVolunteerHandler
     }
     
     public async Task<Result<VolunteerId>> Handle(
-        DeleteVolunteerRequest request,
+        DeleteVolunteerCommand request,
         CancellationToken cancellationToken = default)
     {
         var volunteer = await _repository.GetById(VolunteerId.Create(request.Id),cancellationToken);

@@ -41,8 +41,12 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
     public VolunteerRequisites Requisites { get; private set; }
     public VolunteerSocialNetworks SocialNetworks { get; private set; }
     public IReadOnlyList<Pet.Pet> Pets => _pets;
-    
-    public void AddPets(List<Pet.Pet> pets) => _pets.AddRange(pets);
+
+    public Result AddPet(Pet.Pet pet)
+    {
+        _pets.Add(pet);
+        return Result.Success();
+    }
 
     public int PetsNeedsHelp() => _pets.Count(x => x.HelpStatus == HelpStatus.NeedsHelp);
     public int PetsSearchingHome() => _pets.Count(x => x.HelpStatus == HelpStatus.SearchingHome);
@@ -57,6 +61,16 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
     {
         Requisites = requisites;
         return Result.Success();
+    }
+
+    public  Result<Pet.Pet> GetPetById(PetId id)
+    {
+        var pet = _pets.FirstOrDefault(p => p.Id == id);
+
+        if (pet == null)
+            return Errors.General.NotFound(id.Id);
+
+        return pet;
     }
 
     public Result UpdateInfo(

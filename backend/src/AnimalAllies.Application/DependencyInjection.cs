@@ -1,9 +1,11 @@
 using AnimalAllies.Application.Features.Volunteer;
-using AnimalAllies.Application.Features.Volunteer.Create;
+using AnimalAllies.Application.Features.Volunteer.AddPet;
+using AnimalAllies.Application.Features.Volunteer.AddPetPhoto;
 using AnimalAllies.Application.Features.Volunteer.CreateRequisites;
 using AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
+using AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
 using AnimalAllies.Application.Features.Volunteer.DeleteVolunteer;
-using AnimalAllies.Application.Features.Volunteer.Update;
+using AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
 using Microsoft.Extensions.DependencyInjection;
 using FluentValidation;
 
@@ -18,6 +20,8 @@ public static class DependencyInjection
         services.AddScoped<CreateRequisitesHandler>();
         services.AddScoped<CreateSocialNetworksHandler>();
         services.AddScoped<DeleteVolunteerHandler>();
+        services.AddScoped<AddPetHandler>();
+        services.AddScoped<AddPetPhotosHandler>();
         
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
         return services;

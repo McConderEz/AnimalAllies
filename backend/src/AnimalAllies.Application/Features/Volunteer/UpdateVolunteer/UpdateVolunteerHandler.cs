@@ -1,10 +1,9 @@
 using AnimalAllies.Application.Repositories;
-using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
 using Microsoft.Extensions.Logging;
 
-namespace AnimalAllies.Application.Features.Volunteer.Update;
+namespace AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
 
 public class UpdateVolunteerHandler
 {
@@ -18,7 +17,7 @@ public class UpdateVolunteerHandler
     }
     
     public async Task<Result<VolunteerId>> Handle(
-        UpdateVolunteerRequest request,
+        UpdateVolunteerCommand request,
         CancellationToken cancellationToken = default)
     {
         var volunteer = await _repository.GetById(VolunteerId.Create(request.Id),cancellationToken);

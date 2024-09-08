@@ -2,6 +2,7 @@ using AnimalAllies.Domain.Constraints;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Species;
 using AnimalAllies.Domain.Models.Volunteer.Pet;
+using AnimalAllies.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -111,33 +112,26 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
 
             ppb.OwnsMany(x => x.PetPhotos, ppb =>
             {
+                
                 ppb.Property(x => x.Path)
+                    .HasConversion(
+                        p => p.Path,
+                        p => FilePath.Create(p).Value)
                     .HasMaxLength(Constraints.MAX_PATH_LENGHT)
                     .HasColumnName("path")
                     .IsRequired();
+                
                 ppb.Property(x => x.IsMain)
                     .HasColumnName("is_main")
                     .IsRequired();
             });
         });
         
+        builder.Property(p => p.Requisites)
+            .HasValueJsonConverter()
+            .HasColumnType("jsonb")
+            .HasColumnName("requisites");
         
-
-        builder.OwnsOne(x => x.Requisites, rb =>
-        {
-            rb.ToJson("requisites");
-            rb.OwnsMany(x => x.Requisites, r =>
-            {
-                r.Property(x => x.Title)
-                    .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
-                    .HasColumnName("title")
-                    .IsRequired();
-                r.Property(x => x.Description)
-                    .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH)
-                    .HasColumnName("description")
-                    .IsRequired();
-            });
-        });
         
         builder.Property<bool>("_isDeleted")
             .UsePropertyAccessMode(PropertyAccessMode.Field)

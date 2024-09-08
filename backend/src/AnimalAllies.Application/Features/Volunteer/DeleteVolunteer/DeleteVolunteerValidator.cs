@@ -1,8 +1,8 @@
 using FluentValidation;
 
-namespace AnimalAllies.Application.Features.Volunteer.Delete;
+namespace AnimalAllies.Application.Features.Volunteer.DeleteVolunteer;
 
-public class DeleteVolunteerValidator: AbstractValidator<DeleteVolunteerRequest>
+public class DeleteVolunteerValidator: AbstractValidator<DeleteVolunteerCommand>
 {
     public DeleteVolunteerValidator()
     {

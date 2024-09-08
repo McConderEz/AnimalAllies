@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace AnimalAllies.Application.Features.Volunteer.CreateRequisites;
 
-public class CreateRequisitesValidator: AbstractValidator<CreateRequisitesRequest>
+public class CreateRequisitesValidator: AbstractValidator<CreateRequisitesCommand>
 {
     public CreateRequisitesValidator()
     {
@@ -12,7 +12,7 @@ public class CreateRequisitesValidator: AbstractValidator<CreateRequisitesReques
             .NotEmpty()
             .WithMessage("Id cannot be null");
         
-        RuleForEach(x => x.Dto.Requisites)
+        RuleForEach(x => x.RequisiteDtos)
             .MustBeValueObject(x => Requisite.Create(x.Title, x.Description));
     }
 }

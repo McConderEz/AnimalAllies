@@ -81,6 +81,11 @@ namespace AnimalAllies.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Requisites")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("requisites");
+
                     b.Property<bool>("_isDeleted")
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");
@@ -364,58 +369,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                             b1.Navigation("PetPhotos");
                         });
 
-                    b.OwnsOne("AnimalAllies.Domain.Models.Volunteer.Pet.PetRequisites", "Requisites", b1 =>
-                        {
-                            b1.Property<Guid>("PetId")
-                                .HasColumnType("uuid");
-
-                            b1.HasKey("PetId");
-
-                            b1.ToTable("pets");
-
-                            b1.ToJson("requisites");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PetId");
-
-                            b1.OwnsMany("AnimalAllies.Domain.Shared.Requisite", "Requisites", b2 =>
-                                {
-                                    b2.Property<Guid>("PetRequisitesPetId")
-                                        .HasColumnType("uuid");
-
-                                    b2.Property<int>("Id")
-                                        .ValueGeneratedOnAdd()
-                                        .HasColumnType("integer");
-
-                                    b2.Property<string>("Description")
-                                        .IsRequired()
-                                        .HasMaxLength(1500)
-                                        .HasColumnType("character varying(1500)")
-                                        .HasColumnName("description");
-
-                                    b2.Property<string>("Title")
-                                        .IsRequired()
-                                        .HasMaxLength(100)
-                                        .HasColumnType("character varying(100)")
-                                        .HasColumnName("title");
-
-                                    b2.HasKey("PetRequisitesPetId", "Id");
-
-                                    b2.ToTable("pets");
-
-                                    b2.HasAnnotation("Relational:JsonPropertyName", "requisites");
-
-                                    b2.WithOwner()
-                                        .HasForeignKey("PetRequisitesPetId");
-                                });
-
-                            b1.Navigation("Requisites");
-                        });
-
                     b.Navigation("PetPhotoDetails")
-                        .IsRequired();
-
-                    b.Navigation("Requisites")
                         .IsRequired();
                 });
 
