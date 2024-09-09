@@ -1,8 +1,10 @@
 using AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
 using AnimalAllies.Application.Repositories;
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
@@ -11,13 +13,16 @@ public class CreateSocialNetworksHandler
 {
     private readonly IVolunteerRepository _repository;
     private readonly ILogger<UpdateVolunteerHandler> _logger;
-
+    private readonly IValidator<CreateSocialNetworksCommand> _validator;
+    
     public CreateSocialNetworksHandler(
         IVolunteerRepository repository,
-        ILogger<UpdateVolunteerHandler> logger)
+        ILogger<UpdateVolunteerHandler> logger,
+        IValidator<CreateSocialNetworksCommand> validator)
     {
         _repository = repository;
         _logger = logger;
+        _validator = validator;
     }
     
     public async Task<Result<VolunteerId>> Handle(
@@ -32,7 +37,7 @@ public class CreateSocialNetworksHandler
         var socialNetworks = request.SocialNetworks
             .Select(x => SocialNetwork.Create(x.Title, x.Url).Value);
 
-        var volunteerSocialNetworks = new VolunteerSocialNetworks(socialNetworks.ToList());
+        var volunteerSocialNetworks = new ValueObjectList<SocialNetwork>(socialNetworks.ToList());
 
         volunteer.Value.UpdateSocialNetworks(volunteerSocialNetworks);
         

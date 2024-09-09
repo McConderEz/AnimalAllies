@@ -1,4 +1,4 @@
-using AnimalAllies.Domain.Models.Common;
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Shared;
 
 namespace AnimalAllies.Domain.Models.Volunteer;

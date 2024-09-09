@@ -65,15 +65,45 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
                 .IsRequired(false);
         });
 
-        builder.Property(v => v.Requisites)
-            .HasValueJsonConverter()
-            .HasColumnType("jsonb")
-            .HasColumnName("requisites");
+        builder.OwnsOne(v => v.SocialNetworks, sb =>
+        {
+            sb.ToJson("social_networks");
+            sb.OwnsMany(sb => sb.Values, sb =>
+            {
+                sb.Property(s => s.Title)
+                    .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
+                    .IsRequired();
+
+                sb.Property(s => s.Url)
+                    .HasMaxLength(Constraints.MAX_URL_LENGTH)
+                    .IsRequired();
+            });
+        });
         
-        builder.Property(v => v.SocialNetworks)
-            .HasValueJsonConverter()
-            .HasColumnType("jsonb")
-            .HasColumnName("social_networks");
+        builder.OwnsOne(v => v.Requisites, rb =>
+        {
+            rb.ToJson("requisites");
+            rb.OwnsMany(rb => rb.Values, rb =>
+            {
+                rb.Property(r => r.Title)
+                    .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
+                    .IsRequired();
+
+                rb.Property(r => r.Description)
+                    .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH)
+                    .IsRequired();
+            });
+        });
+        
+        //builder.Property(v => v.Requisites)
+        //    .HasValueJsonConverter()
+        //    .HasColumnType("jsonb")
+        //    .HasColumnName("requisites");
+        
+        //builder.Property(v => v.SocialNetworks)
+        //    .HasValueJsonConverter()
+        //    .HasColumnType("jsonb")
+        //    .HasColumnName("social_networks");
         
         builder.Property<bool>("_isDeleted")
             .UsePropertyAccessMode(PropertyAccessMode.Field)

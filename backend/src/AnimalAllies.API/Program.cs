@@ -34,10 +34,11 @@ builder.Services.AddSerilog();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
-builder.Services.AddFluentValidationAutoValidation(configuration =>
+/*builder.Services.AddFluentValidationAutoValidation(configuration =>
 {
     configuration.OverrideDefaultResultFactoryWith<CustomResultFactory>();
 });
+*/
 
 builder.Services.AddControllers();
 

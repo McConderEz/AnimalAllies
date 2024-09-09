@@ -1,6 +1,7 @@
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
@@ -9,11 +10,16 @@ public class UpdateVolunteerHandler
 {
     private readonly IVolunteerRepository _repository;
     private readonly ILogger<UpdateVolunteerHandler> _logger;
-
-    public UpdateVolunteerHandler(IVolunteerRepository repository, ILogger<UpdateVolunteerHandler> logger)
+    private readonly IValidator<UpdateVolunteerCommand> _validator;
+    
+    public UpdateVolunteerHandler(
+        IVolunteerRepository repository, 
+        ILogger<UpdateVolunteerHandler> logger,
+        IValidator<UpdateVolunteerCommand> validator)
     {
         _repository = repository;
         _logger = logger;
+        _validator = validator;
     }
     
     public async Task<Result<VolunteerId>> Handle(

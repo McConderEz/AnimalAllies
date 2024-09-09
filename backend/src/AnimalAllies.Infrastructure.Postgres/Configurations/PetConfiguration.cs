@@ -110,7 +110,7 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
         {
             ppb.ToJson("pet_photo_details");
 
-            ppb.OwnsMany(x => x.PetPhotos, ppb =>
+            ppb.OwnsMany(x => x.Values, ppb =>
             {
                 
                 ppb.Property(x => x.Path)

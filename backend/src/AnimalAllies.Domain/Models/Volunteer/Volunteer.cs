@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using AnimalAllies.Domain.Models.Common;
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.Shared;
 
@@ -20,8 +20,8 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         VolunteerDescription volunteerDescription,
         WorkExperience workExperience,
         PhoneNumber phone,
-        VolunteerSocialNetworks socialNetworks,
-        VolunteerRequisites requisites)
+        ValueObjectList<SocialNetwork> socialNetworks,
+        ValueObjectList<Requisite> requisites)
     : base(volunteerId)
     {
         FullName = fullName;
@@ -38,8 +38,8 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
     public PhoneNumber Phone { get; private set; }
     public VolunteerDescription Description { get; private set; }
     public WorkExperience WorkExperience { get; private set; }
-    public VolunteerRequisites Requisites { get; private set; }
-    public VolunteerSocialNetworks SocialNetworks { get; private set; }
+    public ValueObjectList<Requisite> Requisites { get; private set; }
+    public ValueObjectList<SocialNetwork> SocialNetworks { get; private set; }
     public IReadOnlyList<Pet.Pet> Pets => _pets;
 
     public Result AddPet(Pet.Pet pet)
@@ -52,12 +52,12 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
     public int PetsSearchingHome() => _pets.Count(x => x.HelpStatus == HelpStatus.SearchingHome);
     public int PetsFoundHome() => _pets.Count(x => x.HelpStatus == HelpStatus.FoundHome);
     
-    public Result UpdateSocialNetworks(VolunteerSocialNetworks socialNetworks)
+    public Result UpdateSocialNetworks(ValueObjectList<SocialNetwork> socialNetworks)
     {
         SocialNetworks = socialNetworks;
         return Result.Success();
     }
-    public Result UpdateRequisites(VolunteerRequisites requisites)
+    public Result UpdateRequisites(ValueObjectList<Requisite> requisites)
     {
         Requisites = requisites;
         return Result.Success();

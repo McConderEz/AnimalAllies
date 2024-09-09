@@ -1,6 +1,8 @@
 using AnimalAllies.Application.Repositories;
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
@@ -8,12 +10,17 @@ namespace AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
 public class CreateVolunteerHandler
 {
     private readonly IVolunteerRepository _repository;
+    private readonly IValidator<CreateVolunteerCommand> _validator;
     private readonly ILogger<CreateVolunteerHandler> _logger;
 
-    public CreateVolunteerHandler(IVolunteerRepository repository,ILogger<CreateVolunteerHandler> logger)
+    public CreateVolunteerHandler(
+        IVolunteerRepository repository,
+        ILogger<CreateVolunteerHandler> logger,
+        IValidator<CreateVolunteerCommand> validator)
     {
         _repository = repository;
         _logger = logger;
+        _validator = validator;
     }
     
     public async Task<Result<VolunteerId>> Handle(
@@ -40,8 +47,8 @@ public class CreateVolunteerHandler
             .Select(x => Requisite.Create(x.Title, x.Description).Value);
 
         
-        var volunteerSocialNetworks = new VolunteerSocialNetworks(socialNetworks.ToList());
-        var volunteerRequisites = new VolunteerRequisites(requisites.ToList());
+        var volunteerSocialNetworks = new ValueObjectList<SocialNetwork>(socialNetworks.ToList());
+        var volunteerRequisites = new ValueObjectList<Requisite>(requisites.ToList());
         
         var volunteerId = VolunteerId.NewGuid();
         

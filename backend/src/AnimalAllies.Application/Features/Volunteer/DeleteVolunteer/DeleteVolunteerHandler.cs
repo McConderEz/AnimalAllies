@@ -2,6 +2,7 @@ using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.DeleteVolunteer;
@@ -10,11 +11,16 @@ public class DeleteVolunteerHandler
 {
     private readonly IVolunteerRepository _repository;
     private readonly ILogger<DeleteVolunteerHandler> _logger;
-
-    public DeleteVolunteerHandler(IVolunteerRepository repository, ILogger<DeleteVolunteerHandler> logger)
+    private readonly IValidator<DeleteVolunteerCommand> _validator;
+    
+    public DeleteVolunteerHandler(
+        IVolunteerRepository repository, 
+        ILogger<DeleteVolunteerHandler> logger,
+        IValidator<DeleteVolunteerCommand> validator)
     {
         _repository = repository;
         _logger = logger;
+        _validator = validator;
     }
     
     public async Task<Result<VolunteerId>> Handle(

@@ -2,11 +2,12 @@ using AnimalAllies.Application.Database;
 using AnimalAllies.Application.FileProvider;
 using AnimalAllies.Application.Providers;
 using AnimalAllies.Application.Repositories;
-using AnimalAllies.Domain.Models.Common;
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Models.Species;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.Shared;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 
@@ -19,17 +20,20 @@ public class AddPetPhotosHandler
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly ILogger<AddPetPhotosHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidator<AddPetPhotosCommand> _validator;
 
     public AddPetPhotosHandler(
         IFileProvider fileProvider,
         IVolunteerRepository volunteerRepository,
         ILogger<AddPetPhotosHandler> logger,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IValidator<AddPetPhotosCommand> validator)
     {
         _fileProvider = fileProvider;
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _validator = validator;
     }
     
 
@@ -74,7 +78,7 @@ public class AddPetPhotosHandler
                 .Select(f => new PetPhoto(f.FilePath, false))
                 .ToList();
             
-            var petPhotoList = new PetPhotoDetails(photos);
+            var petPhotoList = new ValueObjectList<PetPhoto>(photos);
 
             pet.Value.AddPhotos(petPhotoList);
 
