@@ -70,7 +70,6 @@ namespace AnimalAllies.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    requisites = table.Column<string>(type: "jsonb", nullable: false),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false),
                     volunteer_id = table.Column<Guid>(type: "uuid", nullable: true),
                     city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
@@ -91,7 +90,9 @@ namespace AnimalAllies.Infrastructure.Migrations
                     is_vaccinated = table.Column<bool>(type: "boolean", nullable: false),
                     weight = table.Column<double>(type: "double precision", nullable: false),
                     phone_number = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false),
-                    pet_photo_details = table.Column<string>(type: "jsonb", nullable: true)
+                    position = table.Column<int>(type: "integer", nullable: false),
+                    pet_photo_details = table.Column<string>(type: "jsonb", nullable: true),
+                    requisites = table.Column<string>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
                 {

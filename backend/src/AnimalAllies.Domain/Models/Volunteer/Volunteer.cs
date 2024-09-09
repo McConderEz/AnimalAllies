@@ -44,6 +44,15 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
 
     public Result AddPet(Pet.Pet pet)
     {
+
+        var position = _pets.Count == 0
+            ? Position.First
+            : Position.Create(_pets.Count + 1);
+        
+        if (position.IsFailure)
+            return position.Errors;
+        
+        pet.SetPosition(position.Value);
         _pets.Add(pet);
         return Result.Success();
     }

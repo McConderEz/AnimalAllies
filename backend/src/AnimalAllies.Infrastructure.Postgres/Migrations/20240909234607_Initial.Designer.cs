@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AnimalAllies.Infrastructure.Migrations
 {
     [DbContext(typeof(AnimalAlliesDbContext))]
-    [Migration("20240909134139_Initial")]
+    [Migration("20240909234607_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -83,11 +83,6 @@ namespace AnimalAllies.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("Requisites")
-                        .IsRequired()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("requisites");
 
                     b.Property<bool>("_isDeleted")
                         .HasColumnType("boolean")
@@ -219,6 +214,15 @@ namespace AnimalAllies.Infrastructure.Migrations
                                 .HasMaxLength(14)
                                 .HasColumnType("character varying(14)")
                                 .HasColumnName("phone_number");
+                        });
+
+                    b.ComplexProperty<Dictionary<string, object>>("Position", "AnimalAllies.Domain.Models.Volunteer.Pet.Pet.Position#Position", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<int>("Value")
+                                .HasColumnType("integer")
+                                .HasColumnName("position");
                         });
 
                     b.HasKey("Id");
@@ -362,7 +366,54 @@ namespace AnimalAllies.Infrastructure.Migrations
                             b1.Navigation("Values");
                         });
 
+                    b.OwnsOne("AnimalAllies.Domain.Models.Volunteer.Pet.Pet.Requisites#ValueObjectList", "Requisites", b1 =>
+                        {
+                            b1.Property<Guid>("PetId")
+                                .HasColumnType("uuid");
+
+                            b1.HasKey("PetId");
+
+                            b1.ToTable("pets");
+
+                            b1.ToJson("requisites");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PetId");
+
+                            b1.OwnsMany("AnimalAllies.Domain.Shared.Requisite", "Values", b2 =>
+                                {
+                                    b2.Property<Guid>("ValueObjectListPetId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<int>("Id")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("integer");
+
+                                    b2.Property<string>("Description")
+                                        .IsRequired()
+                                        .HasMaxLength(1500)
+                                        .HasColumnType("character varying(1500)");
+
+                                    b2.Property<string>("Title")
+                                        .IsRequired()
+                                        .HasMaxLength(100)
+                                        .HasColumnType("character varying(100)");
+
+                                    b2.HasKey("ValueObjectListPetId", "Id");
+
+                                    b2.ToTable("pets");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("ValueObjectListPetId");
+                                });
+
+                            b1.Navigation("Values");
+                        });
+
                     b.Navigation("PetPhotoDetails");
+
+                    b.Navigation("Requisites")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("AnimalAllies.Domain.Models.Volunteer.Volunteer", b =>
@@ -427,7 +478,7 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                             b1.OwnsMany("AnimalAllies.Domain.Shared.Requisite", "Values", b2 =>
                                 {
-                                    b2.Property<Guid>("ValueObjectListVolunteerId")
+                                    b2.Property<Guid>("ValueObjectList<Requisite>VolunteerId")
                                         .HasColumnType("uuid");
 
                                     b2.Property<int>("Id")
@@ -444,12 +495,12 @@ namespace AnimalAllies.Infrastructure.Migrations
                                         .HasMaxLength(100)
                                         .HasColumnType("character varying(100)");
 
-                                    b2.HasKey("ValueObjectListVolunteerId", "Id");
+                                    b2.HasKey("ValueObjectList<Requisite>VolunteerId", "Id");
 
                                     b2.ToTable("volunteers");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("ValueObjectListVolunteerId");
+                                        .HasForeignKey("ValueObjectList<Requisite>VolunteerId");
                                 });
 
                             b1.Navigation("Values");

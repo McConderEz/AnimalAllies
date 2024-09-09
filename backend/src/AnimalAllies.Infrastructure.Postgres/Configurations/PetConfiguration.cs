@@ -106,6 +106,13 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
                 .HasColumnName("help_status");
         });
 
+        builder.ComplexProperty(p => p.Position, pb =>
+        {
+            pb.IsRequired();
+            pb.Property(p => p.Value)
+                .HasColumnName("position");
+        });
+        
         builder.OwnsOne(x => x.PetPhotoDetails, ppb =>
         {
             ppb.ToJson("pet_photo_details");
@@ -127,10 +134,25 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
             });
         });
         
-        builder.Property(p => p.Requisites)
+        builder.OwnsOne(p => p.Requisites, rb =>
+        {
+            rb.ToJson("requisites");
+            rb.OwnsMany(rb => rb.Values, rb =>
+            {
+                rb.Property(r => r.Title)
+                    .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
+                    .IsRequired();
+
+                rb.Property(r => r.Description)
+                    .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH)
+                    .IsRequired();
+            });
+        });
+        
+        /*builder.Property(p => p.Requisites)
             .HasValueJsonConverter()
             .HasColumnType("jsonb")
-            .HasColumnName("requisites");
+            .HasColumnName("requisites");*/
         
         
         builder.Property<bool>("_isDeleted")

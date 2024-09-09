@@ -43,6 +43,7 @@ public class Pet : Entity<PetId>, ISoftDeletable
     public PhoneNumber PhoneNumber { get; private set; }
     public HelpStatus HelpStatus { get; private set; }
     public AnimalType AnimalType { get; private set; }
+    public Position Position { get; private set; }
     public ValueObjectList<Requisite> Requisites { get; private set; }
     public ValueObjectList<PetPhoto>? PetPhotoDetails { get; private set; }
 
@@ -51,6 +52,11 @@ public class Pet : Entity<PetId>, ISoftDeletable
         PetPhotoDetails = photos;
 
         return Result.Success();
+    }
+
+    public void SetPosition(Position position)
+    {
+        Position = position;
     }
     
     public void Delete() => _isDeleted = !_isDeleted;
