@@ -1,3 +1,4 @@
+using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Common;
@@ -26,15 +27,22 @@ public class CreateSocialNetworksHandler
     }
     
     public async Task<Result<VolunteerId>> Handle(
-        CreateSocialNetworksCommand request,
+        CreateSocialNetworksCommand command,
         CancellationToken cancellationToken = default)
     {
-        var volunteer = await _repository.GetById(VolunteerId.Create(request.Id), cancellationToken);
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+        if (validationResult.IsValid == false)
+        {
+            return validationResult.ToErrorList();
+        }
+        
+        var volunteer = await _repository.GetById(VolunteerId.Create(command.Id), cancellationToken);
 
         if (volunteer.IsFailure)
             return Errors.General.NotFound();
 
-        var socialNetworks = request.SocialNetworks
+        var socialNetworks = command.SocialNetworks
             .Select(x => SocialNetwork.Create(x.Title, x.Url).Value);
 
         var volunteerSocialNetworks = new ValueObjectList<SocialNetwork>(socialNetworks.ToList());
@@ -43,7 +51,7 @@ public class CreateSocialNetworksHandler
         
         var result = await _repository.Save(volunteer.Value, cancellationToken);
         
-        _logger.LogInformation("volunteer with id {volunteerId} updated social networks",  request.Id);
+        _logger.LogInformation("volunteer with id {volunteerId} updated social networks",  command.Id);
 
         return result;
     }

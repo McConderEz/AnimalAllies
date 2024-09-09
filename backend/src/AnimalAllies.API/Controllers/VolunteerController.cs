@@ -32,7 +32,7 @@ public class VolunteerController: ApplicationController
         
         if (result.IsFailure)
         {
-            return result.Error.ToErrorResponse();
+            return result.Errors.ToResponse();
         }
         
         return Ok(result.Value);
@@ -51,7 +51,7 @@ public class VolunteerController: ApplicationController
         
         if (response.IsFailure)
         {
-            return response.Error.ToErrorResponse();
+            return response.Errors.ToResponse();
         }
         
         return Ok(response.Value);
@@ -70,7 +70,7 @@ public class VolunteerController: ApplicationController
         
         if (response.IsFailure)
         {
-            return response.Error.ToErrorResponse();
+            return response.Errors.ToResponse();
         }
         
         return Ok(response.Value);
@@ -89,7 +89,7 @@ public class VolunteerController: ApplicationController
         
         if (response.IsFailure)
         {
-            return response.Error.ToErrorResponse();
+            return response.Errors.ToResponse();
         }
         
         return Ok(response.Value);
@@ -107,7 +107,7 @@ public class VolunteerController: ApplicationController
         
         if (response.IsFailure)
         {
-            return response.Error.ToErrorResponse();
+            return response.Errors.ToResponse();
         }
         
         return Ok(response.Value);
@@ -125,7 +125,7 @@ public class VolunteerController: ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         if (result.IsFailure)
-            return result.Error.ToErrorResponse();
+            return result.Errors.ToResponse();
 
         return Ok(result.Value);
     }
@@ -147,7 +147,7 @@ public class VolunteerController: ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         if (result.IsFailure)
-            return result.Error.ToErrorResponse();
+            return result.Errors.ToResponse();
         
         return Ok(result.Value);
     }

@@ -1,3 +1,4 @@
+using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.FileProvider;
 using AnimalAllies.Application.Providers;
 using AnimalAllies.Application.Repositories;
@@ -37,11 +38,19 @@ public class AddPetHandler
         AddPetCommand command,
         CancellationToken cancellationToken = default)
     {
+
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+        if (validationResult.IsValid == false)
+        {
+            return validationResult.ToErrorList();
+        }
+        
         var volunteerResult = await _volunteerRepository.GetById(
             VolunteerId.Create(command.VolunteerId), cancellationToken);
 
         if (volunteerResult.IsFailure)
-            return volunteerResult.Error;
+            return volunteerResult.Errors;
 
         var petId = PetId.NewGuid();
         

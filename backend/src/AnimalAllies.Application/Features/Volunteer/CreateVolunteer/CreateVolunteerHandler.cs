@@ -1,3 +1,4 @@
+using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Models.Volunteer;
@@ -24,11 +25,18 @@ public class CreateVolunteerHandler
     }
     
     public async Task<Result<VolunteerId>> Handle(
-        CreateVolunteerCommand request,
+        CreateVolunteerCommand command,
         CancellationToken cancellationToken = default)
     {
-        var phoneNumber = PhoneNumber.Create(request.PhoneNumber).Value;
-        var email = Email.Create(request.Email).Value;
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+        if (validationResult.IsValid == false)
+        {
+            return validationResult.ToErrorList();
+        }
+        
+        var phoneNumber = PhoneNumber.Create(command.PhoneNumber).Value;
+        var email = Email.Create(command.Email).Value;
         
         var volunteerByPhoneNumber = await _repository.GetByPhoneNumber(phoneNumber,cancellationToken);
         var volunteerByEmail = await _repository.GetByEmail(email,cancellationToken);
@@ -36,14 +44,14 @@ public class CreateVolunteerHandler
         if (!volunteerByPhoneNumber.IsFailure || !volunteerByEmail.IsFailure)
             return Errors.Volunteer.AlreadyExist();
         
-        var fullName = FullName.Create(request.FullName.FirstName, request.FullName.SecondName, request.FullName.Patronymic).Value;
-        var description = VolunteerDescription.Create(request.Description).Value;
-        var workExperience = WorkExperience.Create(request.WorkExperience).Value;
+        var fullName = FullName.Create(command.FullName.FirstName, command.FullName.SecondName, command.FullName.Patronymic).Value;
+        var description = VolunteerDescription.Create(command.Description).Value;
+        var workExperience = WorkExperience.Create(command.WorkExperience).Value;
         
 
-        var socialNetworks = request.SocialNetworks
+        var socialNetworks = command.SocialNetworks
             .Select(x => SocialNetwork.Create(x.Title, x.Url).Value);
-        var requisites = request.Requisites
+        var requisites = command.Requisites
             .Select(x => Requisite.Create(x.Title, x.Description).Value);
 
         

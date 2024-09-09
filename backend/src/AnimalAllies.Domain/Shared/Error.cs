@@ -9,12 +9,14 @@ public class Error
     public string ErrorCode { get; } 
     public string ErrorMessage { get; }
     public ErrorType Type { get; }
+    public string? InvalidField { get; } = null;
 
-    private Error(string errorCode, string errorMessage, ErrorType type)
+    private Error(string errorCode, string errorMessage, ErrorType type, string? invalidField = null)
     {
         ErrorCode = errorCode;
         ErrorMessage = errorMessage;
         Type = type;
+        InvalidField = invalidField;
     }
     
     public string Serialize()
@@ -39,20 +41,22 @@ public class Error
         return new Error(parts[0], parts[1], type);
     }
 
-    public static Error Validation(string errorCode, string errorMessage) =>
-        new Error(errorCode, errorMessage, ErrorType.Validation);
+    public static Error Validation(string errorCode, string errorMessage, string? invalidField = null) =>
+        new(errorCode, errorMessage, ErrorType.Validation, invalidField);
     
     public static Error Failure(string errorCode, string errorMessage) =>
-        new Error(errorCode, errorMessage, ErrorType.Failure);
+        new(errorCode, errorMessage, ErrorType.Failure);
     
     public static Error NotFound(string errorCode, string errorMessage) =>
-        new Error(errorCode, errorMessage, ErrorType.NotFound);
+        new(errorCode, errorMessage, ErrorType.NotFound);
     
     public static Error Conflict(string errorCode, string errorMessage) =>
-        new Error(errorCode, errorMessage, ErrorType.Conflict);
+        new(errorCode, errorMessage, ErrorType.Conflict);
     
     public static Error Null(string errorCode, string errorMessage) =>
-        new Error(errorCode, errorMessage, ErrorType.Null);
+        new(errorCode, errorMessage, ErrorType.Null);
+
+    public ErrorList ToErrorList() => new([this]);
     
     public override string ToString()
     {

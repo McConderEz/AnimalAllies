@@ -1,12 +1,9 @@
 using AnimalAllies.API.Extensions;
 using AnimalAllies.API.Middlewares;
-using AnimalAllies.API.Validation;
 using AnimalAllies.Application;
 using AnimalAllies.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
-using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

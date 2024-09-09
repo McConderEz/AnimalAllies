@@ -1,3 +1,4 @@
+using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
@@ -24,10 +25,17 @@ public class DeleteVolunteerHandler
     }
     
     public async Task<Result<VolunteerId>> Handle(
-        DeleteVolunteerCommand request,
+        DeleteVolunteerCommand command,
         CancellationToken cancellationToken = default)
     {
-        var volunteer = await _repository.GetById(VolunteerId.Create(request.Id),cancellationToken);
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+        if (validationResult.IsValid == false)
+        {
+            return validationResult.ToErrorList();
+        }
+        
+        var volunteer = await _repository.GetById(VolunteerId.Create(command.Id),cancellationToken);
 
         if (volunteer.IsFailure)
             return Errors.General.NotFound();
@@ -35,7 +43,7 @@ public class DeleteVolunteerHandler
         
         var result = await _repository.Delete(volunteer.Value, cancellationToken);
         
-        _logger.LogInformation("volunteer with id {volunteerId} deleted ", request.Id);
+        _logger.LogInformation("volunteer with id {volunteerId} deleted ", command.Id);
 
         return result;
     }
