@@ -57,6 +57,72 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         return Result.Success();
     }
 
+    public Result MovePet(Pet.Pet pet, Position newPosition)
+    {
+        var currentPosition = pet.Position;
+        
+        if(currentPosition == newPosition || _pets.Count == 1)
+            return Result.Success();
+
+        var adjustedPosition = AdjustNewPositionIfOutOfRange(newPosition);
+        if (adjustedPosition.IsFailure)
+            return adjustedPosition.Errors;
+
+        newPosition = adjustedPosition.Value;
+
+        var moveResult = MovePetBetweenPositions(newPosition, currentPosition);
+        if (moveResult.IsFailure)
+            return moveResult.Errors;
+        
+        return Result.Success();
+    }
+
+    private Result MovePetBetweenPositions(Position newPosition, Position currentPosition)
+    {
+        if (newPosition.Value < currentPosition.Value)
+        {
+            var petsToMove = _pets.Where(p => p.Position.Value >= newPosition.Value
+                                              && p.Position.Value < currentPosition.Value);
+
+            foreach (var petToMove in petsToMove)
+            {
+                var result = petToMove.MoveForward();
+                if (result.IsFailure)
+                {
+                    return result.Errors;
+                }
+            }
+        }
+        else if (newPosition.Value > currentPosition.Value)
+        {
+            var petsToMove = _pets.Where(p => p.Position.Value <= newPosition.Value
+                                              && p.Position.Value > currentPosition.Value);
+
+            foreach (var petToMove in petsToMove)
+            {
+                var result = petToMove.MoveBack();
+                if (result.IsFailure)
+                {
+                    return result.Errors;
+                }
+            }
+        }
+
+        return Result.Success();
+    }
+
+    private Result<Position> AdjustNewPositionIfOutOfRange(Position newPosition)
+    {
+        if (newPosition.Value <= _pets.Count)
+            return newPosition;
+
+        var lastPosition = Position.Create(_pets.Count - 1);
+        if (lastPosition.IsFailure)
+            return lastPosition.Errors;
+
+        return lastPosition.Value;
+    }
+
     public int PetsNeedsHelp() => _pets.Count(x => x.HelpStatus == HelpStatus.NeedsHelp);
     public int PetsSearchingHome() => _pets.Count(x => x.HelpStatus == HelpStatus.SearchingHome);
     public int PetsFoundHome() => _pets.Count(x => x.HelpStatus == HelpStatus.FoundHome);

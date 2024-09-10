@@ -15,6 +15,12 @@ public class Position : ValueObject
         Value = value;
     }
 
+    public Result<Position> Forward()
+        => Create(Value + 1);
+    
+    public Result<Position> Back()
+        => Create(Value - 1);
+    
     public static Result<Position> Create(int value)
     {
         if (value < 1)

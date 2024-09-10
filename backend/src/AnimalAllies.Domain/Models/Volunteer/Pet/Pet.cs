@@ -60,4 +60,26 @@ public class Pet : Entity<PetId>, ISoftDeletable
     }
     
     public void Delete() => _isDeleted = !_isDeleted;
+
+    public Result MoveForward()
+    {
+        var newPosition = Position.Forward();
+        if (newPosition.IsFailure)
+            return newPosition.Errors;
+
+        Position = newPosition.Value;
+
+        return Result.Success();
+    }
+    
+    public Result MoveBack()
+    {
+        var newPosition = Position.Back();
+        if (newPosition.IsFailure)
+            return newPosition.Errors;
+
+        Position = newPosition.Value;
+
+        return Result.Success();
+    }
 }
