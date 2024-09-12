@@ -64,7 +64,7 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         if(currentPosition == newPosition || _pets.Count == 1)
             return Result.Success();
 
-        var adjustedPosition = AdjustNewPositionIfOutOfRange(newPosition);
+        var adjustedPosition = IfNewPositionOutOfRange(newPosition);
         if (adjustedPosition.IsFailure)
             return adjustedPosition.Errors;
 
@@ -73,7 +73,8 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         var moveResult = MovePetBetweenPositions(newPosition, currentPosition);
         if (moveResult.IsFailure)
             return moveResult.Errors;
-        
+
+        pet.Move(newPosition);
         return Result.Success();
     }
 
@@ -111,16 +112,12 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         return Result.Success();
     }
 
-    private Result<Position> AdjustNewPositionIfOutOfRange(Position newPosition)
+    private Result<Position> IfNewPositionOutOfRange(Position newPosition)
     {
-        if (newPosition.Value <= _pets.Count)
-            return newPosition;
-
-        var lastPosition = Position.Create(_pets.Count - 1);
-        if (lastPosition.IsFailure)
-            return lastPosition.Errors;
-
-        return lastPosition.Value;
+        if (newPosition.Value > _pets.Count)
+            return Errors.Volunteer.PetPositionOutOfRange();
+        
+        return newPosition;
     }
 
     public int PetsNeedsHelp() => _pets.Count(x => x.HelpStatus == HelpStatus.NeedsHelp);

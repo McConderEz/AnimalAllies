@@ -69,6 +69,17 @@ public class VolunteerTests
         return pet;
     }
 
+    private Volunteer AddPetsInVolunteer(Volunteer volunteer, int petsCount, DateOnly birthDate, DateTime creationTime)
+    {
+        for (var i = 0; i < petsCount; i++)
+        {
+            var pet = InitPet(birthDate, creationTime);
+            volunteer.AddPet(pet);
+        }
+
+        return volunteer;
+    }
+
     private static Volunteer InitVolunteer()
     {
         var volunteerId = VolunteerId.NewGuid();
@@ -124,4 +135,218 @@ public class VolunteerTests
         addedPetResult.Value.Id.Should().Be(petToAdd.Id);
         addedPetResult.Value.Position.Should().Be(position);
     }
+
+    [Fact]
+    public void Move_Pet_Should_Not_Move_When_Position_Already_At_New_Position()
+    {
+        //arrange
+        var birthDate = DateOnly.FromDateTime(DateTime.Now);
+        var creationTime = DateTime.Now;
+        int petsCount = 5;
+        
+        var volunteer = InitVolunteer();
+        volunteer = AddPetsInVolunteer(volunteer, petsCount, birthDate, creationTime);
+
+        var secondPosition = Position.Create(2).Value;
+
+        var firstPet = volunteer.Pets[0];
+        var secondPet = volunteer.Pets[1];
+        var thirdPet = volunteer.Pets[2];
+        var fourthPet = volunteer.Pets[3];
+        var fifthPet = volunteer.Pets[4];
+
+        
+        //act
+        var result = volunteer.MovePet(secondPet, secondPosition);
+        
+        
+        
+
+        //assert
+        result.IsSuccess.Should().BeTrue();
+
+        firstPet.Position.Value.Should().Be(1);
+        secondPet.Position.Value.Should().Be(2);
+        thirdPet.Position.Value.Should().Be(3);
+        fourthPet.Position.Value.Should().Be(4);
+        fifthPet.Position.Value.Should().Be(5);
+
+    }
+    
+    [Fact]
+    public void Move_Pet_Should_Move_Other_Pet_Forward_When_New_Position_Is_Lower()
+    {
+        //arrange
+        var birthDate = DateOnly.FromDateTime(DateTime.Now);
+        var creationTime = DateTime.Now;
+        int petsCount = 5;
+        
+        var volunteer = InitVolunteer();
+        volunteer = AddPetsInVolunteer(volunteer, petsCount, birthDate, creationTime);
+
+        var secondPosition = Position.Create(2).Value;
+
+        var firstPet = volunteer.Pets[0];
+        var secondPet = volunteer.Pets[1];
+        var thirdPet = volunteer.Pets[2];
+        var fourthPet = volunteer.Pets[3];
+        var fifthPet = volunteer.Pets[4];
+
+        
+        //act
+        var result = volunteer.MovePet(fourthPet, secondPosition);
+        
+        
+        
+
+        //assert
+        result.IsSuccess.Should().BeTrue();
+
+        firstPet.Position.Value.Should().Be(1);
+        secondPet.Position.Value.Should().Be(3);
+        thirdPet.Position.Value.Should().Be(4);
+        fourthPet.Position.Value.Should().Be(2);
+        fifthPet.Position.Value.Should().Be(5);
+
+    }
+    
+    [Fact]
+    public void Move_Pet_Should__Move_Other_Pet_Back_When_New_Position_Is_Grater()
+    {
+        //arrange
+        var birthDate = DateOnly.FromDateTime(DateTime.Now);
+        var creationTime = DateTime.Now;
+        int petsCount = 5;
+        
+        var volunteer = InitVolunteer();
+        volunteer = AddPetsInVolunteer(volunteer, petsCount, birthDate, creationTime);
+
+        var fourth = Position.Create(4).Value;
+
+        var firstPet = volunteer.Pets[0];
+        var secondPet = volunteer.Pets[1];
+        var thirdPet = volunteer.Pets[2];
+        var fourthPet = volunteer.Pets[3];
+        var fifthPet = volunteer.Pets[4];
+
+        
+        //act
+        var result = volunteer.MovePet(secondPet, fourth);
+        
+        
+        
+
+        //assert
+        result.IsSuccess.Should().BeTrue();
+
+        firstPet.Position.Value.Should().Be(1);
+        secondPet.Position.Value.Should().Be(4);
+        thirdPet.Position.Value.Should().Be(2);
+        fourthPet.Position.Value.Should().Be(3);
+        fifthPet.Position.Value.Should().Be(5);
+
+    }
+    
+    [Fact]
+    public void Move_Pet_Should__Move_Other_Pet_Forward_When_New_Position_Is_First()
+    {
+        //arrange
+        var birthDate = DateOnly.FromDateTime(DateTime.Now);
+        var creationTime = DateTime.Now;
+        int petsCount = 5;
+        
+        var volunteer = InitVolunteer();
+        volunteer = AddPetsInVolunteer(volunteer, petsCount, birthDate, creationTime);
+
+        var first = Position.Create(1).Value;
+
+        var firstPet = volunteer.Pets[0];
+        var secondPet = volunteer.Pets[1];
+        var thirdPet = volunteer.Pets[2];
+        var fourthPet = volunteer.Pets[3];
+        var fifthPet = volunteer.Pets[4];
+
+        
+        //act
+        var result = volunteer.MovePet(fourthPet, first);
+        
+        
+        
+
+        //assert
+        result.IsSuccess.Should().BeTrue();
+
+        firstPet.Position.Value.Should().Be(2);
+        secondPet.Position.Value.Should().Be(3);
+        thirdPet.Position.Value.Should().Be(4);
+        fourthPet.Position.Value.Should().Be(1);
+        fifthPet.Position.Value.Should().Be(5);
+
+    }
+    
+    [Fact]
+    public void Move_Pet_Should__Move_Other_Pet_Back_When_New_Position_Is_Last()
+    {
+        //arrange
+        var birthDate = DateOnly.FromDateTime(DateTime.Now);
+        var creationTime = DateTime.Now;
+        int petsCount = 5;
+        
+        var volunteer = InitVolunteer();
+        volunteer = AddPetsInVolunteer(volunteer, petsCount, birthDate, creationTime);
+
+        var fifth = Position.Create(5).Value;
+
+        var firstPet = volunteer.Pets[0];
+        var secondPet = volunteer.Pets[1];
+        var thirdPet = volunteer.Pets[2];
+        var fourthPet = volunteer.Pets[3];
+        var fifthPet = volunteer.Pets[4];
+
+        
+        //act
+        var result = volunteer.MovePet(secondPet, fifth);
+        
+        
+        
+
+        //assert
+        result.IsSuccess.Should().BeTrue();
+
+        firstPet.Position.Value.Should().Be(1);
+        secondPet.Position.Value.Should().Be(5);
+        thirdPet.Position.Value.Should().Be(2);
+        fourthPet.Position.Value.Should().Be(3);
+        fifthPet.Position.Value.Should().Be(4);
+
+    }
+    
+    [Fact]
+    public void Move_Pet_Move_Out_Of_Range_Grater_Should_Be_Error()
+    {
+        //arrange
+        var birthDate = DateOnly.FromDateTime(DateTime.Now);
+        var creationTime = DateTime.Now;
+        int petsCount = 5;
+        
+        var volunteer = InitVolunteer();
+        volunteer = AddPetsInVolunteer(volunteer, petsCount, birthDate, creationTime);
+
+        var sixth = Position.Create(7).Value;
+
+        var firstPet = volunteer.Pets[0];
+        var secondPet = volunteer.Pets[1];
+        var thirdPet = volunteer.Pets[2];
+        var fourthPet = volunteer.Pets[3];
+        var fifthPet = volunteer.Pets[4];
+
+        
+        //act
+        var result = volunteer.MovePet(secondPet, sixth);
+        
+        
+        //assert
+        result.IsSuccess.Should().BeFalse();
+    }
+    
 }

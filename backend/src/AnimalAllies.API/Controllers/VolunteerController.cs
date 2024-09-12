@@ -10,6 +10,7 @@ using AnimalAllies.Application.Features.Volunteer.CreateRequisites;
 using AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
 using AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
 using AnimalAllies.Application.Features.Volunteer.DeleteVolunteer;
+using AnimalAllies.Application.Features.Volunteer.MovePetPosition;
 using AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
 using AnimalAllies.Domain.Models;
 using FluentValidation;
@@ -143,6 +144,24 @@ public class VolunteerController: ApplicationController
         var fileDtos = fileProcessor.Process(request.Files);
 
         var command = request.ToCommand(volunteerId, petId, fileDtos);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
+        
+        return Ok(result.Value);
+    }
+
+    [HttpPost("{volunteerId:guid}/{petId:guid}/petPosition")]
+    public async Task<ActionResult> MovePetPosition(
+        [FromRoute] Guid volunteerId,
+        [FromRoute] Guid petId,
+        [FromBody] MovePetPositionRequest request,
+        [FromServices] MovePetPositionHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = request.ToCommand(volunteerId, petId);
 
         var result = await handler.Handle(command, cancellationToken);
 
