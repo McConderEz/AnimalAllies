@@ -16,6 +16,6 @@ public class MovePetPositionValidator: AbstractValidator<MovePetPositionCommand>
             .NotEmpty().WithError(Errors.General.ValueIsRequired("PetId"));
 
         RuleFor(p => p.Position)
-            .MustBeValueObject(x => Position.Create(x.Value));
+            .MustBeValueObject(p => Position.Create(p.Position));
     }
 }

@@ -44,7 +44,9 @@ public class MovePetPositionHandler
         if (pet.IsFailure)
             return pet.Errors;
 
-        var moveResult = volunteer.Value.MovePet(pet.Value, command.Position);
+        var position = Position.Create(command.Position.Position).Value;
+
+        var moveResult = volunteer.Value.MovePet(pet.Value, position);
 
         if (moveResult.IsFailure)
             return moveResult.Errors;
@@ -58,7 +60,7 @@ public class MovePetPositionHandler
             "pet with id {petId} of volunteer with id {volunteerId} move to position {position}",
             petId.Id,
             volunteerId.Id,
-            command.Position.Value);
+            position);
 
         return volunteerId;
     }

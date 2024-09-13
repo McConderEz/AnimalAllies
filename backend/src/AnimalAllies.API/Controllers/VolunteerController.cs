@@ -153,7 +153,7 @@ public class VolunteerController: ApplicationController
         return Ok(result.Value);
     }
 
-    [HttpPost("{volunteerId:guid}/{petId:guid}/petPosition")]
+    [HttpPost("{volunteerId:guid}/{petId:guid}/pet-position")]
     public async Task<ActionResult> MovePetPosition(
         [FromRoute] Guid volunteerId,
         [FromRoute] Guid petId,
