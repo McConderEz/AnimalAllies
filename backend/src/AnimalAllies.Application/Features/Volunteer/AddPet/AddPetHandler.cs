@@ -1,11 +1,13 @@
+using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.FileProvider;
 using AnimalAllies.Application.Providers;
 using AnimalAllies.Application.Repositories;
-using AnimalAllies.Domain.Models.Common;
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Models.Species;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.Shared;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 
@@ -17,15 +19,18 @@ public class AddPetHandler
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly ILogger<AddPetHandler> _logger;
+    private readonly IValidator<AddPetCommand> _validator;
 
     public AddPetHandler(
         IVolunteerRepository volunteerRepository,
         ILogger<AddPetHandler> logger,
-        IDateTimeProvider dateTimeProvider)
+        IDateTimeProvider dateTimeProvider,
+        IValidator<AddPetCommand> validator)
     {
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _dateTimeProvider = dateTimeProvider;
+        _validator = validator;
     }
     
 
@@ -33,11 +38,19 @@ public class AddPetHandler
         AddPetCommand command,
         CancellationToken cancellationToken = default)
     {
+
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+        if (validationResult.IsValid == false)
+        {
+            return validationResult.ToErrorList();
+        }
+        
         var volunteerResult = await _volunteerRepository.GetById(
             VolunteerId.Create(command.VolunteerId), cancellationToken);
 
         if (volunteerResult.IsFailure)
-            return volunteerResult.Error;
+            return volunteerResult.Errors;
 
         var petId = PetId.NewGuid();
         
@@ -69,7 +82,7 @@ public class AddPetHandler
         var animalType = new AnimalType(SpeciesId.Create(command.AnimalType.SpeciesId), command.AnimalType.BreedId);
 
         var requisites =
-            new PetRequisites(command.Requisites
+            new ValueObjectList<Requisite>(command.Requisites
                 .Select(r => Requisite.Create(r.Title, r.Description).Value).ToList());
         
         
@@ -83,11 +96,13 @@ public class AddPetHandler
             helpStatus,
             animalType,
             requisites,
-            new PetPhotoDetails([]));
+            new ValueObjectList<PetPhoto>([]));
 
         volunteerResult.Value.AddPet(pet);
 
         await _volunteerRepository.Save(volunteerResult.Value, cancellationToken);
+        
+        _logger.LogInformation("added pet with id {petId} to volunteer with id {volunteerId}", petId.Id, volunteerResult.Value.Id.Id);
         
         return pet.Id.Id;
     }

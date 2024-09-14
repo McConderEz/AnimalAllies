@@ -35,5 +35,10 @@ public static class Errors
         {
             return Error.Validation("Record.already.exist", $"Volunteer already exist");
         }
+
+        public static Error PetPositionOutOfRange()
+        {
+            return Error.Validation("Position.out.of.range", "Pet position is out of range");
+        }
     }
 }

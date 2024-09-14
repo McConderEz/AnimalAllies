@@ -1,7 +1,7 @@
 using AnimalAllies.Application.Database;
 using AnimalAllies.Application.Providers;
 using AnimalAllies.Application.Repositories;
-using AnimalAllies.Domain.Models.Common;
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Shared;
 using AnimalAllies.Infrastructure.Common;
 using AnimalAllies.Infrastructure.Options;

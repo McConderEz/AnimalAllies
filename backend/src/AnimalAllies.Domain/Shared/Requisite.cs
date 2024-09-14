@@ -1,11 +1,12 @@
 using System.Text.Json.Serialization;
 using AnimalAllies.Domain.Models;
-using Common_ValueObject = AnimalAllies.Domain.Models.Common.ValueObject;
-using ValueObject = AnimalAllies.Domain.Models.Common.ValueObject;
+using Common_ValueObject = AnimalAllies.Domain.Common.ValueObject;
+using Domain_Common_ValueObject = AnimalAllies.Domain.Common.ValueObject;
+using ValueObject = AnimalAllies.Domain.Common.ValueObject;
 
 namespace AnimalAllies.Domain.Shared;
 
-public class Requisite : Common_ValueObject
+public class Requisite : Domain_Common_ValueObject
 {
     public string Title { get; } 
     public string Description { get; }

@@ -1,4 +1,4 @@
-using AnimalAllies.Domain.Models.Common;
+using AnimalAllies.Domain.Common;
 
 namespace AnimalAllies.Domain.Models.Species;
 

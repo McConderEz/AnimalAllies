@@ -1,4 +1,4 @@
-namespace AnimalAllies.Domain.Models.Common;
+namespace AnimalAllies.Domain.Common;
 
 public interface ISoftDeletable
 {

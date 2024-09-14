@@ -1,4 +1,4 @@
-using AnimalAllies.Domain.Models.Common;
+using AnimalAllies.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -17,6 +17,19 @@ public class SoftDeleteInterceptor : SaveChangesInterceptor
         }
 
         var entries = eventData.Context.ChangeTracker
+            .Entries()
+            .Where(e => e.State == EntityState.Deleted);
+
+        foreach (var entry in entries)
+        {
+            entry.State = EntityState.Modified;
+            if (entry.Entity is ISoftDeletable item)
+            {
+                item.Delete();
+            }
+        }
+        
+        /*var entries = eventData.Context.ChangeTracker
             .Entries<ISoftDeletable>()
             .Where(e => e.State == EntityState.Deleted);
 
@@ -24,7 +37,7 @@ public class SoftDeleteInterceptor : SaveChangesInterceptor
         {
             entry.State = EntityState.Modified;
             entry.Entity.Delete();
-        }
+        }*/
 
         return await base.SavingChangesAsync(eventData, result, cancellationToken);
     }

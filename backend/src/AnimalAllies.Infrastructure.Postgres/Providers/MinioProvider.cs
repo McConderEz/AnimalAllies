@@ -41,7 +41,7 @@ public class MinioProvider: IFileProvider
             var pathsResult = await Task.WhenAll(tasks);
 
             if (pathsResult.Any(p => p.IsFailure))
-                return pathsResult.First().Error;
+                return pathsResult.First().Errors;
 
             var results = pathsResult.Select(p => p.Value).ToList();
 

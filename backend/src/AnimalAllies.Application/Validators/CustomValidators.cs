@@ -16,8 +16,10 @@ public static class CustomValidators
 
             if (result.IsSuccess)
                 return;
+
+            var errorsSerialized = result.Errors.Select(e => e.Serialize());
             
-            context.AddFailure(result.Error.Serialize());
+            context.AddFailure(string.Join('\n', errorsSerialized));
         });
     }
 

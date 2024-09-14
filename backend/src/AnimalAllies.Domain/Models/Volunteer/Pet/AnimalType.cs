@@ -1,4 +1,4 @@
-using AnimalAllies.Domain.Models.Common;
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Models.Species;
 using AnimalAllies.Domain.Models.Species.Breed;
 using AnimalAllies.Domain.Shared;

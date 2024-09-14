@@ -10,6 +10,7 @@ using AnimalAllies.Application.Features.Volunteer.CreateRequisites;
 using AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
 using AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
 using AnimalAllies.Application.Features.Volunteer.DeleteVolunteer;
+using AnimalAllies.Application.Features.Volunteer.MovePetPosition;
 using AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
 using AnimalAllies.Domain.Models;
 using FluentValidation;
@@ -32,7 +33,7 @@ public class VolunteerController: ApplicationController
         
         if (result.IsFailure)
         {
-            return result.Error.ToErrorResponse();
+            return result.Errors.ToResponse();
         }
         
         return Ok(result.Value);
@@ -43,23 +44,15 @@ public class VolunteerController: ApplicationController
         [FromRoute] Guid id,
         [FromBody] UpdateVolunteerRequest request,
         [FromServices] UpdateVolunteerHandler handler,
-        [FromServices] IValidator<UpdateVolunteerCommand> validator,
         CancellationToken cancellationToken = default)
     {
         var command = request.ToCommand(id);
-
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
-        
-        if (validationResult.IsValid == false)
-        {
-            return validationResult.ToValidationErrorResponse();
-        }
         
         var response = await handler.Handle(command, cancellationToken);
         
         if (response.IsFailure)
         {
-            return response.Error.ToErrorResponse();
+            return response.Errors.ToResponse();
         }
         
         return Ok(response.Value);
@@ -70,23 +63,15 @@ public class VolunteerController: ApplicationController
         [FromRoute] Guid id,
         [FromBody] CreateRequisitesRequest request,
         [FromServices] CreateRequisitesHandler handler,
-        [FromServices] IValidator<CreateRequisitesCommand> validator,
         CancellationToken cancellationToken = default)
     {
         var command = request.ToCommand(id);
-
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
-
-        if (validationResult.IsValid == false)
-        {
-            return validationResult.ToValidationErrorResponse();
-        }
         
         var response = await handler.Handle(command, cancellationToken);
         
         if (response.IsFailure)
         {
-            return response.Error.ToErrorResponse();
+            return response.Errors.ToResponse();
         }
         
         return Ok(response.Value);
@@ -97,23 +82,15 @@ public class VolunteerController: ApplicationController
         [FromRoute] Guid id,
         [FromBody] CreateSocialNetworksRequest request,
         [FromServices] CreateSocialNetworksHandler handler,
-        [FromServices] IValidator<CreateSocialNetworksCommand> validator,
         CancellationToken cancellationToken = default)
     {
         var command = request.ToCommand(id);
-
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
-
-        if (validationResult.IsValid == false)
-        {
-            return validationResult.ToValidationErrorResponse();
-        }
         
         var response = await handler.Handle(command, cancellationToken);
         
         if (response.IsFailure)
         {
-            return response.Error.ToErrorResponse();
+            return response.Errors.ToResponse();
         }
         
         return Ok(response.Value);
@@ -123,23 +100,15 @@ public class VolunteerController: ApplicationController
     public async Task<IActionResult> DeleteVolunteer(
         [FromRoute] Guid id,
         [FromServices] DeleteVolunteerHandler handler,
-        [FromServices] IValidator<DeleteVolunteerCommand> validator,
         CancellationToken cancellationToken = default)
     {
         var command = new DeleteVolunteerCommand(id);
-
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
-        
-        if (validationResult.IsValid == false)
-        {
-            return validationResult.ToValidationErrorResponse();
-        }
         
         var response = await handler.Handle(command, cancellationToken);
         
         if (response.IsFailure)
         {
-            return response.Error.ToErrorResponse();
+            return response.Errors.ToResponse();
         }
         
         return Ok(response.Value);
@@ -157,7 +126,7 @@ public class VolunteerController: ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         if (result.IsFailure)
-            return result.Error.ToErrorResponse();
+            return result.Errors.ToResponse();
 
         return Ok(result.Value);
     }
@@ -179,7 +148,25 @@ public class VolunteerController: ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         if (result.IsFailure)
-            return result.Error.ToErrorResponse();
+            return result.Errors.ToResponse();
+        
+        return Ok(result.Value);
+    }
+
+    [HttpPost("{volunteerId:guid}/{petId:guid}/pet-position")]
+    public async Task<ActionResult> MovePetPosition(
+        [FromRoute] Guid volunteerId,
+        [FromRoute] Guid petId,
+        [FromBody] MovePetPositionRequest request,
+        [FromServices] MovePetPositionHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = request.ToCommand(volunteerId, petId);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
         
         return Ok(result.Value);
     }

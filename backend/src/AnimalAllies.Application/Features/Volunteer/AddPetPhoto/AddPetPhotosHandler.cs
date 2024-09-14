@@ -1,12 +1,14 @@
 using AnimalAllies.Application.Database;
+using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.FileProvider;
 using AnimalAllies.Application.Providers;
 using AnimalAllies.Application.Repositories;
-using AnimalAllies.Domain.Models.Common;
+using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Models.Species;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.Shared;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 
@@ -19,17 +21,20 @@ public class AddPetPhotosHandler
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly ILogger<AddPetPhotosHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidator<AddPetPhotosCommand> _validator;
 
     public AddPetPhotosHandler(
         IFileProvider fileProvider,
         IVolunteerRepository volunteerRepository,
         ILogger<AddPetPhotosHandler> logger,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IValidator<AddPetPhotosCommand> validator)
     {
         _fileProvider = fileProvider;
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _validator = validator;
     }
     
 
@@ -37,6 +42,13 @@ public class AddPetPhotosHandler
         AddPetPhotosCommand command,
         CancellationToken cancellationToken = default)
     {
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+        if (validationResult.IsValid == false)
+        {
+            return validationResult.ToErrorList();
+        }
+        
         var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
 
         try
@@ -46,7 +58,7 @@ public class AddPetPhotosHandler
                 VolunteerId.Create(command.VolunteerId), cancellationToken);
 
             if (volunteerResult.IsFailure)
-                return volunteerResult.Error;
+                return volunteerResult.Errors;
 
             var petId = PetId.Create(command.PetId);
 
@@ -63,7 +75,7 @@ public class AddPetPhotosHandler
                 var filePath = FilePath.Create(Guid.NewGuid(), extension);
 
                 if (filePath.IsFailure)
-                    return filePath.Error;
+                    return filePath.Errors;
 
                 var fileContent = new FileData(file.Content, filePath.Value, BUCKE_NAME);
 
@@ -74,7 +86,7 @@ public class AddPetPhotosHandler
                 .Select(f => new PetPhoto(f.FilePath, false))
                 .ToList();
             
-            var petPhotoList = new PetPhotoDetails(photos);
+            var petPhotoList = new ValueObjectList<PetPhoto>(photos);
 
             pet.Value.AddPhotos(petPhotoList);
 
@@ -83,7 +95,7 @@ public class AddPetPhotosHandler
             var uploadResult = await _fileProvider.UploadFiles(filesData, cancellationToken);
 
             if (uploadResult.IsFailure)
-                return uploadResult.Error;
+                return uploadResult.Errors;
             
             transaction.Commit();
             
