@@ -1,9 +1,6 @@
 using AnimalAllies.API.Contracts;
 using AnimalAllies.API.Extensions;
 using AnimalAllies.API.Processors;
-using AnimalAllies.API.Response;
-using AnimalAllies.Application.Contracts.DTOs;
-using AnimalAllies.Application.Features.Volunteer;
 using AnimalAllies.Application.Features.Volunteer.AddPet;
 using AnimalAllies.Application.Features.Volunteer.AddPetPhoto;
 using AnimalAllies.Application.Features.Volunteer.CreateRequisites;
@@ -12,8 +9,6 @@ using AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
 using AnimalAllies.Application.Features.Volunteer.DeleteVolunteer;
 using AnimalAllies.Application.Features.Volunteer.MovePetPosition;
 using AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
-using AnimalAllies.Domain.Models;
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnimalAllies.API.Controllers;
