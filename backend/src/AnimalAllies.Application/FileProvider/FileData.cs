@@ -2,4 +2,6 @@ using AnimalAllies.Domain.Models.Volunteer.Pet;
 
 namespace AnimalAllies.Application.FileProvider;
 
-public record FileData(Stream Stream, FilePath FilePath, string BucketName);
+public record FileData(Stream Stream, FileInfo FileInfo);
+
+public record FileInfo(FilePath FilePath, string BucketName);

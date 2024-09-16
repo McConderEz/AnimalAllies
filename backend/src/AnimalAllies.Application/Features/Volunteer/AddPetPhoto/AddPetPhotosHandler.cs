@@ -1,6 +1,7 @@
 using AnimalAllies.Application.Database;
 using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.FileProvider;
+using AnimalAllies.Application.Messaging;
 using AnimalAllies.Application.Providers;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Common;
@@ -10,6 +11,7 @@ using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.Shared;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using FileInfo = AnimalAllies.Application.FileProvider.FileInfo;
 
 
 namespace AnimalAllies.Application.Features.Volunteer.AddPetPhoto;
@@ -21,6 +23,7 @@ public class AddPetPhotosHandler
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly ILogger<AddPetPhotosHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMessageQueue<IEnumerable<FileInfo>> _messageQueue;
     private readonly IValidator<AddPetPhotosCommand> _validator;
 
     public AddPetPhotosHandler(
@@ -28,13 +31,16 @@ public class AddPetPhotosHandler
         IVolunteerRepository volunteerRepository,
         ILogger<AddPetPhotosHandler> logger,
         IUnitOfWork unitOfWork,
+        IMessageQueue<IEnumerable<FileInfo>> messageQueue,
         IValidator<AddPetPhotosCommand> validator)
     {
         _fileProvider = fileProvider;
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _messageQueue = messageQueue;
         _validator = validator;
+        _messageQueue = messageQueue;
     }
     
 
@@ -77,13 +83,13 @@ public class AddPetPhotosHandler
                 if (filePath.IsFailure)
                     return filePath.Errors;
 
-                var fileContent = new FileData(file.Content, filePath.Value, BUCKE_NAME);
+                var fileContent = new FileData(file.Content,new FileInfo(filePath.Value, BUCKE_NAME));
 
                 filesData.Add(fileContent);
             }
 
             var photos = filesData
-                .Select(f => new PetPhoto(f.FilePath, false))
+                .Select(f => new PetPhoto(f.FileInfo.FilePath, false))
                 .ToList();
             
             var petPhotoList = new ValueObjectList<PetPhoto>(photos);
@@ -93,10 +99,13 @@ public class AddPetPhotosHandler
             await _unitOfWork.SaveChanges(cancellationToken);
             
             var uploadResult = await _fileProvider.UploadFiles(filesData, cancellationToken);
-
             if (uploadResult.IsFailure)
+            {
+                await _messageQueue.WriteAsync(filesData.Select(f => f.FileInfo), cancellationToken);
+                    
                 return uploadResult.Errors;
-            
+            }
+
             transaction.Commit();
             
             _logger.LogInformation("Files uploaded to pet with id - {id}", petId.Id);

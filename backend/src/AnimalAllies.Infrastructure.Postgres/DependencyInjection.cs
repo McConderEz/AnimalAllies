@@ -1,15 +1,20 @@
 using AnimalAllies.Application.Database;
+using AnimalAllies.Application.Messaging;
 using AnimalAllies.Application.Providers;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Common;
+using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.Shared;
+using AnimalAllies.Infrastructure.BackgroundServices;
 using AnimalAllies.Infrastructure.Common;
+using AnimalAllies.Infrastructure.MessageQueues;
 using AnimalAllies.Infrastructure.Options;
 using AnimalAllies.Infrastructure.Providers;
 using AnimalAllies.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Minio;
+using FileInfo = AnimalAllies.Application.FileProvider.FileInfo;
 using ServiceCollectionExtensions = Minio.ServiceCollectionExtensions;
 
 namespace AnimalAllies.Infrastructure;
@@ -25,6 +30,10 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddMinio(configuration);
+
+        services.AddHostedService<FilesCleanerBackgroundService>();
+        
+        services.AddSingleton<IMessageQueue<IEnumerable<FileInfo>>,InMemoryMessageQueue<IEnumerable<FileInfo>>>();
         
         return services;
     }
