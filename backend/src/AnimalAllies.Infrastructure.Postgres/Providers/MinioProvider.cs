@@ -100,12 +100,6 @@ public class MinioProvider: IFileProvider
             var statArgs = new StatObjectArgs()
                 .WithBucket(fileInfo.BucketName)
                 .WithObject(fileInfo.FilePath.Path);
-
-
-            var objectStat = await _minioClient.StatObjectAsync(statArgs, cancellationToken);
-            
-            if(objectStat is null)
-                return Result.Success();
             
             var arg = new RemoveObjectArgs()
                 .WithBucket(fileInfo.BucketName)
