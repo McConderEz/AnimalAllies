@@ -4,6 +4,7 @@ using AnimalAllies.Application.Providers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using FileInfo = AnimalAllies.Application.FileProvider.FileInfo;
 
 namespace AnimalAllies.Infrastructure.BackgroundServices;
 

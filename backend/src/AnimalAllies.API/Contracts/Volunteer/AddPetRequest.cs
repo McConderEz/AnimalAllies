@@ -1,9 +1,7 @@
-using AnimalAllies.Application.Contracts.DTOs;
 using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
-using AnimalAllies.Application.Features.Volunteer.AddPet;
-using Microsoft.AspNetCore.Mvc;
+using AnimalAllies.Application.Features.Volunteer.Commands.AddPet;
 
-namespace AnimalAllies.API.Contracts;
+namespace AnimalAllies.API.Contracts.Volunteer;
 
 public record AddPetRequest(
     string Name,

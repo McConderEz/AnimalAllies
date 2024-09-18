@@ -1,3 +1,7 @@
 namespace AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 
-public record RequisiteDto(string Title, string Description);
+public class RequisiteDto
+{
+    public string Title { get; init; } = string.Empty;
+    public string Description { get; init; } = string.Empty;
+}

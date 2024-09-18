@@ -1,7 +1,7 @@
 using AnimalAllies.Application.Contracts.DTOs;
-using AnimalAllies.Application.Features.Volunteer.AddPetPhoto;
+using AnimalAllies.Application.Features.Volunteer.Commands.AddPetPhoto;
 
-namespace AnimalAllies.API.Contracts;
+namespace AnimalAllies.API.Contracts.Volunteer;
 
 public record AddPetPhotosRequest(IFormFileCollection Files)
 {

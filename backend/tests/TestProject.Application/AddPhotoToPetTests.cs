@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using AnimalAllies.Application.Contracts.DTOs;
 using AnimalAllies.Application.Database;
-using AnimalAllies.Application.Features.Volunteer.AddPetPhoto;
+using AnimalAllies.Application.Features.Volunteer.Commands.AddPetPhoto;
 using AnimalAllies.Application.FileProvider;
 using AnimalAllies.Application.Messaging;
 using AnimalAllies.Application.Providers;

@@ -2,6 +2,7 @@ using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
+using AnimalAllies.Infrastructure.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -9,9 +10,9 @@ namespace AnimalAllies.Infrastructure.Repositories;
 
 public class VolunteerRepository: IVolunteerRepository
 {
-    private readonly AnimalAlliesDbContext _context;
+    private readonly WriteDbContext _context;
     
-    public VolunteerRepository(AnimalAlliesDbContext context)
+    public VolunteerRepository(WriteDbContext context)
     {
         _context = context;
     }

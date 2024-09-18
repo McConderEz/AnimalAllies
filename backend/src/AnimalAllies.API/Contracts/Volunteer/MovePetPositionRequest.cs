@@ -1,8 +1,7 @@
 using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
-using AnimalAllies.Application.Features.Volunteer.MovePetPosition;
-using AnimalAllies.Domain.Models.Volunteer.Pet;
+using AnimalAllies.Application.Features.Volunteer.Commands.MovePetPosition;
 
-namespace AnimalAllies.API.Contracts;
+namespace AnimalAllies.API.Contracts.Volunteer;
 
 public record MovePetPositionRequest(PositionDto Position)
 {

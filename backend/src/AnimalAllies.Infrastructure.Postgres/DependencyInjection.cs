@@ -7,6 +7,7 @@ using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.Shared;
 using AnimalAllies.Infrastructure.BackgroundServices;
 using AnimalAllies.Infrastructure.Common;
+using AnimalAllies.Infrastructure.DbContexts;
 using AnimalAllies.Infrastructure.MessageQueues;
 using AnimalAllies.Infrastructure.Options;
 using AnimalAllies.Infrastructure.Providers;
@@ -24,17 +25,46 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services, IConfiguration configuration)
     {
+        services
+            .AddDbContexts()
+            .AddMinio(configuration)
+            .AddRepositories()
+            .AddDatabase()
+            .AddHostedServices();
+        
         services.AddTransient<IDateTimeProvider, DateTimeProvider>();
-        services.AddScoped<AnimalAlliesDbContext>();
-        services.AddScoped<IVolunteerRepository, VolunteerRepository>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-        services.AddMinio(configuration);
-
-        services.AddHostedService<FilesCleanerBackgroundService>();
         
         services.AddSingleton<IMessageQueue<IEnumerable<FileInfo>>,InMemoryMessageQueue<IEnumerable<FileInfo>>>();
         
+        return services;
+    }
+
+    private static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IVolunteerRepository, VolunteerRepository>();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddHostedServices(this IServiceCollection services)
+    {
+        services.AddHostedService<FilesCleanerBackgroundService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddDatabase(this IServiceCollection services)
+    {
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddDbContexts(this IServiceCollection services)
+    {
+        services.AddScoped<WriteDbContext>();
+        services.AddScoped<IReadDbContext,ReadDbContext>();
+
         return services;
     }
 

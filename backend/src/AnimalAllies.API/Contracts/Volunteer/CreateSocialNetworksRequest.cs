@@ -1,8 +1,7 @@
-using AnimalAllies.Application.Contracts.DTOs;
 using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
-using AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
+using AnimalAllies.Application.Features.Volunteer.Commands.CreateSocialNetworks;
 
-namespace AnimalAllies.API.Contracts;
+namespace AnimalAllies.API.Contracts.Volunteer;
 
 public record CreateSocialNetworksRequest(IEnumerable<SocialNetworkDto> SocialNetworks)
 {
