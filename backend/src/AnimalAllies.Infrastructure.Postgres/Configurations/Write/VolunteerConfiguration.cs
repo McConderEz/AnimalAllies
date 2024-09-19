@@ -22,7 +22,8 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
         {
             b.IsRequired();
             b.Property(x => x.Value)
-                .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH);
+                .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH)
+                .HasColumnName("description");
         });
 
         builder.ComplexProperty(x => x.WorkExperience, we =>
@@ -69,10 +70,12 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
             {
                 sb.Property(s => s.Title)
                     .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
+                    .HasColumnName("title")
                     .IsRequired();
 
                 sb.Property(s => s.Url)
                     .HasMaxLength(Constraints.MAX_URL_LENGTH)
+                    .HasColumnName("url")
                     .IsRequired();
             });
         });
@@ -84,10 +87,12 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
             {
                 rb.Property(r => r.Title)
                     .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
+                    .HasColumnName("title")
                     .IsRequired();
 
                 rb.Property(r => r.Description)
                     .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH)
+                    .HasColumnName("description")
                     .IsRequired();
             });
         });

@@ -14,7 +14,8 @@ public class WriteDbContext(IConfiguration configuration) : DbContext
         optionsBuilder
             .UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
             .UseLoggerFactory(CreateLoggerFactory)
-            .EnableSensitiveDataLogging();
+            .EnableSensitiveDataLogging()
+            .UseSnakeCaseNamingConvention();
 
         optionsBuilder.AddInterceptors(new SoftDeleteInterceptor());
     }

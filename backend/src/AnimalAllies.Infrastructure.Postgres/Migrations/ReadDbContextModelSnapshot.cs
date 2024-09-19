@@ -26,124 +26,157 @@ namespace AnimalAllies.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateOnly>("BirthDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("birth_date");
 
                     b.Property<Guid>("BreedId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("breed_id");
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("city");
 
                     b.Property<string>("Color")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("color");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation_time");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<string>("HealthInformation")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("health_information");
 
                     b.Property<double>("Height")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double precision")
+                        .HasColumnName("height");
 
                     b.Property<string>("HelpStatus")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("help_status");
 
                     b.Property<bool>("IsCastrated")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_castrated");
 
                     b.Property<bool>("IsVaccinated")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_vaccinated");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("phone_number");
 
                     b.Property<Guid>("SpeciesId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("species_id");
 
                     b.Property<string>("State")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("state");
 
                     b.Property<string>("Street")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("street");
 
                     b.Property<Guid>("VolunteerId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("volunteer_id");
 
                     b.Property<double>("Weight")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double precision")
+                        .HasColumnName("weight");
 
                     b.Property<string>("ZipCode")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("zip_code");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_pet_dto");
 
-                    b.HasIndex("VolunteerId");
+                    b.HasIndex("VolunteerId")
+                        .HasDatabaseName("ix_pet_dto_volunteer_id");
 
-                    b.ToTable("PetDto");
+                    b.ToTable("pet_dto", (string)null);
                 });
 
             modelBuilder.Entity("AnimalAllies.Application.Contracts.DTOs.VolunteerDto", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("email");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("first_name");
 
                     b.Property<string>("Patronymic")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("patronymic");
 
-                    b.Property<string>("Phone")
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("phone_number");
 
                     b.Property<string>("Requisites")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("requisites");
 
                     b.Property<string>("SecondName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("second_name");
 
                     b.Property<string>("SocialNetworks")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("VolunteerDescription")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("social_networks");
 
                     b.Property<int>("WorkExperience")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("work_experience");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_volunteers");
 
                     b.ToTable("volunteers", (string)null);
                 });
@@ -154,7 +187,8 @@ namespace AnimalAllies.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("VolunteerId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_pet_dto_volunteers_volunteer_id");
                 });
 #pragma warning restore 612, 618
         }

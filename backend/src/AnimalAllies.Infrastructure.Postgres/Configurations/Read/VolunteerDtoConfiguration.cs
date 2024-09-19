@@ -14,8 +14,7 @@ public class VolunteerDtoConfiguration: IEntityTypeConfiguration<VolunteerDto>
 
         builder.HasMany<PetDto>()
             .WithOne()
-            .HasForeignKey(p => p.VolunteerId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(p => p.VolunteerId);
 
     }
 }

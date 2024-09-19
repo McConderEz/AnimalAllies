@@ -14,7 +14,8 @@ public class ReadDbContext(IConfiguration configuration):DbContext, IReadDbConte
         optionsBuilder
             .UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
             .UseLoggerFactory(CreateLoggerFactory)
-            .EnableSensitiveDataLogging();
+            .EnableSensitiveDataLogging()
+            .UseSnakeCaseNamingConvention();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
