@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteersWithPagination;
 
-public class GetVolunteersWithPaginationQueryValidator : AbstractValidator<GetVolunteersWithPaginationQuery>
+public class GetVolunteersWithPaginationQueryValidator : AbstractValidator<GetFilteredVolunteersWithPaginationQuery>
 {
     public GetVolunteersWithPaginationQueryValidator()
     {

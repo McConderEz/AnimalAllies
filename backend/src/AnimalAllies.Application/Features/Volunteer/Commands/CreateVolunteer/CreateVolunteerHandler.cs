@@ -1,3 +1,4 @@
+using AnimalAllies.Application.Abstractions;
 using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Common;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.Commands.CreateVolunteer;
 
-public class CreateVolunteerHandler
+public class CreateVolunteerHandler : ICommandHandler<CreateVolunteerCommand, VolunteerId>
 {
     private readonly IVolunteerRepository _repository;
     private readonly IValidator<CreateVolunteerCommand> _validator;

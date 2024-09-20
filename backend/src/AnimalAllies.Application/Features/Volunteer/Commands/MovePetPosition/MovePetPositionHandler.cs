@@ -1,3 +1,4 @@
+using AnimalAllies.Application.Abstractions;
 using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models.Volunteer;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.Commands.MovePetPosition;
 
-public class MovePetPositionHandler
+public class MovePetPositionHandler : ICommandHandler<MovePetPositionCommand, VolunteerId>
 {
     private readonly IVolunteerRepository _repository;
     private readonly IValidator<MovePetPositionCommand> _validator;

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AnimalAllies.Infrastructure.Migrations
 {
     [DbContext(typeof(ReadDbContext))]
-    [Migration("20240919205512_InitialRead")]
+    [Migration("20240920212736_InitialRead")]
     partial class InitialRead
     {
         /// <inheritdoc />

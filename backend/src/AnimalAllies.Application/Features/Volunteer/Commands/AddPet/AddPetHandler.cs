@@ -1,3 +1,4 @@
+using AnimalAllies.Application.Abstractions;
 using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Common;
@@ -10,9 +11,8 @@ using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.Commands.AddPet;
 
-public class AddPetHandler
+public class AddPetHandler : ICommandHandler<AddPetCommand, Guid>
 {
-    private const string BUCKE_NAME = "photos";
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly ILogger<AddPetHandler> _logger;

@@ -1,3 +1,4 @@
+using AnimalAllies.Application.Abstractions;
 using AnimalAllies.Application.Database;
 using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.FileProvider;
@@ -15,7 +16,7 @@ using FileInfo = AnimalAllies.Application.FileProvider.FileInfo;
 
 namespace AnimalAllies.Application.Features.Volunteer.Commands.AddPetPhoto;
 
-public class AddPetPhotosHandler
+public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
 {
     private const string BUCKE_NAME = "photos";
     private readonly IFileProvider _fileProvider;

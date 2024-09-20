@@ -1,3 +1,4 @@
+using AnimalAllies.Application.Abstractions;
 using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 
 namespace AnimalAllies.Application.Features.Volunteer.Commands.AddPet;
@@ -11,4 +12,4 @@ public record AddPetCommand(
     string PhoneNumber,
     string HelpStatus,
     AnimalTypeDto AnimalType,
-    IEnumerable<RequisiteDto> Requisites);
+    IEnumerable<RequisiteDto> Requisites) : ICommand;

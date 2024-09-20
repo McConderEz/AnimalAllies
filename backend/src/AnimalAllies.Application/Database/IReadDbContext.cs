@@ -5,5 +5,5 @@ namespace AnimalAllies.Application.Database;
 
 public interface IReadDbContext
 {
-    DbSet<VolunteerDto> Volunteers { get; }
+    IQueryable<VolunteerDto> Volunteers { get; }
 }

@@ -1,3 +1,4 @@
+using AnimalAllies.Application.Abstractions;
 using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models.Volunteer;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.Commands.UpdateVolunteer;
 
-public class UpdateVolunteerHandler
+public class UpdateVolunteerHandler : ICommandHandler<UpdateVolunteerCommand, VolunteerId>
 {
     private readonly IVolunteerRepository _repository;
     private readonly ILogger<UpdateVolunteerHandler> _logger;

@@ -16,6 +16,8 @@ public class ReadDbContext(IConfiguration configuration):DbContext, IReadDbConte
             .UseLoggerFactory(CreateLoggerFactory)
             .EnableSensitiveDataLogging()
             .UseSnakeCaseNamingConvention();
+
+        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,5 +30,5 @@ public class ReadDbContext(IConfiguration configuration):DbContext, IReadDbConte
     private static readonly ILoggerFactory CreateLoggerFactory
         = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
-    public DbSet<VolunteerDto> Volunteers => Set<VolunteerDto>();
+    public IQueryable<VolunteerDto> Volunteers => Set<VolunteerDto>();
 } 

@@ -1,4 +1,5 @@
-﻿using AnimalAllies.Application.Models;
+﻿using System.Linq.Expressions;
+using AnimalAllies.Application.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace AnimalAllies.Application.Extension;
@@ -25,5 +26,13 @@ public static class QueryExtensions
             PageSize = pageSize,
             TotalCount = totalCount
         };
+    }
+    
+    public static IQueryable<T> WhereIf<T>(
+        this IQueryable<T> source,
+        bool condition,
+        Expression<Func<T, bool>> predicate)
+    {
+        return condition ? source.Where(predicate) : source;
     }
 }

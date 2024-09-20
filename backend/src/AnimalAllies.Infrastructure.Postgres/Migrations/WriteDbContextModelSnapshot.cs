@@ -248,6 +248,16 @@ namespace AnimalAllies.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("Requisites")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("requisites");
+
+                    b.Property<string>("SocialNetworks")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("social_networks");
+
                     b.Property<bool>("_isDeleted")
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");
@@ -258,7 +268,6 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                             b1.Property<string>("Value")
                                 .IsRequired()
-                                .ValueGeneratedOnUpdateSometimes()
                                 .HasMaxLength(1500)
                                 .HasColumnType("character varying(1500)")
                                 .HasColumnName("description");
@@ -386,13 +395,13 @@ namespace AnimalAllies.Infrastructure.Migrations
                             b1.Navigation("Values");
                         });
 
-                    b.OwnsOne("AnimalAllies.Domain.Models.Volunteer.Pet.Pet.Requisites#ValueObjectList", "Requisites", b1 =>
+                    b.OwnsOne("AnimalAllies.Domain.Common.ValueObjectList<AnimalAllies.Domain.Shared.Requisite>", "Requisites", b1 =>
                         {
                             b1.Property<Guid>("PetId")
-                                .HasColumnType("uuid");
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
 
-                            b1.HasKey("PetId")
-                                .HasName("pk_pets");
+                            b1.HasKey("PetId");
 
                             b1.ToTable("pets");
 
@@ -400,7 +409,7 @@ namespace AnimalAllies.Infrastructure.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("PetId")
-                                .HasConstraintName("fk_pets_pets_pet_id");
+                                .HasConstraintName("fk_pets_pets_id");
 
                             b1.OwnsMany("AnimalAllies.Domain.Shared.Requisite", "Values", b2 =>
                                 {
@@ -437,118 +446,6 @@ namespace AnimalAllies.Infrastructure.Migrations
                     b.Navigation("PetPhotoDetails");
 
                     b.Navigation("Requisites")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("AnimalAllies.Domain.Models.Volunteer.Volunteer", b =>
-                {
-                    b.OwnsOne("AnimalAllies.Domain.Common.ValueObjectList<AnimalAllies.Domain.Models.Volunteer.SocialNetwork>", "SocialNetworks", b1 =>
-                        {
-                            b1.Property<Guid>("VolunteerId")
-                                .HasColumnType("uuid")
-                                .HasColumnName("id");
-
-                            b1.HasKey("VolunteerId");
-
-                            b1.ToTable("volunteers");
-
-                            b1.ToJson("social_networks");
-
-                            b1.WithOwner()
-                                .HasForeignKey("VolunteerId")
-                                .HasConstraintName("fk_volunteers_volunteers_id");
-
-                            b1.OwnsMany("AnimalAllies.Domain.Models.Volunteer.SocialNetwork", "Values", b2 =>
-                                {
-                                    b2.Property<Guid>("ValueObjectListVolunteerId")
-                                        .HasColumnType("uuid");
-
-                                    b2.Property<int>("Id")
-                                        .ValueGeneratedOnAdd()
-                                        .HasColumnType("integer");
-
-                                    b2.Property<string>("Title")
-                                        .IsRequired()
-                                        .ValueGeneratedOnUpdateSometimes()
-                                        .HasMaxLength(100)
-                                        .HasColumnType("character varying(100)")
-                                        .HasColumnName("title");
-
-                                    b2.Property<string>("Url")
-                                        .IsRequired()
-                                        .HasMaxLength(2048)
-                                        .HasColumnType("character varying(2048)")
-                                        .HasColumnName("url");
-
-                                    b2.HasKey("ValueObjectListVolunteerId", "Id")
-                                        .HasName("pk_volunteers");
-
-                                    b2.ToTable("volunteers");
-
-                                    b2.WithOwner()
-                                        .HasForeignKey("ValueObjectListVolunteerId")
-                                        .HasConstraintName("fk_volunteers_volunteers_value_object_list_volunteer_id");
-                                });
-
-                            b1.Navigation("Values");
-                        });
-
-                    b.OwnsOne("AnimalAllies.Domain.Common.ValueObjectList<AnimalAllies.Domain.Shared.Requisite>", "Requisites", b1 =>
-                        {
-                            b1.Property<Guid>("VolunteerId")
-                                .HasColumnType("uuid")
-                                .HasColumnName("id");
-
-                            b1.HasKey("VolunteerId");
-
-                            b1.ToTable("volunteers");
-
-                            b1.ToJson("requisites");
-
-                            b1.WithOwner()
-                                .HasForeignKey("VolunteerId")
-                                .HasConstraintName("fk_volunteers_volunteers_id");
-
-                            b1.OwnsMany("AnimalAllies.Domain.Shared.Requisite", "Values", b2 =>
-                                {
-                                    b2.Property<Guid>("ValueObjectList<Requisite>VolunteerId")
-                                        .HasColumnType("uuid");
-
-                                    b2.Property<int>("Id")
-                                        .ValueGeneratedOnAdd()
-                                        .HasColumnType("integer");
-
-                                    b2.Property<string>("Description")
-                                        .IsRequired()
-                                        .ValueGeneratedOnUpdateSometimes()
-                                        .HasMaxLength(1500)
-                                        .HasColumnType("character varying(1500)")
-                                        .HasColumnName("description");
-
-                                    b2.Property<string>("Title")
-                                        .IsRequired()
-                                        .ValueGeneratedOnUpdateSometimes()
-                                        .HasMaxLength(100)
-                                        .HasColumnType("character varying(100)")
-                                        .HasColumnName("title");
-
-                                    b2.HasKey("ValueObjectList<Requisite>VolunteerId", "Id")
-                                        .HasName("pk_volunteers");
-
-                                    b2.ToTable("volunteers");
-
-                                    b2.WithOwner()
-                                        .HasForeignKey("ValueObjectList<Requisite>VolunteerId")
-                                        .HasConstraintName("fk_volunteers_volunteers_value_object_list_requisite_volunteer_id");
-                                });
-
-                            b1.Navigation("Values");
-                        });
-
-                    b.Navigation("Requisites")
-                        .IsRequired();
-
-                    b.Navigation("SocialNetworks")
                         .IsRequired();
                 });
 

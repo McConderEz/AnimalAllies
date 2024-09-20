@@ -1,6 +1,11 @@
+using System.Text.Json;
+using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 using AnimalAllies.Domain.Constraints;
 using AnimalAllies.Domain.Models.Volunteer;
+using AnimalAllies.Domain.Shared;
+using AnimalAllies.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AnimalAllies.Infrastructure.Configurations.Write;
@@ -62,8 +67,33 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
                 .HasColumnName("patronymic")
                 .IsRequired(false);
         });
-
-        builder.OwnsOne(v => v.SocialNetworks, sb =>
+        
+        
+        builder.Property(v => v.SocialNetworks)
+            .HasConversion(
+                sn => JsonSerializer.Serialize(sn, JsonSerializerOptions.Default),
+                json => JsonSerializer.Deserialize<List<SocialNetworkDto>>(json, JsonSerializerOptions.Default)!
+                    .Select(dto => SocialNetwork.Create(dto.Title,dto.Url).Value)
+                    .ToList(),
+                new ValueComparer<IReadOnlyList<SocialNetwork>>(
+                    (c1,c2) => c1!.SequenceEqual(c2!),
+                    c => c.Aggregate(0,(a,v) => HashCode.Combine(a,v.GetHashCode())),
+                    c => c.ToList()))
+            .HasColumnType("jsonb");
+        
+        builder.Property(v => v.Requisites)
+            .HasConversion(
+                r => JsonSerializer.Serialize(r, JsonSerializerOptions.Default),
+                json => JsonSerializer.Deserialize<List<RequisiteDto>>(json, JsonSerializerOptions.Default)!
+                    .Select(dto => Requisite.Create(dto.Title,dto.Description).Value)
+                    .ToList(),
+                new ValueComparer<IReadOnlyList<Requisite>>(
+                    (c1,c2) => c1!.SequenceEqual(c2!),
+                    c => c.Aggregate(0,(a,v) => HashCode.Combine(a,v.GetHashCode())),
+                    c => c.ToList()))
+            .HasColumnType("jsonb");
+        
+        /*builder.OwnsOne(v => v.SocialNetworks, sb =>
         {
             sb.ToJson("social_networks");
             sb.OwnsMany(sb => sb.Values, sb =>
@@ -95,17 +125,17 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
                     .HasColumnName("description")
                     .IsRequired();
             });
-        });
+        });*/
         
-        //builder.Property(v => v.Requisites)
-        //    .HasValueJsonConverter()
-        //    .HasColumnType("jsonb")
-        //    .HasColumnName("requisites");
+        /*builder.Property(v => v.Requisites)
+            .HasValueJsonConverter()
+            .HasColumnType("jsonb")
+            .HasColumnName("requisites");
         
-        //builder.Property(v => v.SocialNetworks)
-        //    .HasValueJsonConverter()
-        //    .HasColumnType("jsonb")
-        //    .HasColumnName("social_networks");
+        builder.Property(v => v.SocialNetworks)
+            .HasValueJsonConverter()
+            .HasColumnType("jsonb")
+            .HasColumnName("social_networks");*/
         
         builder.Property<bool>("_isDeleted")
             .UsePropertyAccessMode(PropertyAccessMode.Field)

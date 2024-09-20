@@ -2,8 +2,21 @@
 
 namespace AnimalAllies.API.Contracts.Volunteer;
 
-public record GetVolunteersWithPaginationRequest(int Page, int PageSize)
+public record GetVolunteersWithPaginationRequest(
+    string? FirstName,
+    string? SecondName,
+    string? Patronymic,
+    int? WorkExperienceFrom,
+    int? WorkExperienceTo,
+    int Page,
+    int PageSize)
 {
-    public GetVolunteersWithPaginationQuery ToQuery()
-        => new(Page, PageSize);
+    public GetFilteredVolunteersWithPaginationQuery ToQuery()
+        => new(FirstName,
+            SecondName,
+            Patronymic,
+            WorkExperienceFrom,
+            WorkExperienceTo,
+            Page,
+            PageSize);
 }

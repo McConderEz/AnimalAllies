@@ -12,10 +12,8 @@ public class VolunteerDto
     public string PhoneNumber { get; init; } = string.Empty;
     public string Description { get; init; } = string.Empty;
     public int WorkExperience { get; set; }
-    public string Requisites { get; init; } = string.Empty;
-    public string SocialNetworks { get; init; } = string.Empty;
-    //public RequisiteDto[] Requisites { get; set; } = [];
-    //public SocialNetworkDto[] SocialNetworks { get; set; } = [];
+    public RequisiteDto[] Requisites { get; set; } = [];
+    public SocialNetworkDto[] SocialNetworks { get; set; } = [];
 }
 
 

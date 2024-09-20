@@ -1,3 +1,4 @@
+using AnimalAllies.Application.Abstractions;
 using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdateVolunteer;
 using AnimalAllies.Application.Repositories;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.Commands.CreateRequisites;
 
-public class CreateRequisitesHandler
+public class CreateRequisitesHandler : ICommandHandler<CreateRequisitesCommand, VolunteerId>
 {
     private readonly IVolunteerRepository _repository;
     private readonly ILogger<UpdateVolunteerHandler> _logger;

@@ -29,6 +29,8 @@ namespace AnimalAllies.Infrastructure.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
+                    requisites = table.Column<string>(type: "jsonb", nullable: false),
+                    social_networks = table.Column<string>(type: "jsonb", nullable: false),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false),
                     description = table.Column<string>(type: "character varying(1500)", maxLength: 1500, nullable: false),
                     email = table.Column<string>(type: "text", nullable: false),
@@ -36,9 +38,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                     patronymic = table.Column<string>(type: "text", nullable: true),
                     second_name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     phone_number = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false),
-                    work_experience = table.Column<int>(type: "integer", nullable: false),
-                    requisites = table.Column<string>(type: "jsonb", nullable: false),
-                    social_networks = table.Column<string>(type: "jsonb", nullable: false)
+                    work_experience = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

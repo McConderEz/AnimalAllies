@@ -35,6 +35,22 @@ public class VolunteerController: ApplicationController
         return Ok(result);
     }
     
+    [HttpGet("dapper")]
+    public async Task<ActionResult> GetDapper(
+        [FromQuery] GetVolunteersWithPaginationRequest request,
+        [FromServices] GetVolunteersWithPaginationHandlerDapper handler,
+        CancellationToken cancellationToken = default)
+    {
+        var query = request.ToQuery();
+
+        var result = await handler.Handle(query, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
     [HttpPost]
     public async Task<IActionResult> Create(
         [FromServices] CreateVolunteerHandler handler,
