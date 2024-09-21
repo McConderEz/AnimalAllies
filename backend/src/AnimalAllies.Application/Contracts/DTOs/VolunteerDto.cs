@@ -8,10 +8,8 @@ public class VolunteerDto
     public string FirstName { get; init; } = string.Empty;
     public string SecondName { get; init;} = string.Empty;
     public string Patronymic { get; init;} = string.Empty;
-    public string Email { get; init; } = string.Empty;
     public string PhoneNumber { get; init; } = string.Empty;
-    public string Description { get; init; } = string.Empty;
-    public int WorkExperience { get; set; }
+    public int WorkExperience { get; init; }
     public RequisiteDto[] Requisites { get; set; } = [];
     public SocialNetworkDto[] SocialNetworks { get; set; } = [];
 }

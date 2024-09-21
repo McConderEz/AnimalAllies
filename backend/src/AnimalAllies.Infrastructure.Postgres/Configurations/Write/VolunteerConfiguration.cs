@@ -67,75 +67,18 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
                 .HasColumnName("patronymic")
                 .IsRequired(false);
         });
-        
-        
-        builder.Property(v => v.SocialNetworks)
-            .HasConversion(
-                sn => JsonSerializer.Serialize(sn, JsonSerializerOptions.Default),
-                json => JsonSerializer.Deserialize<List<SocialNetworkDto>>(json, JsonSerializerOptions.Default)!
-                    .Select(dto => SocialNetwork.Create(dto.Title,dto.Url).Value)
-                    .ToList(),
-                new ValueComparer<IReadOnlyList<SocialNetwork>>(
-                    (c1,c2) => c1!.SequenceEqual(c2!),
-                    c => c.Aggregate(0,(a,v) => HashCode.Combine(a,v.GetHashCode())),
-                    c => c.ToList()))
-            .HasColumnType("jsonb");
-        
+
         builder.Property(v => v.Requisites)
-            .HasConversion(
-                r => JsonSerializer.Serialize(r, JsonSerializerOptions.Default),
-                json => JsonSerializer.Deserialize<List<RequisiteDto>>(json, JsonSerializerOptions.Default)!
-                    .Select(dto => Requisite.Create(dto.Title,dto.Description).Value)
-                    .ToList(),
-                new ValueComparer<IReadOnlyList<Requisite>>(
-                    (c1,c2) => c1!.SequenceEqual(c2!),
-                    c => c.Aggregate(0,(a,v) => HashCode.Combine(a,v.GetHashCode())),
-                    c => c.ToList()))
-            .HasColumnType("jsonb");
-        
-        /*builder.OwnsOne(v => v.SocialNetworks, sb =>
-        {
-            sb.ToJson("social_networks");
-            sb.OwnsMany(sb => sb.Values, sb =>
-            {
-                sb.Property(s => s.Title)
-                    .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
-                    .HasColumnName("title")
-                    .IsRequired();
-
-                sb.Property(s => s.Url)
-                    .HasMaxLength(Constraints.MAX_URL_LENGTH)
-                    .HasColumnName("url")
-                    .IsRequired();
-            });
-        });
-        
-        builder.OwnsOne(v => v.Requisites, rb =>
-        {
-            rb.ToJson("requisites");
-            rb.OwnsMany(rb => rb.Values, rb =>
-            {
-                rb.Property(r => r.Title)
-                    .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
-                    .HasColumnName("title")
-                    .IsRequired();
-
-                rb.Property(r => r.Description)
-                    .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH)
-                    .HasColumnName("description")
-                    .IsRequired();
-            });
-        });*/
-        
-        /*builder.Property(v => v.Requisites)
-            .HasValueJsonConverter()
-            .HasColumnType("jsonb")
+            .ValueObjectJsonConverter(
+                r => new RequisiteDto() { Title = r.Title, Description = r.Description },
+                dto => Requisite.Create(dto.Title, dto.Description).Value)
             .HasColumnName("requisites");
         
         builder.Property(v => v.SocialNetworks)
-            .HasValueJsonConverter()
-            .HasColumnType("jsonb")
-            .HasColumnName("social_networks");*/
+            .ValueObjectJsonConverter(
+                sn => new SocialNetworkDto { Title = sn.Title, Url = sn.Url },
+                dto => SocialNetwork.Create(dto.Title, dto.Url).Value)
+            .HasColumnName("social_networks");;
         
         builder.Property<bool>("_isDeleted")
             .UsePropertyAccessMode(PropertyAccessMode.Field)

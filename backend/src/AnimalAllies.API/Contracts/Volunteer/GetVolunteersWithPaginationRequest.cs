@@ -8,6 +8,8 @@ public record GetVolunteersWithPaginationRequest(
     string? Patronymic,
     int? WorkExperienceFrom,
     int? WorkExperienceTo,
+    string? SortBy,
+    string? SortDirection,
     int Page,
     int PageSize)
 {
@@ -17,6 +19,8 @@ public record GetVolunteersWithPaginationRequest(
             Patronymic,
             WorkExperienceFrom,
             WorkExperienceTo,
+            SortBy,
+            SortDirection,
             Page,
             PageSize);
 }

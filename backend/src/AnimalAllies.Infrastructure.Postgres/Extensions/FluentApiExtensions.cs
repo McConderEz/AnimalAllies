@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -8,30 +9,43 @@ namespace AnimalAllies.Infrastructure.Extensions;
 
 public static class FluentApiExtensions
 {
-    public static PropertyBuilder<T> HasValueJsonConverter<T>(this PropertyBuilder<T> propertyBuilder)
+    public static PropertyBuilder<IReadOnlyList<TValueObject>> ValueObjectJsonConverter<TValueObject, TDto>(
+        this PropertyBuilder<IReadOnlyList<TValueObject>> builder,
+        Func<TValueObject, TDto> toDtoSelector,
+        Func<TDto, TValueObject> toValueObjectSelector)
     {
-        return propertyBuilder.HasConversion(
-            new ValueJsonConverter<T>(),
-                    new ValueJsonComparer<T>());
+        return builder.HasConversion(
+                valueObject => SerializeValueObjectCollection(valueObject, toDtoSelector),
+                json => DeserializeDtoCollection(json, toValueObjectSelector),
+                ValueComparer<TValueObject, TDto>())
+            .HasColumnType("jsonb");
+
     }
-}
 
-public class ValueJsonConverter<T>(ConverterMappingHints? mappingHints = null)
-    : ValueConverter<T,string>(
-        v => JsonSerializer.Serialize(v,JsonSerializerOptions.Default),
-        v => JsonSerializer.Deserialize<T>(v, JsonSerializerOptions.Default)!,
-        mappingHints)
-{
-}
-
-public class ValueJsonComparer<T> : ValueComparer<T>
-{
-    public ValueJsonComparer() : base(
-        (l, r) => JsonSerializer.Serialize(l, JsonSerializerOptions.Default) ==
-                  JsonSerializer.Serialize(r, JsonSerializerOptions.Default),
-        v => v == null ? 0 : JsonSerializer.Serialize(v, JsonSerializerOptions.Default).GetHashCode(),
-        v => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
-            JsonSerializerOptions.Default)!)
+    private static ValueComparer ValueComparer<TValueObject, TDto>()
     {
+        return new ValueComparer<IReadOnlyList<TValueObject>>(
+            (c1,c2) => c1!.SequenceEqual(c2!),
+            c => c.Aggregate(0, (a, v) => HashCode.Combine(a,v!.GetHashCode())),
+            c => c.ToList());
     }
+
+    private static string SerializeValueObjectCollection<TValueObject,TDto>(
+        IReadOnlyCollection<TValueObject> valueObjects,
+        Func<TValueObject, TDto> selector)
+    {
+        var dtos = valueObjects.Select(selector);
+
+        return JsonSerializer.Serialize(dtos, JsonSerializerOptions.Default);
+    }
+    
+    private static IReadOnlyList<TValueObject> DeserializeDtoCollection<TValueObject,TDto>(
+        string json,
+        Func<TDto, TValueObject> selector)
+    {
+        var dtos = JsonSerializer.Deserialize<IEnumerable<TDto>>(json, JsonSerializerOptions.Default) ?? [];
+
+        return dtos.Select(selector).ToList();
+    }
+    
 }

@@ -13,4 +13,6 @@ public static partial class Constraints
     public static readonly int MAX_EXP_VALUE = 90;
     public static readonly int MAX_PHONENUMBER_LENGTH = 14;
     public static readonly int MIDDLE_NAME_LENGTH = 50;
+
+    public static string[] Extensions = [".jpg", ".png", ".jpeg", ".svg"];
 }

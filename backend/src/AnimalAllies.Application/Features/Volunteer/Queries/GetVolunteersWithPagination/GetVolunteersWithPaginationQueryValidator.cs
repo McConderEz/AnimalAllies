@@ -9,11 +9,11 @@ public class GetVolunteersWithPaginationQueryValidator : AbstractValidator<GetFi
     public GetVolunteersWithPaginationQueryValidator()
     {
         RuleFor(v => v.Page)
-            .Must(p => p > 0)
+            .GreaterThanOrEqualTo(1)
             .WithError(Errors.General.ValueIsInvalid("page"));
         
         RuleFor(v => v.PageSize)
-            .Must(p => p > 0)
+            .GreaterThanOrEqualTo(1)
             .WithError(Errors.General.ValueIsInvalid("page size"));
     }  
 }

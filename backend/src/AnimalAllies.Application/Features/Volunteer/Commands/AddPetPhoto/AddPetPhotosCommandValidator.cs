@@ -1,4 +1,5 @@
 using AnimalAllies.Application.Validators;
+using AnimalAllies.Domain.Constraints;
 using AnimalAllies.Domain.Shared;
 using FluentValidation;
 
@@ -18,10 +19,11 @@ public class AddPetPhotosCommandValidator: AbstractValidator<AddPetPhotosCommand
             .ChildRules(p =>
             {
                 p.RuleFor(p => p.FileName)
+                    .Must(ext => Constraints.Extensions.Contains(Path.GetExtension(ext)))
                     .NotEmpty().WithError(Error.Null("filename.is.null", "filename cannot be null or empty"));
 
                 p.RuleFor(p => p.Content)
-                    .Must(s => s.Length > 0).WithError(Error.Null("stream.empty", "stream cannot be empty"));
+                    .Must(s => s.Length is > 0 and <= 15 * 1024 * 1024).WithError(Error.Null("stream.empty", "stream cannot be empty"));
             });
 
     }

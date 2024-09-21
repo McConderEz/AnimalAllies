@@ -2,6 +2,7 @@
 using AnimalAllies.Application.Contracts.DTOs;
 using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 using AnimalAllies.Domain.Models.Volunteer;
+using AnimalAllies.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,15 +19,15 @@ public class VolunteerDtoConfiguration: IEntityTypeConfiguration<VolunteerDto>
         builder.HasMany<PetDto>()
             .WithOne()
             .HasForeignKey(p => p.VolunteerId);
-
-        builder.Property(v => v.SocialNetworks)
-            .HasConversion(
-                sn => JsonSerializer.Serialize(string.Empty, JsonSerializerOptions.Default),
-                json => JsonSerializer.Deserialize<SocialNetworkDto[]>(json, JsonSerializerOptions.Default)!);
-
-        builder.Property(v => v.Requisites)
+        
+        builder.Property(i => i.Requisites)
             .HasConversion(
                 r => JsonSerializer.Serialize(string.Empty, JsonSerializerOptions.Default),
                 json => JsonSerializer.Deserialize<RequisiteDto[]>(json, JsonSerializerOptions.Default)!);
+        
+        builder.Property(i => i.SocialNetworks)
+            .HasConversion(
+                sn => JsonSerializer.Serialize(string.Empty, JsonSerializerOptions.Default),
+                json => JsonSerializer.Deserialize<SocialNetworkDto[]>(json, JsonSerializerOptions.Default)!);
     }
 }
