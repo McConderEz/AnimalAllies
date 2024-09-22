@@ -1,14 +1,12 @@
 ﻿using System.Linq.Expressions;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using AnimalAllies.Application.Abstractions;
 using AnimalAllies.Application.Contracts.DTOs;
 using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 using AnimalAllies.Application.Database;
 using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.Models;
-using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
 using Dapper;
 using FluentValidation;
@@ -179,7 +177,9 @@ public class GetVolunteersWithPaginationHandlerDapper :
                 splitOn:"requisites, social_networks",
                 param: parameters);
         
-        _logger.LogInformation("Get volunteers");
+        _logger.LogInformation(
+            "Get volunteers with pagination Page: {Page}, PageSize: {PageSize}, TotalCount: {TotalCount}",
+            query.Page, query.PageSize, totalCount);
 
         return new PagedList<VolunteerDto>
         {

@@ -11,6 +11,7 @@ using AnimalAllies.Application.Features.Volunteer.Commands.CreateVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Commands.DeleteVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Commands.MovePetPosition;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdateVolunteer;
+using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteerById;
 using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteersWithPagination;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,22 @@ public class VolunteerController: ApplicationController
         CancellationToken cancellationToken = default)
     {
         var query = request.ToQuery();
+
+        var result = await handler.Handle(query, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [HttpGet("{volunteerId:guid}")]
+    public async Task<ActionResult> GetById(
+        [FromRoute] Guid volunteerId,
+        [FromServices] GetVolunteerByIdHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetVolunteerByIdQuery(volunteerId);
 
         var result = await handler.Handle(query, cancellationToken);
 
