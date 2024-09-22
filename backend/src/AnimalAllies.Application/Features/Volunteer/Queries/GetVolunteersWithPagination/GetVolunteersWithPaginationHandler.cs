@@ -8,6 +8,7 @@ using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 using AnimalAllies.Application.Database;
 using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.Models;
+using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
 using Dapper;
 using FluentValidation;
@@ -148,13 +149,18 @@ public class GetVolunteersWithPaginationHandlerDapper :
             "first_name",
             "second_name",
             "patronymic",
-            "description",
-            "email",
-            "phone_number",
             "work_experience"
         };
         
         sql.ApplySorting(query.SortBy,query.SortDirection,validProperties);
+        
+        sql.ApplyFilterByString(validProperties[0], query.FirstName, validProperties);
+        sql.ApplyFilterByString(validProperties[1], query.SecondName, validProperties);
+        sql.ApplyFilterByString(validProperties[2], query.Patronymic, validProperties);
+        
+        if(query.WorkExperienceFrom != null && query.WorkExperienceTo != null)
+            sql.ApplyFilterByNumber<int>(validProperties[3], (int)query.WorkExperienceFrom, (int)query.WorkExperienceTo ,validProperties);
+        
         sql.ApplyPagination(query.Page,query.PageSize);
 
         var volunteers = 
@@ -183,4 +189,5 @@ public class GetVolunteersWithPaginationHandlerDapper :
             TotalCount = totalCount
         };
     }
+    
 }
