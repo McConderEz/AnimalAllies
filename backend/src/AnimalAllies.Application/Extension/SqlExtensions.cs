@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteersWithPagination;
+namespace AnimalAllies.Application.Extension;
 
 public static class SqlExtensions
 {
@@ -14,7 +14,7 @@ public static class SqlExtensions
         {
             var validSortDirections = new[]{"asc", "desc"};
 
-            if (validSortDirections.Contains(sortDirection?.ToLower()) && validSortBy.Contains(sortBy?.ToLower()))
+            if (validSortDirections.Contains(sortDirection?.ToLower()))
             {
                 sqlBuilder.Append($"\norder by {sortBy} {sortDirection}");
             }
@@ -33,41 +33,49 @@ public static class SqlExtensions
         sqlBuilder.Append($"\nlimit {pageSize} offset {(page - 1) * pageSize}");
     }
     
-    public static void ApplyFilterByNumber<TValue>(
+    public static void ApplyBetweenFilter<TValue>(
         this StringBuilder sqlBuilder,
         string? propertyName,
         TValue? valueFrom,
-        TValue? valueTo,
-        params string[] validProperties)
+        TValue? valueTo)
     {
         if (!string.IsNullOrWhiteSpace(propertyName))
         {
-            if (validProperties.Contains(propertyName?.ToLower()))
-            {
-                sqlBuilder.Append($"\nwhere {propertyName} between {valueFrom} and {valueTo}");
-            }
-            else
-            {
-                throw new ArgumentException("Invalid filter parameters");
-            }
+            sqlBuilder.Append($"\nwhere {propertyName} between {valueFrom} and {valueTo}");
+        }
+    }
+    
+    public static void ApplyFilterByValueFrom<TValue>(
+        this StringBuilder sqlBuilder,
+        string? propertyName,
+        TValue? valueFrom)
+    {
+        if (!string.IsNullOrWhiteSpace(propertyName))
+        {
+            sqlBuilder.Append($"\nwhere {propertyName} >= {valueFrom}");
+        }
+    }
+    
+    public static void ApplyFilterByValueTo<TValue>(
+        this StringBuilder sqlBuilder,
+        string? propertyName,
+        TValue? valueTo)
+    {
+        if (!string.IsNullOrWhiteSpace(propertyName))
+        {
+            sqlBuilder.Append($"\nwhere {propertyName} <= {valueTo}");
         }
     }
     
     public static void ApplyFilterByString(
         this StringBuilder sqlBuilder,
-        string? propertyName,
-        string? value,
-        params string[] validProperties)
+        Dictionary<string, string> properties)
     {
-        if (!string.IsNullOrWhiteSpace(propertyName)  && !string.IsNullOrWhiteSpace(value))
+        foreach (var property in properties)
         {
-            if (validProperties.Contains(propertyName?.ToLower()))
+            if (!string.IsNullOrWhiteSpace(property.Key)  && !string.IsNullOrWhiteSpace(property.Value))
             {
-                sqlBuilder.Append($"\nwhere {propertyName} = {value}");
-            }
-            else
-            {
-                throw new ArgumentException("Invalid filter parameters");
+                sqlBuilder.Append($"\nwhere {property.Key} like '%{property.Value}%'");
             }
         }
     }

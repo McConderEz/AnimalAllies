@@ -4,9 +4,9 @@ using FluentValidation;
 
 namespace AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteersWithPagination;
 
-public class GetVolunteersWithPaginationQueryValidator : AbstractValidator<GetFilteredVolunteersWithPaginationQuery>
+public class GetFilteredVolunteersWithPaginationQueryValidator : AbstractValidator<GetFilteredVolunteersWithPaginationQuery>
 {
-    public GetVolunteersWithPaginationQueryValidator()
+    public GetFilteredVolunteersWithPaginationQueryValidator()
     {
         RuleFor(v => v.Page)
             .GreaterThanOrEqualTo(1)

@@ -1,12 +1,14 @@
 ﻿using System.Linq.Expressions;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using AnimalAllies.Application.Abstractions;
 using AnimalAllies.Application.Contracts.DTOs;
 using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 using AnimalAllies.Application.Database;
 using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.Models;
+using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Shared;
 using Dapper;
 using FluentValidation;
@@ -14,14 +16,14 @@ using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteersWithPagination;
 
-public class GetVolunteersWithPaginationHandler :
+public class GetFilteredVolunteersWithPaginationHandler :
     IQueryHandler<PagedList<VolunteerDto>, GetFilteredVolunteersWithPaginationQuery>
 {
     private readonly IReadDbContext _readDbContext;
     private readonly IValidator<GetFilteredVolunteersWithPaginationQuery> _validator;
     private readonly ILogger<GetVolunteersWithPaginationHandler> _logger;
 
-    public GetVolunteersWithPaginationHandler(
+    public GetFilteredVolunteersWithPaginationHandler(
         IReadDbContext readDbContext, 
         IValidator<GetFilteredVolunteersWithPaginationQuery> validator,
         ILogger<GetVolunteersWithPaginationHandler> logger)
@@ -100,13 +102,13 @@ public class GetVolunteersWithPaginationHandler :
     }
 }
 
-public class GetVolunteersWithPaginationHandlerDapper :
+public class GetFilteredVolunteersWithPaginationHandlerDapper :
     IQueryHandler<PagedList<VolunteerDto>, GetFilteredVolunteersWithPaginationQuery>
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
     private readonly ILogger<GetVolunteersWithPaginationHandler> _logger;
 
-    public GetVolunteersWithPaginationHandlerDapper(
+    public GetFilteredVolunteersWithPaginationHandlerDapper(
         ISqlConnectionFactory sqlConnectionFactory,
         ILogger<GetVolunteersWithPaginationHandler> logger)
     {
@@ -177,9 +179,7 @@ public class GetVolunteersWithPaginationHandlerDapper :
                 splitOn:"requisites, social_networks",
                 param: parameters);
         
-        _logger.LogInformation(
-            "Get volunteers with pagination Page: {Page}, PageSize: {PageSize}, TotalCount: {TotalCount}",
-            query.Page, query.PageSize, totalCount);
+        _logger.LogInformation("Get volunteers");
 
         return new PagedList<VolunteerDto>
         {
