@@ -1,14 +1,15 @@
 using System.Data;
 using AnimalAllies.Application.Database;
+using AnimalAllies.Infrastructure.DbContexts;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AnimalAllies.Infrastructure;
 
 public class UnitOfWork: IUnitOfWork
 {
-    private readonly AnimalAlliesDbContext _dbContext;
+    private readonly WriteDbContext _dbContext;
 
-    public UnitOfWork(AnimalAlliesDbContext dbContext)
+    public UnitOfWork(WriteDbContext dbContext)
     {
         _dbContext = dbContext;
     }

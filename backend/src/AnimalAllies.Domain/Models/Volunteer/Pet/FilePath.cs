@@ -16,7 +16,8 @@ public class FilePath: ValueObject
 
     public static Result<FilePath> Create(Guid path, string extension)
     {
-        //TODO: Сделать валидацию на доступные расширения
+        if (!Constraints.Constraints.Extensions.Contains(extension))
+            return Errors.General.ValueIsInvalid("extension");
         
         if(string.IsNullOrWhiteSpace(extension) || extension.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
             return Errors.General.ValueIsRequired(extension);

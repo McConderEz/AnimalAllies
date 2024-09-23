@@ -1,5 +1,5 @@
 using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
-using AnimalAllies.Application.Features.Volunteer.AddPet;
+using AnimalAllies.Application.Features.Volunteer.Commands.AddPet;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Models.Species;
@@ -55,7 +55,7 @@ public class AddPetTests
             new AnimalTypeDto(Guid.NewGuid(), Guid.NewGuid()),
             new List<RequisiteDto>
             {
-                new RequisiteDto("Title", "Description")
+                new RequisiteDto{Title = "Title", Description = "Description"}
             });
 
         _dateTimeProviderMock.Setup(d => d.UtcNow)
@@ -119,7 +119,7 @@ public class AddPetTests
             new AnimalTypeDto(Guid.NewGuid(), Guid.NewGuid()),
             new List<RequisiteDto>
             {
-                new RequisiteDto("Title", "Description")
+                new RequisiteDto{Title = "Title", Description = "Description"}
             });
 
         _dateTimeProviderMock.Setup(d => d.UtcNow)
@@ -185,7 +185,7 @@ public class AddPetTests
             new AnimalTypeDto(Guid.NewGuid(), Guid.NewGuid()),
             new List<RequisiteDto>
             {
-                new RequisiteDto("Title", "Description")
+                new RequisiteDto{Title = "Title", Description = "Description"}
             });
 
         var error = Error.Failure("save.failure", "save method return error");

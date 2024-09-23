@@ -10,6 +10,8 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
 {
     private bool _isDeleted = false;
     private readonly List<Pet.Pet> _pets = [];
+    private List<Requisite> _requisites = [];
+    private List<SocialNetwork> _socialNetworks = [];
 
     private Volunteer(VolunteerId id) : base(id){}
     
@@ -29,8 +31,8 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         Description = volunteerDescription;
         WorkExperience = workExperience;
         Phone = phone;
-        SocialNetworks = socialNetworks;
-        Requisites = requisites;
+        _socialNetworks = socialNetworks;
+        _requisites = requisites;
     }
     
     public FullName FullName { get; private set;}
@@ -38,8 +40,8 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
     public PhoneNumber Phone { get; private set; }
     public VolunteerDescription Description { get; private set; }
     public WorkExperience WorkExperience { get; private set; }
-    public ValueObjectList<Requisite> Requisites { get; private set; }
-    public ValueObjectList<SocialNetwork> SocialNetworks { get; private set; }
+    public IReadOnlyList<Requisite> Requisites => _requisites;
+    public IReadOnlyList<SocialNetwork> SocialNetworks => _socialNetworks;
     public IReadOnlyList<Pet.Pet> Pets => _pets;
 
     public Result AddPet(Pet.Pet pet)
@@ -124,14 +126,14 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
     public int PetsSearchingHome() => _pets.Count(x => x.HelpStatus == HelpStatus.SearchingHome);
     public int PetsFoundHome() => _pets.Count(x => x.HelpStatus == HelpStatus.FoundHome);
     
-    public Result UpdateSocialNetworks(ValueObjectList<SocialNetwork> socialNetworks)
+    public Result UpdateSocialNetworks(List<SocialNetwork> socialNetworks)
     {
-        SocialNetworks = socialNetworks;
+        _socialNetworks = socialNetworks;
         return Result.Success();
     }
-    public Result UpdateRequisites(ValueObjectList<Requisite> requisites)
+    public Result UpdateRequisites(List<Requisite> requisites)
     {
-        Requisites = requisites;
+        _requisites = requisites;
         return Result.Success();
     }
 

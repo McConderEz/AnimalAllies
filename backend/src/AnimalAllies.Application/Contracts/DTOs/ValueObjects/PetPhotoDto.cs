@@ -1,3 +1,7 @@
 namespace AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 
-public record PetPhotoDto(string Path, bool IsMain );
+public class PetPhotoDto
+{
+    public string Path { get; init; } = string.Empty;
+    public bool IsMain { get; set; } 
+}

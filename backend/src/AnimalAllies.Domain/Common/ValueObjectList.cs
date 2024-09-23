@@ -17,6 +17,8 @@ public class ValueObjectList<T> : ValueObject, IReadOnlyList<T>
     public string TypeName => typeof(T).Name;
     
     private ValueObjectList(){}
+    
+    [JsonConstructor]
 
     public ValueObjectList(IEnumerable<T> values)
     {

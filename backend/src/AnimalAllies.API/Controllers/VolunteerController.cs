@@ -1,20 +1,56 @@
 using AnimalAllies.API.Contracts;
+using AnimalAllies.API.Contracts.Volunteer;
 using AnimalAllies.API.Extensions;
 using AnimalAllies.API.Processors;
-using AnimalAllies.Application.Features.Volunteer.AddPet;
-using AnimalAllies.Application.Features.Volunteer.AddPetPhoto;
-using AnimalAllies.Application.Features.Volunteer.CreateRequisites;
-using AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
-using AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
-using AnimalAllies.Application.Features.Volunteer.DeleteVolunteer;
-using AnimalAllies.Application.Features.Volunteer.MovePetPosition;
-using AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
+using AnimalAllies.API.Response;
+using AnimalAllies.Application.Features.Volunteer.Commands.AddPet;
+using AnimalAllies.Application.Features.Volunteer.Commands.AddPetPhoto;
+using AnimalAllies.Application.Features.Volunteer.Commands.CreateRequisites;
+using AnimalAllies.Application.Features.Volunteer.Commands.CreateSocialNetworks;
+using AnimalAllies.Application.Features.Volunteer.Commands.CreateVolunteer;
+using AnimalAllies.Application.Features.Volunteer.Commands.DeleteVolunteer;
+using AnimalAllies.Application.Features.Volunteer.Commands.MovePetPosition;
+using AnimalAllies.Application.Features.Volunteer.Commands.UpdateVolunteer;
+using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteersWithPagination;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnimalAllies.API.Controllers;
 
 public class VolunteerController: ApplicationController
 {
+
+    [HttpGet]
+    public async Task<ActionResult> Get(
+        [FromQuery] GetFilteredVolunteersWithPaginationRequest request,
+        [FromServices] GetFilteredVolunteersWithPaginationHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var query = request.ToQuery();
+
+        var result = await handler.Handle(query, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [HttpGet("dapper")]
+    public async Task<ActionResult> GetDapper(
+        [FromQuery] GetFilteredVolunteersWithPaginationRequest request,
+        [FromServices] GetVolunteersWithPaginationHandlerDapper handler,
+        CancellationToken cancellationToken = default)
+    {
+        var query = request.ToQuery();
+
+        var result = await handler.Handle(query, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
     [HttpPost]
     public async Task<IActionResult> Create(
         [FromServices] CreateVolunteerHandler handler,

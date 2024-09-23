@@ -1,12 +1,14 @@
+using AnimalAllies.Application.Abstractions;
 using AnimalAllies.Application.Features.Volunteer;
-using AnimalAllies.Application.Features.Volunteer.AddPet;
-using AnimalAllies.Application.Features.Volunteer.AddPetPhoto;
-using AnimalAllies.Application.Features.Volunteer.CreateRequisites;
-using AnimalAllies.Application.Features.Volunteer.CreateSocialNetworks;
-using AnimalAllies.Application.Features.Volunteer.CreateVolunteer;
-using AnimalAllies.Application.Features.Volunteer.DeleteVolunteer;
-using AnimalAllies.Application.Features.Volunteer.MovePetPosition;
-using AnimalAllies.Application.Features.Volunteer.UpdateVolunteer;
+using AnimalAllies.Application.Features.Volunteer.Commands.AddPet;
+using AnimalAllies.Application.Features.Volunteer.Commands.AddPetPhoto;
+using AnimalAllies.Application.Features.Volunteer.Commands.CreateRequisites;
+using AnimalAllies.Application.Features.Volunteer.Commands.CreateSocialNetworks;
+using AnimalAllies.Application.Features.Volunteer.Commands.CreateVolunteer;
+using AnimalAllies.Application.Features.Volunteer.Commands.DeleteVolunteer;
+using AnimalAllies.Application.Features.Volunteer.Commands.MovePetPosition;
+using AnimalAllies.Application.Features.Volunteer.Commands.UpdateVolunteer;
+using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteersWithPagination;
 using Microsoft.Extensions.DependencyInjection;
 using FluentValidation;
 
@@ -16,16 +18,32 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddScoped<CreateVolunteerHandler>();
-        services.AddScoped<UpdateVolunteerHandler>();
-        services.AddScoped<CreateRequisitesHandler>();
-        services.AddScoped<CreateSocialNetworksHandler>();
-        services.AddScoped<DeleteVolunteerHandler>();
-        services.AddScoped<AddPetHandler>();
-        services.AddScoped<AddPetPhotosHandler>();
-        services.AddScoped<MovePetPositionHandler>();
-        
-        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+        services
+            .AddCommands()
+            .AddQueries()
+            .AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);;
+        return services;
+    }
+
+    private static IServiceCollection AddCommands(this IServiceCollection services)
+    {
+        services.Scan(scan => scan.FromAssemblies(typeof(DependencyInjection).Assembly)
+            .AddClasses(classes => classes
+                .AssignableToAny([typeof(ICommandHandler<,>), typeof(ICommandHandler<>)]))
+            .AsSelfWithInterfaces()
+            .WithScopedLifetime());
+
+        return services;
+    }
+    
+    private static IServiceCollection AddQueries(this IServiceCollection services)
+    {
+        services.Scan(scan => scan.FromAssemblies(typeof(DependencyInjection).Assembly)
+            .AddClasses(classes => classes
+                .AssignableTo(typeof(IQueryHandler<,>)))
+            .AsSelfWithInterfaces()
+            .WithScopedLifetime());
+
         return services;
     }
 }

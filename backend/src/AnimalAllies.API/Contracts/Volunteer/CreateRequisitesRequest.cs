@@ -1,7 +1,7 @@
 using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
-using AnimalAllies.Application.Features.Volunteer.CreateRequisites;
+using AnimalAllies.Application.Features.Volunteer.Commands.CreateRequisites;
 
-namespace AnimalAllies.API.Contracts;
+namespace AnimalAllies.API.Contracts.Volunteer;
 
 public record CreateRequisitesRequest(IEnumerable<RequisiteDto> Requisites)
 {
