@@ -16,7 +16,13 @@ public class Species: Entity<SpeciesId>, ISoftDeletable
     
     public Name Name { get; private set; }
     public IReadOnlyList<Breed.Breed> Breeds => _breeds;
-    public void AddBreeds(List<Breed.Breed> breeds) => _breeds.AddRange(breeds);
+
+    public Result AddBreed(Breed.Breed breed)
+    {
+        _breeds.Add(breed);
+
+        return Result.Success();
+    }
 
     public Result UpdateName(Name name)
     {

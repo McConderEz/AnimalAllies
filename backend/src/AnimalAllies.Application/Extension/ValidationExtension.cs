@@ -10,6 +10,7 @@ public static class ValidationExtension
     {
         var validationErrors = validationResult.Errors;
 
+        //TODO: Ошибка десериализации, пофиксить позже
         var errors = from validationError in validationErrors
             let errorMessage = validationError.ErrorMessage
             let error = Error.Deserialize(errorMessage)

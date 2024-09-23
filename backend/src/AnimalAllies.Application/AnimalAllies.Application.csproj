@@ -20,7 +20,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\Species\Commands\CreateBreed\" />
       <Folder Include="Features\Species\Commands\DeleteBreed\" />
       <Folder Include="Features\Species\Commands\DeleteSpecies\" />
       <Folder Include="Features\Species\Queries\GetBreedsBySpeciesId\" />
