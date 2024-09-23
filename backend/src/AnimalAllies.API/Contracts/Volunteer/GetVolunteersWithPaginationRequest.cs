@@ -2,7 +2,7 @@
 
 namespace AnimalAllies.API.Contracts.Volunteer;
 
-public record GetVolunteersWithPaginationRequest(
+public record GetFilteredVolunteersWithPaginationRequest(
     string? FirstName,
     string? SecondName,
     string? Patronymic,

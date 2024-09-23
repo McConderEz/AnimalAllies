@@ -21,8 +21,8 @@ public class VolunteerController: ApplicationController
 
     [HttpGet]
     public async Task<ActionResult> Get(
-        [FromQuery] GetVolunteersWithPaginationRequest request,
-        [FromServices] GetVolunteersWithPaginationHandler handler,
+        [FromQuery] GetFilteredVolunteersWithPaginationRequest request,
+        [FromServices] GetFilteredVolunteersWithPaginationHandler handler,
         CancellationToken cancellationToken = default)
     {
         var query = request.ToQuery();
@@ -37,7 +37,7 @@ public class VolunteerController: ApplicationController
     
     [HttpGet("dapper")]
     public async Task<ActionResult> GetDapper(
-        [FromQuery] GetVolunteersWithPaginationRequest request,
+        [FromQuery] GetFilteredVolunteersWithPaginationRequest request,
         [FromServices] GetVolunteersWithPaginationHandlerDapper handler,
         CancellationToken cancellationToken = default)
     {
