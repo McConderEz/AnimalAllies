@@ -164,7 +164,7 @@ public class GetVolunteersWithPaginationHandlerDapper :
                 break;
         }
         
-        sql.ApplySorting(query.SortBy,query.SortDirection,"work_experience");
+        sql.ApplySorting(query.SortBy,query.SortDirection);
         
         sql.ApplyPagination(query.Page,query.PageSize);
         

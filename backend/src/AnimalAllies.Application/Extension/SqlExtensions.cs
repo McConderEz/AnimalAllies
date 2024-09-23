@@ -14,7 +14,7 @@ public static class SqlExtensions
         {
             var validSortDirections = new[]{"asc", "desc"};
 
-            if (validSortDirections.Contains(sortDirection?.ToLower()) && validSortBy.Contains(sortBy?.ToLower()))
+            if (validSortDirections.Contains(sortDirection?.ToLower()))
             {
                 sqlBuilder.Append($"\norder by {sortBy} {sortDirection}");
             }
