@@ -20,8 +20,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\Species\Queries\GetBreedsBySpeciesId\" />
-      <Folder Include="Features\Species\Queries\GetSpeciesWithPagination\" />
       <Folder Include="Features\Volunteer\Commands\" />
     </ItemGroup>
 

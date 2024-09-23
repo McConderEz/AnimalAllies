@@ -45,7 +45,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                                 .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("character varying(100)")
-                                .HasColumnName("name_value");
+                                .HasColumnName("name");
                         });
 
                     b.HasKey("Id")
@@ -75,7 +75,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                                 .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("character varying(100)")
-                                .HasColumnName("name_value");
+                                .HasColumnName("name");
                         });
 
                     b.HasKey("Id")

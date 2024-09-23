@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AnimalAllies.Infrastructure.Migrations
 {
     [DbContext(typeof(WriteDbContext))]
-    [Migration("20240921160202_InitialWrite")]
+    [Migration("20240923130123_InitialWrite")]
     partial class InitialWrite
     {
         /// <inheritdoc />
@@ -48,7 +48,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                                 .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("character varying(100)")
-                                .HasColumnName("name_value");
+                                .HasColumnName("name");
                         });
 
                     b.HasKey("Id")
@@ -78,7 +78,7 @@ namespace AnimalAllies.Infrastructure.Migrations
                                 .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("character varying(100)")
-                                .HasColumnName("name_value");
+                                .HasColumnName("name");
                         });
 
                     b.HasKey("Id")
