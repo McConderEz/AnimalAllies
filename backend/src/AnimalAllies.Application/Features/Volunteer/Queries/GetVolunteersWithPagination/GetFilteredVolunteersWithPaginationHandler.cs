@@ -42,14 +42,14 @@ public class GetFilteredVolunteersWithPaginationHandler :
             validationResult.ToErrorList();
 
         var volunteerQuery = _readDbContext.Volunteers;
-        
-        volunteerQuery = VolunteerQueryFilter(query, volunteerQuery);
 
         var keySelector = SortByProperty(query);
 
         volunteerQuery = query.SortDirection?.ToLower() == "desc"
                 ? volunteerQuery.OrderByDescending(keySelector) 
                 : volunteerQuery.OrderBy(keySelector);
+        
+        volunteerQuery = VolunteerQueryFilter(query, volunteerQuery);
         
         var pagedList = await volunteerQuery.ToPagedList(
             query.Page,
@@ -102,15 +102,15 @@ public class GetFilteredVolunteersWithPaginationHandler :
     }
 }
 
-public class GetVolunteersWithPaginationHandlerDapper :
+public class GetFilteredVolunteersWithPaginationHandlerDapper :
     IQueryHandler<PagedList<VolunteerDto>, GetFilteredVolunteersWithPaginationQuery>
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
-    private readonly ILogger<GetFilteredVolunteersWithPaginationHandler> _logger;
+    private readonly ILogger<GetFilteredVolunteersWithPaginationHandlerDapper> _logger;
 
-    public GetVolunteersWithPaginationHandlerDapper(
+    public GetFilteredVolunteersWithPaginationHandlerDapper(
         ISqlConnectionFactory sqlConnectionFactory,
-        ILogger<GetFilteredVolunteersWithPaginationHandler> logger)
+        ILogger<GetFilteredVolunteersWithPaginationHandlerDapper> logger)
     {
         _sqlConnectionFactory = sqlConnectionFactory;
         _logger = logger;
