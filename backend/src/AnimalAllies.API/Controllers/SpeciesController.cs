@@ -13,12 +13,11 @@ namespace AnimalAllies.API.Controllers;
 public class SpeciesController : ApplicationController
 {
     [HttpPost]
-    public async Task<IActionResult> CreateSpecies(
+    public async Task<IActionResult> Create(
         [FromServices] CreateSpeciesHandler handler,
         [FromBody] CreateSpeciesRequest request,
         CancellationToken cancellationToken = default)
     {
-
         var command = request.ToCommand();
         
         var result = await handler.Handle(command, cancellationToken);
@@ -38,7 +37,6 @@ public class SpeciesController : ApplicationController
         [FromBody] CreateBreedRequest request,
         CancellationToken cancellationToken = default)
     {
-
         var command = request.ToCommand(speciesId);
         
         var result = await handler.Handle(command, cancellationToken);
@@ -57,7 +55,6 @@ public class SpeciesController : ApplicationController
         [FromRoute] Guid speciesId,
         CancellationToken cancellationToken = default)
     {
-
         var command = new DeleteSpeciesCommand(speciesId);
         
         var result = await handler.Handle(command, cancellationToken);
@@ -77,7 +74,6 @@ public class SpeciesController : ApplicationController
         [FromRoute] Guid breedId,
         CancellationToken cancellationToken = default)
     {
-
         var command = new DeleteBreedCommand(speciesId, breedId);
         
         var result = await handler.Handle(command, cancellationToken);
@@ -116,7 +112,6 @@ public class SpeciesController : ApplicationController
         [FromQuery] GetBreedsBySpeciesIdWithPaginationRequest request,
         CancellationToken cancellationToken = default)
     {
-
         var query = request.ToQuery(speciesId);
         
         var result = await handler.Handle(query, cancellationToken);

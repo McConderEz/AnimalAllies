@@ -1,4 +1,5 @@
 ﻿using AnimalAllies.Application.Abstractions;
+using AnimalAllies.Application.Database;
 using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Models.Species;
@@ -12,13 +13,19 @@ public class CreateSpeciesHandler : ICommandHandler<CreateSpeciesCommand, Specie
 {
     private readonly ISpeciesRepository _repository;
     private readonly IValidator<CreateSpeciesCommand> _validator;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateSpeciesHandler> _logger;
 
-    public CreateSpeciesHandler(ISpeciesRepository repository, IValidator<CreateSpeciesCommand> validator, ILogger<CreateSpeciesHandler> logger)
+    public CreateSpeciesHandler(
+        ISpeciesRepository repository, 
+        IValidator<CreateSpeciesCommand> validator,
+        ILogger<CreateSpeciesHandler> logger,
+        IUnitOfWork unitOfWork)
     {
         _repository = repository;
         _validator = validator;
         _logger = logger;
+        _unitOfWork = unitOfWork;
     }
 
 
@@ -30,11 +37,13 @@ public class CreateSpeciesHandler : ICommandHandler<CreateSpeciesCommand, Specie
 
         var speciesId = SpeciesId.NewGuid();
         var name = Name.Create(command.Name).Value;
-
+        
         var species = new Domain.Models.Species.Species(speciesId, name);
 
         var result = await _repository.Create(species, cancellationToken);
 
+        await _unitOfWork.SaveChanges(cancellationToken);
+        
         if (result.IsFailure)
             return result.Errors;
         

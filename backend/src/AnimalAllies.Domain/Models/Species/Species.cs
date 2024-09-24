@@ -20,6 +20,10 @@ public class Species: Entity<SpeciesId>, ISoftDeletable
 
     public Result AddBreed(Breed.Breed breed)
     {
+        var breedAlreadyExist = _breeds.FirstOrDefault(b => b.Name == breed.Name);
+        if (breedAlreadyExist is not null)
+            return Errors.Species.BreedAlreadyExist();
+        
         _breeds.Add(breed);
 
         return Result.Success();

@@ -41,4 +41,22 @@ public static class Errors
             return Error.Validation("Position.out.of.range", "Pet position is out of range");
         }
     }
+    
+    public static class Species
+    {
+        public static Error DeleteConflict()
+        {
+            return Error.Conflict("Exist.dependent.records", "Cannot delete because there are records that depend on it");
+        }
+        
+        public static Error AlreadyExist()
+        {
+            return Error.Validation("Record.already.exist", $"Species already exist");
+        }
+        
+        public static Error BreedAlreadyExist()
+        {
+            return Error.Validation("Record.already.exist", $"Breed of this species already exist");
+        }
+    }
 }

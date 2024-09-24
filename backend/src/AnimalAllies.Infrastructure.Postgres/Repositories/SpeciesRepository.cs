@@ -18,22 +18,20 @@ public class SpeciesRepository : ISpeciesRepository
     public async Task<Result<SpeciesId>> Create(Species entity, CancellationToken cancellationToken = default)
     {
         await _context.Species.AddAsync(entity, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+
         return entity.Id;
     }
 
-    public async Task<Result<SpeciesId>> Delete(Species entity, CancellationToken cancellationToken = default)
+    public Result<SpeciesId> Delete(Species entity, CancellationToken cancellationToken = default)
     {
         _context.Species.Remove(entity);
-        await _context.SaveChangesAsync(cancellationToken);
 
         return entity.Id;
     }
 
-    public async Task<Result<SpeciesId>> Save(Species entity, CancellationToken cancellationToken = default)
+    public Result<SpeciesId> Save(Species entity, CancellationToken cancellationToken = default)
     {
         _context.Species.Attach(entity);
-        await _context.SaveChangesAsync(cancellationToken);
 
         return entity.Id;
     }
@@ -48,5 +46,12 @@ public class SpeciesRepository : ISpeciesRepository
             return Result<Species>.Failure(Errors.General.NotFound());
 
         return Result<Species>.Success(species);
+    }
+
+    public async Task<Result<List<Species>>> Get(CancellationToken cancellationToken = default)
+    {
+        return await _context.Species
+            .Include(s => s.Breeds)
+            .ToListAsync(cancellationToken);
     }
 }
