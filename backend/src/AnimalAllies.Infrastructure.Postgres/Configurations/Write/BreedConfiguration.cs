@@ -22,7 +22,8 @@ public class BreedConfiguration: IEntityTypeConfiguration<Breed>
             b.IsRequired();
 
             b.Property(x => x.Value)
-                .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
+                .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
+                .HasColumnName("name");
         });
 
         builder.Property<bool>("_isDeleted")

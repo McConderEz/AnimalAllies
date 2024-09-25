@@ -82,7 +82,9 @@ public class VolunteerRepository: IVolunteerRepository
 
     public async Task<Result<List<Volunteer>>> Get(CancellationToken cancellationToken = default)
     {
-        var volunteers = await _context.Volunteers.ToListAsync(cancellationToken);
+        var volunteers = await _context.Volunteers
+            .Include(v => v.Pets)
+            .ToListAsync(cancellationToken);
 
         return Result<List<Volunteer>>.Success(volunteers);
     }

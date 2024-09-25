@@ -3,6 +3,7 @@ using AnimalAllies.Application.Extension;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Common;
 using AnimalAllies.Domain.Models.Species;
+using AnimalAllies.Domain.Models.Species.Breed;
 using AnimalAllies.Domain.Models.Volunteer;
 using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.Shared;
@@ -15,6 +16,7 @@ public class AddPetHandler : ICommandHandler<AddPetCommand, Guid>
 {
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IVolunteerRepository _volunteerRepository;
+    private readonly ISpeciesRepository _speciesRepository;
     private readonly ILogger<AddPetHandler> _logger;
     private readonly IValidator<AddPetCommand> _validator;
 
@@ -22,12 +24,14 @@ public class AddPetHandler : ICommandHandler<AddPetCommand, Guid>
         IVolunteerRepository volunteerRepository,
         ILogger<AddPetHandler> logger,
         IDateTimeProvider dateTimeProvider,
-        IValidator<AddPetCommand> validator)
+        IValidator<AddPetCommand> validator,
+        ISpeciesRepository speciesRepository)
     {
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _dateTimeProvider = dateTimeProvider;
         _validator = validator;
+        _speciesRepository = speciesRepository;
     }
     
 
@@ -76,6 +80,16 @@ public class AddPetHandler : ICommandHandler<AddPetCommand, Guid>
             command.Address.State,
             command.Address.ZipCode).Value;
 
+        var isSpeciesExist = await _speciesRepository
+            .GetById(SpeciesId.Create(command.AnimalType.SpeciesId), cancellationToken);
+        if (isSpeciesExist.IsFailure)
+            return isSpeciesExist.Errors;
+
+        var isBreedExist = isSpeciesExist.Value
+            .GetById(BreedId.Create(command.AnimalType.BreedId));
+        if (isBreedExist.IsFailure)
+            return isBreedExist.Errors;
+        
         var animalType = new AnimalType(SpeciesId.Create(command.AnimalType.SpeciesId), command.AnimalType.BreedId);
 
         var requisites =

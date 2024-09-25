@@ -42,7 +42,8 @@ public static class DependencyInjection
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IVolunteerRepository, VolunteerRepository>();
-
+        services.AddScoped<ISpeciesRepository, SpeciesRepository>();
+        
         return services;
     }
     
