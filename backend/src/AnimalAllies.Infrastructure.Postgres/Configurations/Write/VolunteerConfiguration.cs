@@ -78,7 +78,7 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<Volunteer>
             .ValueObjectJsonConverter(
                 sn => new SocialNetworkDto { Title = sn.Title, Url = sn.Url },
                 dto => SocialNetwork.Create(dto.Title, dto.Url).Value)
-            .HasColumnName("social_networks");;
+            .HasColumnName("social_networks");
         
         builder.Property<bool>("_isDeleted")
             .UsePropertyAccessMode(PropertyAccessMode.Field)
