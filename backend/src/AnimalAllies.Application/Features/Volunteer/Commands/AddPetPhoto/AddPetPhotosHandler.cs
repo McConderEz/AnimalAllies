@@ -18,7 +18,7 @@ namespace AnimalAllies.Application.Features.Volunteer.Commands.AddPetPhoto;
 
 public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
 {
-    private const string BUCKE_NAME = "photos";
+    private const string BUCKET_NAME = "photos";
     private readonly IFileProvider _fileProvider;
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly ILogger<AddPetPhotosHandler> _logger;
@@ -83,7 +83,7 @@ public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
                 if (filePath.IsFailure)
                     return filePath.Errors;
 
-                var fileContent = new FileData(file.Content,new FileInfo(filePath.Value, BUCKE_NAME));
+                var fileContent = new FileData(file.Content,new FileInfo(filePath.Value, BUCKET_NAME));
 
                 filesData.Add(fileContent);
             }

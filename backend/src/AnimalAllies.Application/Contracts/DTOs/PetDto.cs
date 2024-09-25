@@ -8,10 +8,10 @@ public class PetDto
     public string Name { get; init; } = string.Empty;
     public string Color { get; init; } = string.Empty;
     public string HealthInformation { get; init; } = string.Empty;
-    public double Weight { get; set; } 
-    public double Height { get; set; }
-    public bool IsCastrated { get; set; }
-    public bool IsVaccinated { get; set; }
+    public double Weight { get; init; } 
+    public double Height { get; init; }
+    public bool IsCastrated { get; init; }
+    public bool IsVaccinated { get; init; }
     public string Description { get; init; } = string.Empty; 
     public DateOnly BirthDate { get; init; } 
     public DateTime CreationTime { get; init; }
@@ -21,9 +21,9 @@ public class PetDto
     public string ZipCode { get; init; } = string.Empty;
     public string PhoneNumber { get; init; } = string.Empty;
     public string HelpStatus { get; init; } = string.Empty;
-    public Guid VolunteerId { get; set; }
-    public Guid SpeciesId { get; set; }
-    public Guid BreedId { get; set; }
+    public Guid VolunteerId { get; init; }
+    public Guid SpeciesId { get; init; }
+    public Guid BreedId { get; init; }
     //public RequisiteDto[] Requisites { get; set; } = [];
     //public PetPhotoDto[] Photos { get; set; } = [];
 }

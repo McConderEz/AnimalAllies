@@ -22,7 +22,7 @@ public class ValueObjectList<T> : ValueObject, IReadOnlyList<T>
 
     public ValueObjectList(IEnumerable<T> values)
     {
-        Values = new List<T>(values).AsReadOnly();
+        Values = new List<T>(values);
     }
     
     protected override IEnumerable<object> GetEqualityComponents()
