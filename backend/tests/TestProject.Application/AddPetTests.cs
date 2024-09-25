@@ -1,4 +1,5 @@
 using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
+using AnimalAllies.Application.Database;
 using AnimalAllies.Application.Features.Volunteer.Commands.AddPet;
 using AnimalAllies.Application.Repositories;
 using AnimalAllies.Domain.Common;
@@ -20,6 +21,8 @@ public class AddPetTests
     private readonly Mock<IVolunteerRepository> _volunteerRepositoryMock = new();
     private readonly Mock<ILogger<AddPetHandler>> _loggerMock = new();
     private readonly Mock<IValidator<AddPetCommand>> _validatorMock = new();
+    private readonly Mock<IReadDbContext> _readDbContext = new();
+    private readonly Mock<ISpeciesRepository> _speciesRepository = new();
     
     
     [Fact]
@@ -74,7 +77,8 @@ public class AddPetTests
             _volunteerRepositoryMock.Object,
             _loggerMock.Object,
             _dateTimeProviderMock.Object,
-            _validatorMock.Object);
+            _validatorMock.Object,
+            _speciesRepository.Object);
         
         //act
         var result = await handler.Handle(command, ct);
@@ -141,7 +145,8 @@ public class AddPetTests
             _volunteerRepositoryMock.Object,
             _loggerMock.Object,
             _dateTimeProviderMock.Object,
-            _validatorMock.Object);
+            _validatorMock.Object,
+            _speciesRepository.Object);
         
         //act
         var result = await handler.Handle(command, ct);
@@ -206,7 +211,8 @@ public class AddPetTests
             _volunteerRepositoryMock.Object,
             _loggerMock.Object,
             _dateTimeProviderMock.Object,
-            _validatorMock.Object);
+            _validatorMock.Object,
+            _speciesRepository.Object);
         
         //act
         var result = await handler.Handle(command, ct);

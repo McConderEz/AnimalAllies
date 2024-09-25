@@ -147,11 +147,6 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
             });
         });
         
-        /*builder.Property(p => p.Requisites)
-            .HasValueJsonConverter()
-            .HasColumnType("jsonb")
-            .HasColumnName("requisites");*/
-        
         
         builder.Property<bool>("_isDeleted")
             .UsePropertyAccessMode(PropertyAccessMode.Field)

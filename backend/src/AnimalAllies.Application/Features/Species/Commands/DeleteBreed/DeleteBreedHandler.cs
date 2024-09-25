@@ -14,7 +14,7 @@ namespace AnimalAllies.Application.Features.Species.Commands.DeleteBreed;
 public class DeleteBreedHandler : ICommandHandler<DeleteBreedCommand, BreedId>
 {
     private readonly ISpeciesRepository _repository;
-    private readonly IVolunteerRepository _volunteerRepository;
+    private readonly IReadDbContext _readDbContext;
     private readonly IValidator<DeleteBreedCommand> _validator;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DeleteBreedHandler> _logger;
@@ -24,13 +24,13 @@ public class DeleteBreedHandler : ICommandHandler<DeleteBreedCommand, BreedId>
         IValidator<DeleteBreedCommand> validator,
         ILogger<DeleteBreedHandler> logger,
         IUnitOfWork unitOfWork,
-        IVolunteerRepository volunteerRepository)
+        IReadDbContext readDbContext)
     {
         _repository = repository;
         _validator = validator;
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _volunteerRepository = volunteerRepository;
+        _readDbContext = readDbContext;
     }
     
     
@@ -47,12 +47,7 @@ public class DeleteBreedHandler : ICommandHandler<DeleteBreedCommand, BreedId>
         if (species.IsFailure)
             return Errors.General.NotFound();
 
-        var volunteers = await _volunteerRepository.Get(cancellationToken);
-        if (volunteers.IsFailure)
-            return volunteers.Errors;
-
-        var petOfThisBreed = volunteers.Value
-            .Any(v => v.Pets.Any(p => p.AnimalType.BreedId == breedId.Id));
+        var petOfThisBreed = _readDbContext.Pets.Any(p => p.BreedId == breedId.Id);
 
         if (petOfThisBreed)
             return Errors.Species.DeleteConflict();

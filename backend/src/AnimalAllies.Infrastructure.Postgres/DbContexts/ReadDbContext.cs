@@ -1,6 +1,5 @@
 ﻿using AnimalAllies.Application.Contracts.DTOs;
 using AnimalAllies.Application.Database;
-using AnimalAllies.Infrastructure.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -31,4 +30,7 @@ public class ReadDbContext(IConfiguration configuration):DbContext, IReadDbConte
         = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
     public IQueryable<VolunteerDto> Volunteers => Set<VolunteerDto>();
+    public IQueryable<BreedDto> Breeds => Set<BreedDto>();
+    public IQueryable<SpeciesDto> Species => Set<SpeciesDto>();
+    public IQueryable<PetDto> Pets => Set<PetDto>();
 } 

@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AnimalAllies.Infrastructure.Migrations
 {
     [DbContext(typeof(WriteDbContext))]
-    [Migration("20240923130123_InitialWrite")]
+    [Migration("20240925182231_InitialWrite")]
     partial class InitialWrite
     {
         /// <inheritdoc />
