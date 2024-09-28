@@ -21,7 +21,6 @@
 
     <ItemGroup>
       <Folder Include="Features\Volunteer\Commands\UpdatePetPhoto\" />
-      <Folder Include="Features\Volunteer\Commands\UpdatePet\" />
     </ItemGroup>
 
 </Project>

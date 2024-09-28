@@ -87,4 +87,24 @@ public class Pet : Entity<PetId>, ISoftDeletable
     {
         Position = newPosition;
     }
+
+    public void UpdatePet(
+        Name? name,
+        PetPhysicCharacteristics? petPhysicCharacteristics,
+        PetDetails? petDetails,
+        Address? address,
+        PhoneNumber? phoneNumber,
+        HelpStatus? helpStatus,
+        AnimalType? animalType,
+        ValueObjectList<Requisite>? requisites)
+    {
+        Name = name ?? Name;
+        PetPhysicCharacteristics = petPhysicCharacteristics ?? PetPhysicCharacteristics;
+        PetDetails = petDetails ?? PetDetails;
+        Address = address ?? Address;
+        PhoneNumber = phoneNumber ?? PhoneNumber;
+        HelpStatus = helpStatus ?? HelpStatus;
+        AnimalType = animalType ?? AnimalType;
+        Requisites = requisites ?? Requisites;
+    }
 }

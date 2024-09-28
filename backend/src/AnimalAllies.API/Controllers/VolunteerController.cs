@@ -10,6 +10,7 @@ using AnimalAllies.Application.Features.Volunteer.Commands.CreateSocialNetworks;
 using AnimalAllies.Application.Features.Volunteer.Commands.CreateVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Commands.DeleteVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Commands.MovePetPosition;
+using AnimalAllies.Application.Features.Volunteer.Commands.UpdatePet;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdateVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteerById;
 using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteersWithPagination;
@@ -216,6 +217,24 @@ public class VolunteerController: ApplicationController
         if (result.IsFailure)
             return result.Errors.ToResponse();
         
+        return Ok(result.Value);
+    }
+    
+    [HttpPut("{volunteerId:guid}/{petId:guid}/pet")]
+    public async Task<ActionResult> UpdatePet(
+        [FromRoute] Guid volunteerId,
+        [FromRoute] Guid petId,
+        [FromBody] UpdatePetRequest request,
+        [FromServices] UpdatePetHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = request.ToCommand(volunteerId, petId);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
+
         return Ok(result.Value);
     }
 }
