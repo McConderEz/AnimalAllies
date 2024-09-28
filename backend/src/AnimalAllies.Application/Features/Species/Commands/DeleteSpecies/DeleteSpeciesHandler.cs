@@ -46,6 +46,8 @@ public class DeleteSpeciesHandler: ICommandHandler<DeleteSpeciesCommand, Species
 
         var petOfThisSpecies = _readDbContext.Pets.Any(p => p.SpeciesId == command.SpeciesId);
 
+        //TODO: Сделать полное удаление
+        
         if (petOfThisSpecies)
             return Errors.Species.DeleteConflict();
         
