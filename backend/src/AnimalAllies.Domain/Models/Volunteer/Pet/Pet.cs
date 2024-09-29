@@ -54,6 +54,13 @@ public class Pet : Entity<PetId>, ISoftDeletable
         return Result.Success();
     }
 
+    public Result DeletePhotos()
+    {
+        PetPhotoDetails = new ValueObjectList<PetPhoto>([]);
+        
+        return Result.Success();
+    }
+
     public void SetPosition(Position position)
     {
         Position = position;

@@ -8,10 +8,10 @@ using AnimalAllies.Application.Features.Volunteer.Commands.AddPetPhoto;
 using AnimalAllies.Application.Features.Volunteer.Commands.CreateRequisites;
 using AnimalAllies.Application.Features.Volunteer.Commands.CreateSocialNetworks;
 using AnimalAllies.Application.Features.Volunteer.Commands.CreateVolunteer;
+using AnimalAllies.Application.Features.Volunteer.Commands.DeletePetPhoto;
 using AnimalAllies.Application.Features.Volunteer.Commands.DeleteVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Commands.MovePetPosition;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdatePet;
-using AnimalAllies.Application.Features.Volunteer.Commands.UpdatePetPhoto;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdateVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteerById;
 using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteersWithPagination;
@@ -239,19 +239,14 @@ public class VolunteerController: ApplicationController
         return Ok(result.Value);
     }
     
-    [HttpPut("{volunteerId:guid}/{petId:guid}/refreshing-pet-photos")]
-    public async Task<ActionResult> UpdatePetPhoto(
+    [HttpPut("{volunteerId:guid}/{petId:guid}/delete-pet-photos")]
+    public async Task<ActionResult> DeletePetPhoto(
         [FromRoute] Guid volunteerId,
         [FromRoute] Guid petId,
-        [FromForm] UpdatePetPhotoRequest request,
-        [FromServices] UpdatePetPhotosHandler handler,
+        [FromServices] DeletePetPhotosHandler handler,
         CancellationToken cancellationToken = default)
     {
-        await using var fileProcessor = new FormFileProcessor();
-
-        var fileDtos = fileProcessor.Process(request.Files);
-
-        var command = request.ToCommand(volunteerId, petId, fileDtos);
+        var command = new DeletePetPhotosCommand(volunteerId, petId);
 
         var result = await handler.Handle(command, cancellationToken);
 
