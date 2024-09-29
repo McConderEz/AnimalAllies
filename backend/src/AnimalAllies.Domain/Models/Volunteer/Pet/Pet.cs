@@ -90,6 +90,13 @@ public class Pet : Entity<PetId>, ISoftDeletable
         return Result.Success();
     }
 
+    public Result UpdateHelpStatus(HelpStatus helpStatus)
+    {
+        HelpStatus = helpStatus;
+        
+        return Result.Success();
+    }
+
     public void Move(Position newPosition)
     {
         Position = newPosition;
