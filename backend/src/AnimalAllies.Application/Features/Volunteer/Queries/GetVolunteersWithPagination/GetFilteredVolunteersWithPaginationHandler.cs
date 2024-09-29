@@ -116,6 +116,7 @@ public class GetFilteredVolunteersWithPaginationHandlerDapper :
         _logger = logger;
     }
 
+    //TODO: Упростить метод, переписать сортировки 
     public async Task<Result<PagedList<VolunteerDto>>> Handle(
         GetFilteredVolunteersWithPaginationQuery query,
         CancellationToken cancellationToken = default)
@@ -123,9 +124,6 @@ public class GetFilteredVolunteersWithPaginationHandlerDapper :
         var connection = _sqlConnectionFactory.Create();
 
         var parameters = new DynamicParameters();
-        
-        parameters.Add("@PageSize", query.PageSize);
-        parameters.Add("@Offset", (query.Page - 1) * query.PageSize);
         
         var sql = new StringBuilder("""
                                     select 

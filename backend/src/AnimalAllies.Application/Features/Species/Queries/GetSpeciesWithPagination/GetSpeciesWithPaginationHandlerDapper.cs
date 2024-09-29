@@ -35,9 +35,6 @@ public class GetSpeciesWithPaginationHandlerDapper : IQueryHandler<PagedList<Spe
         var connection = _sqlConnectionFactory.Create();
 
         var parameters = new DynamicParameters();
-        
-        parameters.Add("@PageSize", query.PageSize);
-        parameters.Add("@Offset", (query.Page - 1) * query.PageSize);
 
         var sql = new StringBuilder("""
                                     select 

@@ -48,7 +48,7 @@ public class DeleteBreedHandler : ICommandHandler<DeleteBreedCommand, BreedId>
             return Errors.General.NotFound();
 
         var petOfThisBreed = _readDbContext.Pets.Any(p => p.BreedId == breedId.Id);
-
+        
         if (petOfThisBreed)
             return Errors.Species.DeleteConflict();
         

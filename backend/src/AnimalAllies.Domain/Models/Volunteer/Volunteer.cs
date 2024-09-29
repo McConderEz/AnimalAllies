@@ -32,7 +32,7 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         WorkExperience = workExperience;
         Phone = phone;
         _socialNetworks = socialNetworks;
-        _requisites = requisites;
+        _requisites = requisites;       
     }
     
     public FullName FullName { get; private set;}
@@ -56,6 +56,39 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         
         pet.SetPosition(position.Value);
         _pets.Add(pet);
+        return Result.Success();
+    }
+
+    public Result UpdatePet(
+        PetId petId,
+        Name? name,
+        PetPhysicCharacteristics? petPhysicCharacteristics,
+        PetDetails? petDetails,
+        Address? address,
+        PhoneNumber? phoneNumber,
+        HelpStatus? helpStatus,
+        AnimalType? animalType,
+        ValueObjectList<Requisite>? requisites)
+    {
+        var pet = GetPetById(petId);
+        if (pet.IsFailure)
+            return Errors.General.NotFound();
+
+        pet.Value.UpdatePet(
+            name,
+            petPhysicCharacteristics,
+            petDetails,
+            address,
+            phoneNumber,
+            helpStatus,
+            animalType,
+            requisites);
+        
+        return Result.Success();
+    }
+
+    public Result UpdatePetPhotos()
+    {
         return Result.Success();
     }
 

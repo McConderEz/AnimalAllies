@@ -38,8 +38,6 @@ public class GetBreedsBySpeciesIdWithPaginationHandlerDapper: IQueryHandler<Page
 
         var parameters = new DynamicParameters();
         
-        parameters.Add("@PageSize", query.PageSize);
-        parameters.Add("@Offset", (query.Page - 1) * query.PageSize);
         parameters.Add("@SpeciesId", query.SpeciesId);
 
         var sql = new StringBuilder("""

@@ -54,6 +54,13 @@ public class Pet : Entity<PetId>, ISoftDeletable
         return Result.Success();
     }
 
+    public Result DeletePhotos()
+    {
+        PetPhotoDetails = new ValueObjectList<PetPhoto>([]);
+        
+        return Result.Success();
+    }
+
     public void SetPosition(Position position)
     {
         Position = position;
@@ -86,5 +93,25 @@ public class Pet : Entity<PetId>, ISoftDeletable
     public void Move(Position newPosition)
     {
         Position = newPosition;
+    }
+
+    public void UpdatePet(
+        Name? name,
+        PetPhysicCharacteristics? petPhysicCharacteristics,
+        PetDetails? petDetails,
+        Address? address,
+        PhoneNumber? phoneNumber,
+        HelpStatus? helpStatus,
+        AnimalType? animalType,
+        ValueObjectList<Requisite>? requisites)
+    {
+        Name = name ?? Name;
+        PetPhysicCharacteristics = petPhysicCharacteristics ?? PetPhysicCharacteristics;
+        PetDetails = petDetails ?? PetDetails;
+        Address = address ?? Address;
+        PhoneNumber = phoneNumber ?? PhoneNumber;
+        HelpStatus = helpStatus ?? HelpStatus;
+        AnimalType = animalType ?? AnimalType;
+        Requisites = requisites ?? Requisites;
     }
 }

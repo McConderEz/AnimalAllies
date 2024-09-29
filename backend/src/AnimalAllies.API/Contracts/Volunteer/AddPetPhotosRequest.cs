@@ -5,6 +5,6 @@ namespace AnimalAllies.API.Contracts.Volunteer;
 
 public record AddPetPhotosRequest(IFormFileCollection Files)
 {
-    public AddPetPhotosCommand ToCommand(Guid VolunteerId,Guid PetId, IEnumerable<CreateFileDto> Photos)
-        => new(VolunteerId, PetId, Photos);
+    public AddPetPhotosCommand ToCommand(Guid volunteerId,Guid petId, IEnumerable<CreateFileDto> photos)
+        => new(volunteerId, petId, photos);
 }

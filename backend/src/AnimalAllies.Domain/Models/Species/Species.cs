@@ -50,9 +50,10 @@ public class Species: Entity<SpeciesId>, ISoftDeletable
         var breed = GetById(id);
         if (breed.IsFailure)
             return Errors.General.NotFound();
-        
-        breed.Value.Delete();
 
+        _breeds.Remove(breed.Value);
+        breed.Value.Delete();
+        
         return Result.Success();
     }
     
