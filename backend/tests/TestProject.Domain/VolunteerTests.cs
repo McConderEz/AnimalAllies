@@ -64,8 +64,7 @@ public class VolunteerTests
             phoneNumber,
             helpStatus,
             animalType,
-            requisites,
-            null);
+            requisites);
         return pet;
     }
 

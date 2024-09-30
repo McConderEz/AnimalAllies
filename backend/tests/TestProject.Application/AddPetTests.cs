@@ -253,8 +253,7 @@ public class AddPetTests
             phoneNumber,
             helpStatus,
             animalType,
-            requisites,
-            null);
+            requisites);
         return pet;
     }
 

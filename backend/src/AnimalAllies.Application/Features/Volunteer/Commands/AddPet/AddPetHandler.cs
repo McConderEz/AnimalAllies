@@ -106,8 +106,7 @@ public class AddPetHandler : ICommandHandler<AddPetCommand, Guid>
             phoneNumber,
             helpStatus,
             animalType,
-            requisites,
-            new ValueObjectList<PetPhoto>([]));
+            requisites);
 
         volunteerResult.Value.AddPet(pet);
 
