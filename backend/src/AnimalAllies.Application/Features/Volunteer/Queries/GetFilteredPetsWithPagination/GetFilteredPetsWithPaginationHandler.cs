@@ -10,6 +10,7 @@ using AnimalAllies.Application.Models;
 using AnimalAllies.Domain.Models.Volunteer.Pet;
 using AnimalAllies.Domain.Shared;
 using Dapper;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Application.Features.Volunteer.Queries.GetFilteredPetsWithPagination;
@@ -18,19 +19,26 @@ public class GetFilteredPetsWithPaginationHandler : IQueryHandler<PagedList<PetD
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
     private readonly ILogger<GetFilteredPetsWithPaginationHandler> _logger;
+    private readonly IValidator<GetFilteredPetsWithPaginationQuery> _validator;
 
     public GetFilteredPetsWithPaginationHandler(
         ISqlConnectionFactory sqlConnectionFactory,
-        ILogger<GetFilteredPetsWithPaginationHandler> logger)
+        ILogger<GetFilteredPetsWithPaginationHandler> logger,
+        IValidator<GetFilteredPetsWithPaginationQuery> validator)
     {
         _sqlConnectionFactory = sqlConnectionFactory;
         _logger = logger;
+        _validator = validator;
     }
 
     public async Task<Result<PagedList<PetDto>>> Handle(
         GetFilteredPetsWithPaginationQuery query,
         CancellationToken cancellationToken = default)
     {
+        var validatorResult =  await _validator.ValidateAsync(query, cancellationToken);
+        if (!validatorResult.IsValid)
+            return validatorResult.ToErrorList();
+        
         var connection = _sqlConnectionFactory.Create();
 
         var parameters = new DynamicParameters();

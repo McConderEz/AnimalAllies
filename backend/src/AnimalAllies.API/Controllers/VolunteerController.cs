@@ -15,6 +15,7 @@ using AnimalAllies.Application.Features.Volunteer.Commands.UpdatePet;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdatePetStatus;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdateVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Queries.GetFilteredPetsWithPagination;
+using AnimalAllies.Application.Features.Volunteer.Queries.GetPetById;
 using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteerById;
 using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteersWithPagination;
 using Microsoft.AspNetCore.Mvc;
@@ -73,13 +74,29 @@ public class VolunteerController: ApplicationController
     }
     
     [HttpGet("{volunteerId:guid}/pet-dapper")]
-    public async Task<ActionResult> GetPetDapper(
+    public async Task<ActionResult> GetPetsDapper(
         [FromRoute] Guid volunteerId,
         [FromQuery] GetFilteredPetsWithPaginationRequest request,
         [FromServices] GetFilteredPetsWithPaginationHandler handler,
         CancellationToken cancellationToken = default)
     {
         var query = request.ToQuery(volunteerId);
+
+        var result = await handler.Handle(query, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [HttpGet("{petId:guid}/pet-by-id-dapper")]
+    public async Task<ActionResult> GetPetByIdDapper(
+        [FromRoute] Guid petId,
+        [FromServices] GetPetByIdHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetPetByIdQuery(petId);
 
         var result = await handler.Handle(query, cancellationToken);
 
