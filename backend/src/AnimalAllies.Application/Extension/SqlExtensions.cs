@@ -35,48 +35,74 @@ public static class SqlExtensions
     
     public static void ApplyBetweenFilter<TValue>(
         this StringBuilder sqlBuilder,
+        ref bool hasWhereClause,
         string? propertyName,
         TValue? valueFrom,
         TValue? valueTo)
     {
-        if (!string.IsNullOrWhiteSpace(propertyName))
+        if (!string.IsNullOrWhiteSpace(propertyName) && valueFrom != null && valueTo != null)
         {
-            sqlBuilder.Append($"\nwhere {propertyName} between {valueFrom} and {valueTo}");
+            sqlBuilder.Append(hasWhereClause ? " AND " : " WHERE ");
+            sqlBuilder.Append($"{propertyName} BETWEEN {valueFrom} AND {valueTo}");
+            hasWhereClause = true;
         }
     }
-    
+
     public static void ApplyFilterByValueFrom<TValue>(
         this StringBuilder sqlBuilder,
+        ref bool hasWhereClause,
         string? propertyName,
         TValue? valueFrom)
     {
-        if (!string.IsNullOrWhiteSpace(propertyName))
+        if (!string.IsNullOrWhiteSpace(propertyName) && valueFrom != null)
         {
-            sqlBuilder.Append($"\nwhere {propertyName} >= {valueFrom}");
+            sqlBuilder.Append(hasWhereClause ? " AND " : " WHERE ");
+            sqlBuilder.Append($"{propertyName} >= {valueFrom}");
+            hasWhereClause = true;
         }
     }
-    
+
     public static void ApplyFilterByValueTo<TValue>(
         this StringBuilder sqlBuilder,
+        ref bool hasWhereClause,
         string? propertyName,
         TValue? valueTo)
     {
-        if (!string.IsNullOrWhiteSpace(propertyName))
+        if (!string.IsNullOrWhiteSpace(propertyName) && valueTo != null)
         {
-            sqlBuilder.Append($"\nwhere {propertyName} <= {valueTo}");
+            sqlBuilder.Append(hasWhereClause ? " AND " : " WHERE ");
+            sqlBuilder.Append($"{propertyName} <= {valueTo}");
+            hasWhereClause = true;
         }
     }
-    
+
     public static void ApplyFilterByString(
         this StringBuilder sqlBuilder,
+        ref bool hasWhereClause,
         Dictionary<string, string> properties)
     {
         foreach (var property in properties)
         {
-            if (!string.IsNullOrWhiteSpace(property.Key)  && !string.IsNullOrWhiteSpace(property.Value))
+            if (!string.IsNullOrWhiteSpace(property.Key) && !string.IsNullOrWhiteSpace(property.Value))
             {
-                sqlBuilder.Append($"\nwhere {property.Key} like '%{property.Value}%'");
+                sqlBuilder.Append(hasWhereClause ? " AND " : " WHERE ");
+                sqlBuilder.Append($"{property.Key} LIKE '%{property.Value}%'");
+                hasWhereClause = true;
             }
+        }
+    }
+    
+    public static void ApplyFilterByEqualsValue<TValue>(
+        this StringBuilder sqlBuilder,
+        ref bool hasWhereClause,
+        string? propertyName,
+        TValue? valueTo)
+    {
+        if (!string.IsNullOrWhiteSpace(propertyName) && valueTo != null)
+        {
+            sqlBuilder.Append(hasWhereClause ? " AND " : " WHERE ");
+            sqlBuilder.Append($"{propertyName} = {valueTo}");
+            hasWhereClause = true;
         }
     }
     

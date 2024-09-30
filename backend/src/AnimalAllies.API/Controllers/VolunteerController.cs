@@ -14,6 +14,7 @@ using AnimalAllies.Application.Features.Volunteer.Commands.MovePetPosition;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdatePet;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdatePetStatus;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdateVolunteer;
+using AnimalAllies.Application.Features.Volunteer.Queries.GetFilteredPetsWithPagination;
 using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteerById;
 using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteersWithPagination;
 using Microsoft.AspNetCore.Mvc;
@@ -62,6 +63,23 @@ public class VolunteerController: ApplicationController
         CancellationToken cancellationToken = default)
     {
         var query = request.ToQuery();
+
+        var result = await handler.Handle(query, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [HttpGet("{volunteerId:guid}/pet-dapper")]
+    public async Task<ActionResult> GetPetDapper(
+        [FromRoute] Guid volunteerId,
+        [FromQuery] GetFilteredPetsWithPaginationRequest request,
+        [FromServices] GetFilteredPetsWithPaginationHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var query = request.ToQuery(volunteerId);
 
         var result = await handler.Handle(query, cancellationToken);
 

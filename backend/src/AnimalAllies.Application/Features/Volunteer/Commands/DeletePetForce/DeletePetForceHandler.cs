@@ -56,7 +56,7 @@ public class DeletePetForceHandler: ICommandHandler<DeletePetForceCommand, PetId
         if (result.IsFailure)
             return result.Errors;
         
-        var petPreviousPhotos = pet.Value.PetPhotoDetails!.Values
+        var petPreviousPhotos = pet.Value.PetPhotoDetails!
             .Select(f => new AnimalAllies.Application.FileProvider.FileInfo(f.Path, BUCKET_NAME)).ToList();
             
         if(petPreviousPhotos.Any())

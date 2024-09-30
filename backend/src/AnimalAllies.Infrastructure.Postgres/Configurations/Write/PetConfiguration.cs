@@ -113,42 +113,18 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
             pb.Property(p => p.Value)
                 .HasColumnName("position");
         });
-        
-        builder.OwnsOne(x => x.PetPhotoDetails, ppb =>
-        {
-            ppb.ToJson("pet_photo_details");
 
-            ppb.OwnsMany(x => x.Values, ppb =>
-            {
-                
-                ppb.Property(x => x.Path)
-                    .HasConversion(
-                        p => p.Path,
-                        p => FilePath.Create(p).Value)
-                    .HasMaxLength(Constraints.MAX_PATH_LENGHT)
-                    .HasColumnName("path")
-                    .IsRequired();
-                
-                ppb.Property(x => x.IsMain)
-                    .HasColumnName("is_main")
-                    .IsRequired();
-            });
-        });
+        builder.Property(p => p.PetPhotoDetails)
+            .ValueObjectJsonConverter(
+                p => new PetPhotoDto() { Path = p.Path.Path, IsMain = p.IsMain },
+                dto => new PetPhoto(FilePath.Create(dto.Path).Value, dto.IsMain))
+            .HasColumnName("pet_photos");
         
-        builder.OwnsOne(p => p.Requisites, rb =>
-        {
-            rb.ToJson("requisites");
-            rb.OwnsMany(rb => rb.Values, rb =>
-            {
-                rb.Property(r => r.Title)
-                    .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
-                    .IsRequired();
-
-                rb.Property(r => r.Description)
-                    .HasMaxLength(Constraints.MAX_DESCRIPTION_LENGTH)
-                    .IsRequired();
-            });
-        });
+        builder.Property(p => p.Requisites)
+            .ValueObjectJsonConverter(
+                r => new RequisiteDto() { Title = r.Title, Description = r.Description },
+                dto => Requisite.Create(dto.Title, dto.Description).Value)
+            .HasColumnName("requisites");
         
         
         builder.Property<bool>("_isDeleted")

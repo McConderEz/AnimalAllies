@@ -71,7 +71,7 @@ public class DeletePetPhotosHandler : ICommandHandler<DeletePetPhotosCommand, Gu
             if (pet.IsFailure)
                 return Errors.General.NotFound(petId.Id);
             
-            var petPreviousPhotos = pet.Value.PetPhotoDetails!.Values
+            var petPreviousPhotos = pet.Value.PetPhotoDetails!
                 .Select(f => new FileInfo(f.Path, BUCKET_NAME)).ToList();
             
             if(petPreviousPhotos.Any())
