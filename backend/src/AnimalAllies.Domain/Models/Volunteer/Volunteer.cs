@@ -106,6 +106,17 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         pet.Value.Delete();
         return Result.Success();
     }
+    
+    public Result DeletePetForce(PetId petId)
+    {
+        var pet = GetPetById(petId);
+        if (pet.IsFailure)
+            return pet.Errors;
+
+        _pets.Remove(pet.Value);
+        pet.Value.Delete();
+        return Result.Success();
+    }
 
     public Result MovePet(Pet.Pet pet, Position newPosition)
     {

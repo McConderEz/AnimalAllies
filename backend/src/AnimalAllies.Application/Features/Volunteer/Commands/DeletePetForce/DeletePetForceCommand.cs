@@ -1,6 +1,5 @@
-﻿namespace AnimalAllies.Application.Features.Volunteer.Commands.DeletePetForce;
+﻿using AnimalAllies.Application.Abstractions;
 
-public class DeletePetForceCommand
-{
-    
-}
+namespace AnimalAllies.Application.Features.Volunteer.Commands.DeletePetForce;
+
+public record DeletePetForceCommand(Guid VolunteerId, Guid PetId) : ICommand;

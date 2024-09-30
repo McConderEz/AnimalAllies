@@ -1,3 +1,4 @@
+using System.IO;
 using AnimalAllies.Domain.Models.Volunteer.Pet;
 
 namespace AnimalAllies.Application.FileProvider;
