@@ -7,6 +7,7 @@ using AnimalAllies.Application.Features.Volunteer.Commands.CreateRequisites;
 using AnimalAllies.Application.Features.Volunteer.Commands.CreateSocialNetworks;
 using AnimalAllies.Application.Features.Volunteer.Commands.CreateVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Commands.DeletePetPhoto;
+using AnimalAllies.Application.Features.Volunteer.Commands.DeletePetSoft;
 using AnimalAllies.Application.Features.Volunteer.Commands.DeleteVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Commands.MovePetPosition;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdatePet;
@@ -264,6 +265,23 @@ public class VolunteerController: ApplicationController
         CancellationToken cancellationToken = default)
     {
         var command = request.ToCommand(volunteerId, petId);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
+
+        return Ok(result.Value);
+    }
+    
+    [HttpDelete("{volunteerId:guid}/{petId:guid}/pet")]
+    public async Task<ActionResult> DeletePetSoft(
+        [FromRoute] Guid volunteerId,
+        [FromRoute] Guid petId,
+        [FromServices] DeletePetSoftHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new DeletePetSoftCommand(volunteerId, petId);
 
         var result = await handler.Handle(command, cancellationToken);
 
