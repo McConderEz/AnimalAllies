@@ -1,8 +1,6 @@
-using AnimalAllies.API.Contracts;
 using AnimalAllies.API.Contracts.Volunteer;
 using AnimalAllies.API.Extensions;
 using AnimalAllies.API.Processors;
-using AnimalAllies.API.Response;
 using AnimalAllies.Application.Features.Volunteer.Commands.AddPet;
 using AnimalAllies.Application.Features.Volunteer.Commands.AddPetPhoto;
 using AnimalAllies.Application.Features.Volunteer.Commands.CreateRequisites;
@@ -12,6 +10,7 @@ using AnimalAllies.Application.Features.Volunteer.Commands.DeletePetPhoto;
 using AnimalAllies.Application.Features.Volunteer.Commands.DeleteVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Commands.MovePetPosition;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdatePet;
+using AnimalAllies.Application.Features.Volunteer.Commands.UpdatePetStatus;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdateVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteerById;
 using AnimalAllies.Application.Features.Volunteer.Queries.GetVolunteersWithPagination;
@@ -253,6 +252,24 @@ public class VolunteerController: ApplicationController
         if (result.IsFailure)
             return result.Errors.ToResponse();
         
+        return Ok(result.Value);
+    }
+    
+    [HttpPut("{volunteerId:guid}/{petId:guid}/pet-help-status")]
+    public async Task<ActionResult> UpdatePetStatus(
+        [FromRoute] Guid volunteerId,
+        [FromRoute] Guid petId,
+        [FromBody] UpdatePetStatusRequest request,
+        [FromServices] UpdatePetStatusHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = request.ToCommand(volunteerId, petId);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
+
         return Ok(result.Value);
     }
 }

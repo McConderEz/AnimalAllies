@@ -15,4 +15,5 @@ public static partial class Constraints
     public static readonly int MIDDLE_NAME_LENGTH = 50;
 
     public static string[] Extensions = [".jpg", ".png", ".jpeg", ".svg"];
+    public static string[] HELP_STATUS_PET_FROM_VOLUNTEER = ["SearchingHome", "FoundHome"];
 }

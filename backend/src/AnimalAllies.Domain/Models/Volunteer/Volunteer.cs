@@ -87,8 +87,13 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         return Result.Success();
     }
 
-    public Result UpdatePetPhotos()
+    public Result UpdatePetStatus(PetId petId, HelpStatus helpStatus)
     {
+        var pet = GetPetById(petId);
+        if (pet.IsFailure)
+            return pet.Errors;
+
+        pet.Value.UpdateHelpStatus(helpStatus);
         return Result.Success();
     }
 
