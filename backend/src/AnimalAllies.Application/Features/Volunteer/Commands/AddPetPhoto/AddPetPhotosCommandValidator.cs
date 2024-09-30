@@ -1,3 +1,4 @@
+using System.IO;
 using AnimalAllies.Application.Validators;
 using AnimalAllies.Domain.Constraints;
 using AnimalAllies.Domain.Shared;
