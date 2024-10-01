@@ -139,6 +139,8 @@ public class GetFilteredVolunteersWithPaginationHandlerDapper :
                                         social_networks
                                         from volunteers
                                     """);
+
+        bool hasWhereClause = false;
         
         var stringProperties = new Dictionary<string, string>
         {
@@ -147,18 +149,18 @@ public class GetFilteredVolunteersWithPaginationHandlerDapper :
             { "patronymic", query.Patronymic },
         };
 
-        sql.ApplyFilterByString(stringProperties);
+        sql.ApplyFilterByString(ref hasWhereClause,stringProperties);
         
         switch (query)
         {
             case { WorkExperienceFrom: not null, WorkExperienceTo: not null }:
-                sql.ApplyBetweenFilter("work_experience", (int)query.WorkExperienceFrom, (int)query.WorkExperienceTo);
+                sql.ApplyBetweenFilter(ref hasWhereClause,"work_experience", (int)query.WorkExperienceFrom, (int)query.WorkExperienceTo);
                 break;
             case {WorkExperienceFrom: not null, WorkExperienceTo: null}:
-                sql.ApplyFilterByValueFrom("work_experience", (int)query.WorkExperienceFrom);
+                sql.ApplyFilterByValueFrom(ref hasWhereClause,"work_experience", (int)query.WorkExperienceFrom);
                 break;
             case {WorkExperienceFrom: null, WorkExperienceTo: not null}:
-                sql.ApplyFilterByValueTo<int>("work_experience", (int)query.WorkExperienceTo);
+                sql.ApplyFilterByValueTo<int>(ref hasWhereClause,"work_experience", (int)query.WorkExperienceTo);
                 break;
         }
         

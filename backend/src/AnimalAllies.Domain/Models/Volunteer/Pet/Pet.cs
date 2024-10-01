@@ -44,8 +44,8 @@ public class Pet : Entity<PetId>, ISoftDeletable
     public HelpStatus HelpStatus { get; private set; }
     public AnimalType AnimalType { get; private set; }
     public Position Position { get; private set; }
-    public ValueObjectList<Requisite> Requisites { get; private set; }
-    public ValueObjectList<PetPhoto>? PetPhotoDetails { get; private set; }
+    public IReadOnlyList<Requisite> Requisites { get; private set; }
+    public IReadOnlyList<PetPhoto>? PetPhotoDetails { get; private set; }
 
     public Result AddPhotos(ValueObjectList<PetPhoto>? photos)
     {

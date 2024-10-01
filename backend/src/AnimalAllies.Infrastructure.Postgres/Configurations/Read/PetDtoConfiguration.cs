@@ -1,4 +1,6 @@
-﻿using AnimalAllies.Application.Contracts.DTOs;
+﻿using System.Text.Json;
+using AnimalAllies.Application.Contracts.DTOs;
+using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,6 +13,14 @@ public class PetDtoConfiguration: IEntityTypeConfiguration<PetDto>
         builder.ToTable("pets");
         builder.HasKey(x => x.Id);
         
-        //TODO: Пока без json конвертера
+        builder.Property(i => i.Requisites)
+            .HasConversion(
+                r => JsonSerializer.Serialize(string.Empty, JsonSerializerOptions.Default),
+                json => JsonSerializer.Deserialize<RequisiteDto[]>(json, JsonSerializerOptions.Default)!);
+        
+        builder.Property(i => i.PetPhotos)
+            .HasConversion(
+                p => JsonSerializer.Serialize(string.Empty, JsonSerializerOptions.Default),
+                json => JsonSerializer.Deserialize<PetPhotoDto[]>(json, JsonSerializerOptions.Default)!);
     }
 }
