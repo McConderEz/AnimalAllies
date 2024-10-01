@@ -21,8 +21,7 @@ public class Pet : Entity<PetId>, ISoftDeletable
         PhoneNumber phoneNumber,
         HelpStatus helpStatus,
         AnimalType animalType,
-        ValueObjectList<Requisite> requisites,
-        ValueObjectList<PetPhoto>? petPhotoDetails)
+        ValueObjectList<Requisite> requisites)
         : base(petId)
     {
         Name = name;
@@ -33,7 +32,6 @@ public class Pet : Entity<PetId>, ISoftDeletable
         HelpStatus = helpStatus;
         AnimalType = animalType;
         Requisites = requisites;
-        PetPhotoDetails = petPhotoDetails;
     }
 
     public Name Name { get; private set; }
@@ -45,7 +43,7 @@ public class Pet : Entity<PetId>, ISoftDeletable
     public AnimalType AnimalType { get; private set; }
     public Position Position { get; private set; }
     public IReadOnlyList<Requisite> Requisites { get; private set; }
-    public IReadOnlyList<PetPhoto>? PetPhotoDetails { get; private set; }
+    public IReadOnlyList<PetPhoto> PetPhotoDetails { get; private set; } = [];
 
     public Result AddPhotos(ValueObjectList<PetPhoto>? photos)
     {
@@ -75,6 +73,20 @@ public class Pet : Entity<PetId>, ISoftDeletable
             return newPosition.Errors;
 
         Position = newPosition.Value;
+
+        return Result.Success();
+    }
+
+    public Result SetMainPhoto(PetPhoto petPhoto)
+    {
+        var isPhotoExist = PetPhotoDetails.FirstOrDefault(p => p.Path == petPhoto.Path);
+        if (isPhotoExist is null)
+            return Errors.General.NotFound();
+
+        PetPhotoDetails = PetPhotoDetails
+            .Select(photo => new PetPhoto(photo.Path, photo.Path == petPhoto.Path))
+            .OrderByDescending(p => p.IsMain)
+            .ToList();
 
         return Result.Success();
     }

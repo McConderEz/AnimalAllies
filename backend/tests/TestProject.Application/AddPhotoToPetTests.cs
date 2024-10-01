@@ -315,8 +315,7 @@ public class AddPhotoToPetTests
             phoneNumber,
             helpStatus,
             animalType,
-            requisites,
-            null);
+            requisites);
         return pet;
     }
 

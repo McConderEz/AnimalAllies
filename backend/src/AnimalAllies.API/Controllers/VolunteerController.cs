@@ -11,6 +11,7 @@ using AnimalAllies.Application.Features.Volunteer.Commands.DeletePetPhoto;
 using AnimalAllies.Application.Features.Volunteer.Commands.DeletePetSoft;
 using AnimalAllies.Application.Features.Volunteer.Commands.DeleteVolunteer;
 using AnimalAllies.Application.Features.Volunteer.Commands.MovePetPosition;
+using AnimalAllies.Application.Features.Volunteer.Commands.SetMainPhotoOfPet;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdatePet;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdatePetStatus;
 using AnimalAllies.Application.Features.Volunteer.Commands.UpdateVolunteer;
@@ -298,6 +299,24 @@ public class VolunteerController: ApplicationController
         [FromRoute] Guid petId,
         [FromBody] UpdatePetStatusRequest request,
         [FromServices] UpdatePetStatusHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = request.ToCommand(volunteerId, petId);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
+
+        return Ok(result.Value);
+    }
+    
+    [HttpPut("{volunteerId:guid}/{petId:guid}/pet-main-photo")]
+    public async Task<ActionResult> SetMainPhotoOfPet(
+        [FromRoute] Guid volunteerId,
+        [FromRoute] Guid petId,
+        [FromBody] SetMainPhotoOfPetRequest request,
+        [FromServices] SetMainPhotoOfPetHandler handler,
         CancellationToken cancellationToken = default)
     {
         var command = request.ToCommand(volunteerId, petId);

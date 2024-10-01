@@ -59,6 +59,19 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         return Result.Success();
     }
 
+    public Result SetMainPhotoOfPet(PetId petId, PetPhoto petPhoto)
+    {
+        var pet = GetPetById(petId);
+        if (pet.IsFailure)
+            return pet.Errors;
+
+        var result = pet.Value.SetMainPhoto(petPhoto);
+        if (result.IsFailure)
+            return result.Errors;
+
+        return result;
+    }
+    
     public Result UpdatePet(
         PetId petId,
         Name? name,

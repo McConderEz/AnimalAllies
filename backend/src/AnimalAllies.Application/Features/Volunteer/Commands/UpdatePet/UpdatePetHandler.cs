@@ -115,8 +115,7 @@ public class UpdatePetHandler: ICommandHandler<UpdatePetCommand, Guid>
             phoneNumber,
             helpStatus,
             animalType,
-            requisites,
-            new ValueObjectList<PetPhoto>([]));
+            requisites);
 
         var result =volunteerResult.Value.UpdatePet(
             petId,
