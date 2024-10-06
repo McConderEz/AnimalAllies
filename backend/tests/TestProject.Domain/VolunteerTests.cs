@@ -1,8 +1,10 @@
-using AnimalAllies.Domain.Common;
-using AnimalAllies.Domain.Models.Species;
-using AnimalAllies.Domain.Models.Volunteer;
-using AnimalAllies.Domain.Models.Volunteer.Pet;
-using AnimalAllies.Domain.Shared;
+using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.SharedKernel.Shared.ValueObjects;
+using AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate;
+using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet;
+using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
+using AnimalAllies.Volunteer.Domain.VolunteerManagement.ValueObject;
 using FluentAssertions;
 
 namespace TestProject.Domain;

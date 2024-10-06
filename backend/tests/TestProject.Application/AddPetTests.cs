@@ -1,17 +1,21 @@
-using AnimalAllies.Application.Contracts.DTOs.ValueObjects;
-using AnimalAllies.Application.Database;
-using AnimalAllies.Application.Features.Volunteer.Commands.AddPet;
-using AnimalAllies.Application.Repositories;
-using AnimalAllies.Domain.Common;
-using AnimalAllies.Domain.Models.Species;
-using AnimalAllies.Domain.Models.Volunteer;
-using AnimalAllies.Domain.Models.Volunteer.Pet;
-using AnimalAllies.Domain.Shared;
+using System.Runtime.InteropServices.JavaScript;
+using AnimalAllies.Core.Database;
+using AnimalAllies.Core.DTOs.ValueObjects;
+using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.SharedKernel.Shared.ValueObjects;
+using AnimalAllies.Species.Application.Repository;
+using AnimalAllies.Volunteer.Application.Repository;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPet;
+using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet;
+using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
+using AnimalAllies.Volunteer.Domain.VolunteerManagement.ValueObject;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using Moq;
+using static AnimalAllies.SharedKernel.Shared.Errors;
 
 namespace TestProject.Application;
 
@@ -68,9 +72,9 @@ public class AddPetTests
             .ReturnsAsync(new ValidationResult());
 
         _volunteerRepositoryMock.Setup(v => v.GetById(It.IsAny<VolunteerId>(), ct))
-            .ReturnsAsync(Result<Volunteer>.Success(volunteer));
+            .ReturnsAsync(Result<AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer>.Success(volunteer));
         
-        _volunteerRepositoryMock.Setup(v => v.Save(It.IsAny<Volunteer>(), ct))
+        _volunteerRepositoryMock.Setup(v => v.Save(It.IsAny<AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer>(), ct))
             .ReturnsAsync(Result<VolunteerId>.Success(volunteer.Id));
         
         var handler = new AddPetHandler(
@@ -78,7 +82,7 @@ public class AddPetTests
             _loggerMock.Object,
             _dateTimeProviderMock.Object,
             _validatorMock.Object,
-            _speciesRepository.Object);
+            _readDbContext.Object);
         
         //act
         var result = await handler.Handle(command, ct);
@@ -146,7 +150,7 @@ public class AddPetTests
             _loggerMock.Object,
             _dateTimeProviderMock.Object,
             _validatorMock.Object,
-            _speciesRepository.Object);
+            _readDbContext.Object);
         
         //act
         var result = await handler.Handle(command, ct);
@@ -202,9 +206,9 @@ public class AddPetTests
             .ReturnsAsync(new ValidationResult());
         
         _volunteerRepositoryMock.Setup(v => v.GetById(It.IsAny<VolunteerId>(), ct))
-            .ReturnsAsync(Result<Volunteer>.Failure(error));
+            .ReturnsAsync(Result<AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer>.Failure(error));
         
-        _volunteerRepositoryMock.Setup(v => v.Save(It.IsAny<Volunteer>(), ct))
+        _volunteerRepositoryMock.Setup(v => v.Save(It.IsAny<AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer>(), ct))
             .ReturnsAsync(Result<VolunteerId>.Failure(error));
         
         var handler = new AddPetHandler(
@@ -212,7 +216,7 @@ public class AddPetTests
             _loggerMock.Object,
             _dateTimeProviderMock.Object,
             _validatorMock.Object,
-            _speciesRepository.Object);
+            _readDbContext.Object);
         
         //act
         var result = await handler.Handle(command, ct);
@@ -257,7 +261,8 @@ public class AddPetTests
         return pet;
     }
 
-    private Volunteer AddPetsInVolunteer(Volunteer volunteer, int petsCount, DateOnly birthDate, DateTime creationTime)
+    private AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer AddPetsInVolunteer(
+        AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer volunteer, int petsCount, DateOnly birthDate, DateTime creationTime)
     {
         for (var i = 0; i < petsCount; i++)
         {
@@ -268,7 +273,7 @@ public class AddPetTests
         return volunteer;
     }
 
-    private static Volunteer InitVolunteer()
+    private static AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer InitVolunteer()
     {
         var volunteerId = VolunteerId.NewGuid();
         var fullName = FullName.Create("Test","Test","Test").Value;
@@ -279,7 +284,7 @@ public class AddPetTests
         var socialNetworks = new ValueObjectList<SocialNetwork>([SocialNetwork.Create("Test", "Test").Value]);
         var requisites = new ValueObjectList<Requisite>([Requisite.Create("Test", "Test").Value]);
 
-        var volunteer = new Volunteer(
+        var volunteer = new AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer(
             volunteerId,
             fullName,
             email,
