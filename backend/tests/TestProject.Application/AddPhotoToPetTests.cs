@@ -1,22 +1,24 @@
 ﻿using System.Data;
-using AnimalAllies.Application.Contracts.DTOs;
-using AnimalAllies.Application.Database;
-using AnimalAllies.Application.Features.Volunteer.Commands.AddPetPhoto;
-using AnimalAllies.Application.FileProvider;
-using AnimalAllies.Application.Messaging;
-using AnimalAllies.Application.Providers;
-using AnimalAllies.Application.Repositories;
-using AnimalAllies.Domain.Common;
-using AnimalAllies.Domain.Models.Species;
-using AnimalAllies.Domain.Models.Volunteer;
-using AnimalAllies.Domain.Models.Volunteer.Pet;
-using AnimalAllies.Domain.Shared;
+using System.Runtime.InteropServices.JavaScript;
+using AnimalAllies.Core.Database;
+using AnimalAllies.Core.DTOs.ValueObjects;
+using AnimalAllies.Core.Messaging;
+using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.SharedKernel.Shared.ValueObjects;
+using AnimalAllies.Volunteer.Application.FileProvider;
+using AnimalAllies.Volunteer.Application.Providers;
+using AnimalAllies.Volunteer.Application.Repository;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPetPhoto;
+using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet;
+using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
+using AnimalAllies.Volunteer.Domain.VolunteerManagement.ValueObject;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using Moq;
-using FileInfo = AnimalAllies.Application.FileProvider.FileInfo;
+using static AnimalAllies.SharedKernel.Shared.Errors;
 
 namespace TestProject.Application;
 
@@ -28,7 +30,7 @@ public class AddPhotoToPetTests
     private readonly Mock<IFileProvider> _fileProviderMock = new();
     private readonly Mock<IDbTransaction> _dbTransactionMock = new();
     private readonly Mock<IValidator<AddPetPhotosCommand>> _validatorMock = new();
-    private readonly Mock<IMessageQueue<IEnumerable<FileInfo>>> _messageQueueMock = new();
+    private readonly Mock<IMessageQueue<IEnumerable<AnimalAllies.Volunteer.Application.FileProvider.FileInfo>>> _messageQueueMock = new();
 
     [Fact]
     public async void Handle_Should_Add_Photo_To_Pet_When_Command_Is_Valid()
@@ -60,12 +62,12 @@ public class AddPhotoToPetTests
             .ReturnsAsync(new ValidationResult());
 
         _volunteerRepositoryMock.Setup(v => v.GetById(It.IsAny<VolunteerId>(), ct))
-            .ReturnsAsync(Result<Volunteer>.Success(volunteer));
+            .ReturnsAsync(Result<AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer>.Success(volunteer));
 
         var filesData = fileList.Select(f =>
-            new FileData(f.Content,new FileInfo(FilePath.Create(f.FileName).Value, bucketName)));
+            new FileData(f.Content,new AnimalAllies.Volunteer.Application.FileProvider.FileInfo(FilePath.Create(f.FileName).Value, bucketName)));
         
-        _volunteerRepositoryMock.Setup(v => v.Save(It.IsAny<Volunteer>(), ct))
+        _volunteerRepositoryMock.Setup(v => v.Save(It.IsAny<AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer>(), ct))
             .ReturnsAsync(Result<VolunteerId>.Success(volunteer.Id));
 
         _unitOfWorkMock.Setup(u => u.BeginTransaction(ct))
@@ -137,12 +139,12 @@ public class AddPhotoToPetTests
             .ReturnsAsync(new ValidationResult());
 
         _volunteerRepositoryMock.Setup(v => v.GetById(It.IsAny<VolunteerId>(), ct))
-            .ReturnsAsync(Result<Volunteer>.Success(volunteer));
+            .ReturnsAsync(Result<AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer>.Success(volunteer));
 
         var filesData = fileList.Select(f =>
-            new FileData(f.Content,new FileInfo(FilePath.Create(f.FileName).Value, bucketName)));
+            new FileData(f.Content,new AnimalAllies.Volunteer.Application.FileProvider.FileInfo(FilePath.Create(f.FileName).Value, bucketName)));
         
-        _volunteerRepositoryMock.Setup(v => v.Save(It.IsAny<Volunteer>(), ct))
+        _volunteerRepositoryMock.Setup(v => v.Save(It.IsAny<AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer>(), ct))
             .ReturnsAsync(Result<VolunteerId>.Success(volunteer.Id));
 
         _unitOfWorkMock.Setup(u => u.BeginTransaction(ct))
@@ -212,7 +214,7 @@ public class AddPhotoToPetTests
         var returnedError = Errors.General.NotFound(volunteer.Id.Id);
         
         _volunteerRepositoryMock.Setup(v => v.GetById(It.IsAny<VolunteerId>(), ct))
-            .ReturnsAsync(Result<Volunteer>.Failure(returnedError));
+            .ReturnsAsync(Result<AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer>.Failure(returnedError));
         
 
         var handler = new AddPetPhotosHandler(
@@ -319,7 +321,11 @@ public class AddPhotoToPetTests
         return pet;
     }
 
-    private Volunteer AddPetsInVolunteer(Volunteer volunteer, int petsCount, DateOnly birthDate, DateTime creationTime)
+    private AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer AddPetsInVolunteer(
+        AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer volunteer,
+        int petsCount,
+        DateOnly birthDate,
+        DateTime creationTime)
     {
         for (var i = 0; i < petsCount; i++)
         {
@@ -330,7 +336,7 @@ public class AddPhotoToPetTests
         return volunteer;
     }
 
-    private static Volunteer InitVolunteer()
+    private static AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer InitVolunteer()
     {
         var volunteerId = VolunteerId.NewGuid();
         var fullName = FullName.Create("Test","Test","Test").Value;
@@ -341,7 +347,7 @@ public class AddPhotoToPetTests
         var socialNetworks = new ValueObjectList<SocialNetwork>([SocialNetwork.Create("Test", "Test").Value]);
         var requisites = new ValueObjectList<Requisite>([Requisite.Create("Test", "Test").Value]);
 
-        var volunteer = new Volunteer(
+        var volunteer = new AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer(
             volunteerId,
             fullName,
             email,

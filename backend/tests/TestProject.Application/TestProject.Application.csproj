@@ -10,22 +10,25 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="coverlet.collector" Version="6.0.0"/>
+        <PackageReference Include="coverlet.collector" Version="6.0.0" />
         <PackageReference Include="FluentAssertions" Version="6.12.1" />
-        <PackageReference Include="FluentValidation" Version="11.5.1" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
+        <PackageReference Include="FluentValidation" Version="11.10.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
         <PackageReference Include="Moq" Version="4.20.72" />
-        <PackageReference Include="xunit" Version="2.5.3"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3"/>
+        <PackageReference Include="xunit" Version="2.5.3" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
     </ItemGroup>
 
     <ItemGroup>
-        <Using Include="Xunit"/>
+        <Using Include="Xunit" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\AnimalAllies.Application\AnimalAllies.Application.csproj" />
-      <ProjectReference Include="..\..\src\AnimalAllies.Domain\AnimalAllies.Domain.csproj" />
+      <ProjectReference Include="..\..\src\BreedManagement\AnimalAllies.Species.Application\AnimalAllies.Species.Application.csproj" />
+      <ProjectReference Include="..\..\src\PetManagement\AnimalAllies.Volunteer.Application\AnimalAllies.Volunteer.Application.csproj" />
+      <ProjectReference Include="..\..\src\Shared\AnimalAllies.Core\AnimalAllies.Core.csproj" />
+      <ProjectReference Include="..\..\src\Shared\AnimalAllies.Framework\AnimalAllies.Framework.csproj" />
+      <ProjectReference Include="..\..\src\Shared\AnimalAllies.SharedKernel\AnimalAllies.SharedKernel.csproj" />
     </ItemGroup>
 
 </Project>
