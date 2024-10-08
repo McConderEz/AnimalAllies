@@ -1,5 +1,6 @@
 using System.Data;
 using AnimalAllies.Core.Database;
+using AnimalAllies.Species.Application.Database;
 using AnimalAllies.Species.Infrastructure.DbContexts;
 using Microsoft.EntityFrameworkCore.Storage;
 

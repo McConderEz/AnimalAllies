@@ -5,6 +5,7 @@ using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using AnimalAllies.Species.Application.Repository;
+using AnimalAllies.Species.Contracts;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPet;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet;
@@ -15,7 +16,6 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using Moq;
-using static AnimalAllies.SharedKernel.Shared.Errors;
 
 namespace TestProject.Application;
 
@@ -26,7 +26,7 @@ public class AddPetTests
     private readonly Mock<ILogger<AddPetHandler>> _loggerMock = new();
     private readonly Mock<IValidator<AddPetCommand>> _validatorMock = new();
     private readonly Mock<IReadDbContext> _readDbContext = new();
-    private readonly Mock<ISpeciesRepository> _speciesRepository = new();
+    private readonly Mock<ISpeciesContracts> _speciesContractMock = new();
     
     
     [Fact]
@@ -82,7 +82,7 @@ public class AddPetTests
             _loggerMock.Object,
             _dateTimeProviderMock.Object,
             _validatorMock.Object,
-            _readDbContext.Object);
+            _speciesContractMock.Object);
         
         //act
         var result = await handler.Handle(command, ct);
@@ -150,7 +150,7 @@ public class AddPetTests
             _loggerMock.Object,
             _dateTimeProviderMock.Object,
             _validatorMock.Object,
-            _readDbContext.Object);
+            _speciesContractMock.Object);
         
         //act
         var result = await handler.Handle(command, ct);
@@ -216,7 +216,7 @@ public class AddPetTests
             _loggerMock.Object,
             _dateTimeProviderMock.Object,
             _validatorMock.Object,
-            _readDbContext.Object);
+            _speciesContractMock.Object);
         
         //act
         var result = await handler.Handle(command, ct);

@@ -1,6 +1,6 @@
 using System.Data;
 
-namespace AnimalAllies.Core.Database;
+namespace AnimalAllies.Species.Application.Database;
 
 public interface IUnitOfWork
 {

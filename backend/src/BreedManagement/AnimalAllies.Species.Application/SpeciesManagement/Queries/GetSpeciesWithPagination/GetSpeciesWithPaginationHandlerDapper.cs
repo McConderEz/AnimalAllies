@@ -25,7 +25,7 @@ public class GetSpeciesWithPaginationHandlerDapper : IQueryHandler<PagedList<Spe
         _logger = logger;
         _validator = validator;
     }
-
+    
     public async Task<Result<PagedList<SpeciesDto>>> Handle(GetSpeciesWithPaginationQuery query, CancellationToken cancellationToken = default)
     {
         var validatorResult = await _validator.ValidateAsync(query, cancellationToken);
@@ -61,5 +61,27 @@ public class GetSpeciesWithPaginationHandlerDapper : IQueryHandler<PagedList<Spe
             TotalCount = speciesDtos.Count()
         };
 
+    }
+    
+    public async Task<Result<List<SpeciesDto>>> Handle(CancellationToken cancellationToken = default)
+    {
+
+        var connection = _sqlConnectionFactory.Create();
+        
+
+        var sql = new StringBuilder("""
+                                    select 
+                                        id,
+                                        name
+                                        from species
+                                    """);
+        
+
+        var species = await connection.QueryAsync<SpeciesDto>(sql.ToString());
+        
+        _logger.LogInformation("Get species with pagination Page");
+
+
+        return species.ToList();
     }
 }

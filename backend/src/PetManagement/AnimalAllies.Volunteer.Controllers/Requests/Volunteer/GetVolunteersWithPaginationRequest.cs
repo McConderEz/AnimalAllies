@@ -1,6 +1,6 @@
 ﻿using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetVolunteersWithPagination;
 
-namespace AnimalAllies.Volunteer.Controllers.Requests.Volunteer;
+namespace AnimalAllies.Volunteer.Presentation.Requests.Volunteer;
 
 public record GetFilteredVolunteersWithPaginationRequest(
     string? FirstName,

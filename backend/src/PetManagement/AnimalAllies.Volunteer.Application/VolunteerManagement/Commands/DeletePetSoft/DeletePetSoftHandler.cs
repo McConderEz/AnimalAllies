@@ -3,6 +3,7 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.Volunteer.Application.Database;
 using AnimalAllies.Volunteer.Application.Repository;
 using FluentValidation;
 using Microsoft.Extensions.Logging;

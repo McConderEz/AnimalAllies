@@ -5,10 +5,10 @@ using AnimalAllies.Species.Application.SpeciesManagement.Commands.DeleteBreed;
 using AnimalAllies.Species.Application.SpeciesManagement.Commands.DeleteSpecies;
 using AnimalAllies.Species.Application.SpeciesManagement.Queries.GetBreedsBySpeciesId;
 using AnimalAllies.Species.Application.SpeciesManagement.Queries.GetSpeciesWithPagination;
-using AnimalAllies.Species.Controllers.Requests;
+using AnimalAllies.Species.Presentation.Requests;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AnimalAllies.Species.Controllers;
+namespace AnimalAllies.Species.Presentation;
 
 public class SpeciesController : ApplicationController
 {

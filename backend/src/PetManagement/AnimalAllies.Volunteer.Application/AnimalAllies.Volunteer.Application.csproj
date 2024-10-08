@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\BreedManagement\AnimalAllies.Species.Contracts\AnimalAllies.Species.Contracts.csproj" />
       <ProjectReference Include="..\..\Shared\AnimalAllies.Core\AnimalAllies.Core.csproj" />
       <ProjectReference Include="..\AnimalAllies.Volunteer.Domain\AnimalAllies.Volunteer.Domain.csproj" />
     </ItemGroup>

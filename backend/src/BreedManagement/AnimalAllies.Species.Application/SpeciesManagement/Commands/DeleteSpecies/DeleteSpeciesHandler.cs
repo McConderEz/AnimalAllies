@@ -3,7 +3,9 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.Species.Application.Database;
 using AnimalAllies.Species.Application.Repository;
+using AnimalAllies.Volunteer.Contracts;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
@@ -12,7 +14,7 @@ namespace AnimalAllies.Species.Application.SpeciesManagement.Commands.DeleteSpec
 public class DeleteSpeciesHandler: ICommandHandler<DeleteSpeciesCommand, SpeciesId>
 {
     private readonly ISpeciesRepository _repository;
-    private readonly IReadDbContext _readDbContext;
+    private readonly IVolunteerContract _volunteerContract;
     private readonly IValidator<DeleteSpeciesCommand> _validator;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DeleteSpeciesHandler> _logger;
@@ -22,13 +24,13 @@ public class DeleteSpeciesHandler: ICommandHandler<DeleteSpeciesCommand, Species
         IValidator<DeleteSpeciesCommand> validator,
         ILogger<DeleteSpeciesHandler> logger, 
         IUnitOfWork unitOfWork,
-        IReadDbContext readDbContext)
+        IVolunteerContract volunteerContract)
     {
         _repository = repository;
         _validator = validator;
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _readDbContext = readDbContext;
+        _volunteerContract = volunteerContract;
     }
 
     public async Task<Result<SpeciesId>> Handle(DeleteSpeciesCommand command, CancellationToken cancellationToken = default)
@@ -43,9 +45,9 @@ public class DeleteSpeciesHandler: ICommandHandler<DeleteSpeciesCommand, Species
         if (species.IsFailure)
             return Errors.General.NotFound();
 
-        var petOfThisSpecies = _readDbContext.Pets.Any(p => p.SpeciesId == command.SpeciesId);
+        var petOfThisSpecies = await _volunteerContract.GetPetsBySpeciesId(command.SpeciesId,cancellationToken);
         
-        if (petOfThisSpecies)
+        if (petOfThisSpecies.IsFailure || petOfThisSpecies.Value.Count > 0)
             return Errors.Species.DeleteConflict();
         
         var result =  _repository.Delete(species.Value, cancellationToken);

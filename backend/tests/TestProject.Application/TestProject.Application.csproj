@@ -25,7 +25,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\BreedManagement\AnimalAllies.Species.Application\AnimalAllies.Species.Application.csproj" />
+      <ProjectReference Include="..\..\src\BreedManagement\AnimalAllies.Species.Contracts\AnimalAllies.Species.Contracts.csproj" />
       <ProjectReference Include="..\..\src\PetManagement\AnimalAllies.Volunteer.Application\AnimalAllies.Volunteer.Application.csproj" />
+      <ProjectReference Include="..\..\src\PetManagement\AnimalAllies.Volunteer.Contracts\AnimalAllies.Volunteer.Contracts.csproj" />
       <ProjectReference Include="..\..\src\Shared\AnimalAllies.Core\AnimalAllies.Core.csproj" />
       <ProjectReference Include="..\..\src\Shared\AnimalAllies.Framework\AnimalAllies.Framework.csproj" />
       <ProjectReference Include="..\..\src\Shared\AnimalAllies.SharedKernel\AnimalAllies.SharedKernel.csproj" />

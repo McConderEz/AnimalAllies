@@ -12,6 +12,7 @@ public class VolunteerDto
     public int WorkExperience { get; set; }
     public RequisiteDto[] Requisites { get; set; } = [];
     public SocialNetworkDto[] SocialNetworks { get; set; } = [];
+    public bool IsDeleted { get; set; }
 }
 
 

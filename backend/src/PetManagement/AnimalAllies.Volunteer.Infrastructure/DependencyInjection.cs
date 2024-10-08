@@ -2,6 +2,7 @@ using AnimalAllies.Core.Common;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Messaging;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.Volunteer.Application.Database;
 using AnimalAllies.Volunteer.Application.Providers;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Infrastructure.BackgroundServices;
