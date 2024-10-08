@@ -72,11 +72,8 @@ public class GetSpeciesWithPaginationHandlerDapper : IQueryHandler<PagedList<Spe
         var sql = new StringBuilder("""
                                     select 
                                         id,
-                                        name,
-                                        breeds.name
+                                        name
                                         from species
-                                        join breeds on species.id = breeds.species_id
-                                        
                                     """);
         
 

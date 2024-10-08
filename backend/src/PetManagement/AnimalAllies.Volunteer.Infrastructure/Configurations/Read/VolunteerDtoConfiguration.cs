@@ -27,5 +27,7 @@ public class VolunteerDtoConfiguration: IEntityTypeConfiguration<VolunteerDto>
             .HasConversion(
                 sn => JsonSerializer.Serialize(string.Empty, JsonSerializerOptions.Default),
                 json => JsonSerializer.Deserialize<SocialNetworkDto[]>(json, JsonSerializerOptions.Default)!);
+
+        builder.HasQueryFilter(v => v.IsDeleted == false);
     }
 }

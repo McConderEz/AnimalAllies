@@ -22,5 +22,7 @@ public class PetDtoConfiguration: IEntityTypeConfiguration<PetDto>
             .HasConversion(
                 p => JsonSerializer.Serialize(string.Empty, JsonSerializerOptions.Default),
                 json => JsonSerializer.Deserialize<PetPhotoDto[]>(json, JsonSerializerOptions.Default)!);
+        
+        builder.HasQueryFilter(p => p.IsDeleted == false);
     }
 }

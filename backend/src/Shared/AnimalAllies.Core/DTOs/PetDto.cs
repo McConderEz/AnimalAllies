@@ -25,4 +25,5 @@ public class PetDto
     public Guid BreedId { get; set; }
     public RequisiteDto[] Requisites { get; set; } = [];
     public PetPhotoDto[] PetPhotos { get; set; } = [];
+    public bool IsDeleted { get; set; }
 }

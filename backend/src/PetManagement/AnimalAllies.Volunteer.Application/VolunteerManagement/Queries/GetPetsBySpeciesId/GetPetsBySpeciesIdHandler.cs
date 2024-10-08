@@ -69,7 +69,8 @@ public class GetPetsBySpeciesIdHandler: IQueryHandler<List<PetDto>, GetPetsBySpe
                                         requisites,
                                         pet_photos
                                         from pets
-                                        where species_id = @SpeciesId
+                                        where species_id = @SpeciesId and
+                                            is_deleted = false
                                     """);
         
         var pets = 

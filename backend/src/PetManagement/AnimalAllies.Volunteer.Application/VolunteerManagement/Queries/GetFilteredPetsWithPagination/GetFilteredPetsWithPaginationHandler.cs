@@ -66,7 +66,8 @@ public class GetFilteredPetsWithPaginationHandler : IQueryHandler<PagedList<PetD
                                         requisites,
                                         pet_photos
                                         from pets
-                                        where volunteer_id = @VolunteerId
+                                        where volunteer_id = @VolunteerId and 
+                                              is_deleted = false
                                     """);
         
         bool hasWhereClause = true;
