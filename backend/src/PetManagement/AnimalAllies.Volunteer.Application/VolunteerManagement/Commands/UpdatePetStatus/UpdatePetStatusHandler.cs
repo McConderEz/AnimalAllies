@@ -3,6 +3,7 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.Volunteer.Application.Database;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 using FluentValidation;
@@ -12,7 +13,6 @@ namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.Update
 
 public class UpdatePetStatusHandler : ICommandHandler<UpdatePetStatusCommand, PetId>
 {
-    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<UpdatePetStatusHandler> _logger;
@@ -21,13 +21,11 @@ public class UpdatePetStatusHandler : ICommandHandler<UpdatePetStatusCommand, Pe
     public UpdatePetStatusHandler(
         IVolunteerRepository volunteerRepository,
         ILogger<UpdatePetStatusHandler> logger,
-        IDateTimeProvider dateTimeProvider,
         IValidator<UpdatePetStatusCommand> validator,
         IUnitOfWork unitOfWork)
     {
         _volunteerRepository = volunteerRepository;
         _logger = logger;
-        _dateTimeProvider = dateTimeProvider;
         _validator = validator;
         _unitOfWork = unitOfWork;
     }

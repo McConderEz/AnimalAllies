@@ -4,6 +4,8 @@ using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
+using AnimalAllies.Species.Contracts;
+using AnimalAllies.Volunteer.Application.Database;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
@@ -17,7 +19,7 @@ public class UpdatePetHandler: ICommandHandler<UpdatePetCommand, Guid>
 {
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IVolunteerRepository _volunteerRepository;
-    private readonly IReadDbContext _readDbContext;
+    private readonly ISpeciesContracts _speciesContracts;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<UpdatePetHandler> _logger;
     private readonly IValidator<UpdatePetCommand> _validator;
@@ -27,15 +29,15 @@ public class UpdatePetHandler: ICommandHandler<UpdatePetCommand, Guid>
         ILogger<UpdatePetHandler> logger,
         IDateTimeProvider dateTimeProvider,
         IValidator<UpdatePetCommand> validator,
-        IReadDbContext readDbContext,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ISpeciesContracts speciesContracts)
     {
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _dateTimeProvider = dateTimeProvider;
         _validator = validator;
-        _readDbContext = readDbContext;
         _unitOfWork = unitOfWork;
+        _speciesContracts = speciesContracts;
     }
     
 
@@ -90,13 +92,19 @@ public class UpdatePetHandler: ICommandHandler<UpdatePetCommand, Guid>
         
         var speciesId = SpeciesId.Create(command.AnimalTypeDto.SpeciesId);
 
-        var isSpeciesExist = await _readDbContext.Species
-            .FirstOrDefaultAsync(s => s.Id == command.AnimalTypeDto.SpeciesId, cancellationToken);
+        var species = await _speciesContracts.GetSpecies(cancellationToken);
+        if (species.IsFailure)
+            return species.Errors;
+
+        var isSpeciesExist = species.Value.FirstOrDefault(s => s.Id == command.AnimalTypeDto.SpeciesId);
         if (isSpeciesExist is null)
             return Errors.General.NotFound();
-        
-        var isBreedExist = await _readDbContext.Breeds
-            .FirstOrDefaultAsync(s => s.Id == command.AnimalTypeDto.BreedId, cancellationToken);
+
+        var breeds = await _speciesContracts.GetBreedsBySpeciesId(isSpeciesExist.Id,cancellationToken);
+        if (breeds.IsFailure)
+            return breeds.Errors;
+
+        var isBreedExist = breeds.Value.FirstOrDefault(b => b.Id == command.AnimalTypeDto.BreedId);
         if (isBreedExist is null)
             return Errors.General.NotFound();
         

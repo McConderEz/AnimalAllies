@@ -13,6 +13,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Shared\AnimalAllies.Framework\AnimalAllies.Framework.csproj" />
 		<ProjectReference Include="..\AnimalAllies.Volunteer.Application\AnimalAllies.Volunteer.Application.csproj" />
+		<ProjectReference Include="..\AnimalAllies.Volunteer.Contracts\AnimalAllies.Volunteer.Contracts.csproj" />
 	</ItemGroup>
 
 </Project>

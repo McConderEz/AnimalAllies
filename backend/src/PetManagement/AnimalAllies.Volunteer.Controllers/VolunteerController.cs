@@ -1,27 +1,28 @@
-using Microsoft.AspNetCore.Mvc;
 using AnimalAllies.Framework;
 using AnimalAllies.Framework.Processors;
-using AnimalAllies.Volunteer.Controllers.Requests.Volunteer;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.UpdateVolunteer;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.UpdatePetStatus;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.UpdatePet;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPet;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPetPhoto;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CreateRequisites;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CreateSocialNetworks;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CreateVolunteer;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeletePetForce;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeletePetPhoto;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeletePetSoft;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeleteVolunteer;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.MovePetPosition;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.SetMainPhotoOfPet;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.UpdatePet;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.UpdatePetStatus;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.UpdateVolunteer;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetFilteredPetsWithPagination;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetPetById;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetPetsBySpeciesId;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetVolunteerById;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetVolunteersWithPagination;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.MovePetPosition;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetPetById;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CreateVolunteer;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetFilteredPetsWithPagination;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeleteVolunteer;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeletePetSoft;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeletePetPhoto;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeletePetForce;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CreateSocialNetworks;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CreateRequisites;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPetPhoto;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPet;
+using AnimalAllies.Volunteer.Presentation.Requests.Volunteer;
+using Microsoft.AspNetCore.Mvc;
 
-namespace AnimalAllies.Volunteer.Controllers;
+namespace AnimalAllies.Volunteer.Presentation;
 
 public class VolunteerController: ApplicationController
 {
@@ -82,6 +83,22 @@ public class VolunteerController: ApplicationController
         CancellationToken cancellationToken = default)
     {
         var query = request.ToQuery(volunteerId);
+
+        var result = await handler.Handle(query, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [HttpGet("{speciesId:guid}/pet-by-species-id")]
+    public async Task<ActionResult> GetPetsBySpeciesIdDapper(
+        [FromRoute] Guid speciesId,
+        [FromServices] GetPetsBySpeciesIdHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetPetsBySpeciesIdQuery(speciesId);
 
         var result = await handler.Handle(query, cancellationToken);
 

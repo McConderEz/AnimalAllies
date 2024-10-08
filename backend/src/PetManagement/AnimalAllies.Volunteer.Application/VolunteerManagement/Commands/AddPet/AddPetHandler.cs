@@ -4,6 +4,7 @@ using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
+using AnimalAllies.Species.Contracts;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
@@ -17,7 +18,7 @@ public class AddPetHandler : ICommandHandler<AddPetCommand, Guid>
 {
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IVolunteerRepository _volunteerRepository;
-    private readonly IReadDbContext _readDbContext;
+    private readonly ISpeciesContracts _speciesContracts;
     private readonly ILogger<AddPetHandler> _logger;
     private readonly IValidator<AddPetCommand> _validator;
 
@@ -25,14 +26,14 @@ public class AddPetHandler : ICommandHandler<AddPetCommand, Guid>
         IVolunteerRepository volunteerRepository,
         ILogger<AddPetHandler> logger,
         IDateTimeProvider dateTimeProvider,
-        IValidator<AddPetCommand> validator,
-        IReadDbContext readDbContext)
+        IValidator<AddPetCommand> validator, 
+        ISpeciesContracts speciesContracts)
     {
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _dateTimeProvider = dateTimeProvider;
         _validator = validator;
-        _readDbContext = readDbContext;
+        _speciesContracts = speciesContracts;
     }
     
 
@@ -81,13 +82,19 @@ public class AddPetHandler : ICommandHandler<AddPetCommand, Guid>
             command.Address.State,
             command.Address.ZipCode).Value;
 
-        var isSpeciesExist = await _readDbContext.Species
-            .FirstOrDefaultAsync(s => s.Id == command.AnimalType.SpeciesId,cancellationToken);
+        var species = await _speciesContracts.GetSpecies(cancellationToken);
+        if (species.IsFailure)
+            return species.Errors;
+
+        var isSpeciesExist = species.Value.FirstOrDefault(s => s.Id == command.AnimalType.SpeciesId);
         if (isSpeciesExist is null)
             return Errors.General.NotFound();
 
-        var isBreedExist = await _readDbContext.Breeds
-            .FirstOrDefaultAsync(b => b.Id == command.AnimalType.BreedId,cancellationToken);
+        var breeds = await _speciesContracts.GetBreedsBySpeciesId(isSpeciesExist.Id,cancellationToken);
+        if (breeds.IsFailure)
+            return breeds.Errors;
+
+        var isBreedExist = breeds.Value.FirstOrDefault(b => b.Id == command.AnimalType.BreedId);
         if (isBreedExist is null)
             return Errors.General.NotFound();
         
@@ -96,7 +103,6 @@ public class AddPetHandler : ICommandHandler<AddPetCommand, Guid>
         var requisites =
             new ValueObjectList<Requisite>(command.Requisites
                 .Select(r => Requisite.Create(r.Title, r.Description).Value).ToList());
-        
         
         var pet = new Pet(
             petId,

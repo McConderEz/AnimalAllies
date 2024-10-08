@@ -67,4 +67,32 @@ public class GetBreedsBySpeciesIdWithPaginationHandlerDapper: IQueryHandler<Page
         };
 
     }
+    
+    public async Task<Result<List<BreedDto>>> Handle(Guid speciesId, CancellationToken cancellationToken = default)
+    {
+        //TODO: Возможно валидация
+
+        var connection = _sqlConnectionFactory.Create();
+
+        var parameters = new DynamicParameters();
+        
+        parameters.Add("@SpeciesId", speciesId);
+
+        var sql = new StringBuilder("""
+                                    select 
+                                        id,
+                                        name,
+                                        species_id
+                                        from breeds
+                                    where species_id = @SpeciesId
+                                    """);
+        
+
+        var breeds = await connection.QueryAsync<BreedDto>(sql.ToString(), parameters);
+        
+        _logger.LogInformation("Get breeds with pagination with {speciesId}", speciesId);
+
+        return breeds.ToList();
+    }
+    
 }

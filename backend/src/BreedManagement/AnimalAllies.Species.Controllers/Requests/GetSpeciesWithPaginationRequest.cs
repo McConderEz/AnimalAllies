@@ -1,6 +1,6 @@
 ﻿using AnimalAllies.Species.Application.SpeciesManagement.Queries.GetSpeciesWithPagination;
 
-namespace AnimalAllies.Species.Controllers.Requests;
+namespace AnimalAllies.Species.Presentation.Requests;
 
 public record GetSpeciesWithPaginationRequest(
     string? SortBy,

@@ -4,6 +4,7 @@ using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
+using AnimalAllies.Species.Application.Database;
 using AnimalAllies.Species.Application.Repository;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -42,13 +43,13 @@ public class CreateSpeciesHandler : ICommandHandler<CreateSpeciesCommand, Specie
         var species = new Domain.Species(speciesId, name);
 
         var result = await _repository.Create(species, cancellationToken);
-
-        await _unitOfWork.SaveChanges(cancellationToken);
         
         if (result.IsFailure)
             return result.Errors;
         
         _logger.LogInformation("Created species with id {speciesId}", speciesId.Id);
+        
+        await _unitOfWork.SaveChanges(cancellationToken);
         
         return result.Value;
     }

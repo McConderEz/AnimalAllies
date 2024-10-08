@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Shared\AnimalAllies.Framework\AnimalAllies.Framework.csproj" />
       <ProjectReference Include="..\AnimalAllies.Species.Application\AnimalAllies.Species.Application.csproj" />
+      <ProjectReference Include="..\AnimalAllies.Species.Contracts\AnimalAllies.Species.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

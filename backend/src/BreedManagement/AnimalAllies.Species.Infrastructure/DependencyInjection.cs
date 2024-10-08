@@ -1,4 +1,5 @@
 using AnimalAllies.Core.Database;
+using AnimalAllies.Species.Application.Database;
 using AnimalAllies.Species.Application.Repository;
 using AnimalAllies.Species.Infrastructure.DbContexts;
 using AnimalAllies.Species.Infrastructure.Repository;
@@ -13,9 +14,9 @@ public static class DependencyInjection
         this IServiceCollection services, IConfiguration configuration)
     {
         services
+            .AddDatabase()
             .AddDbContexts()
-            .AddRepositories()
-            .AddDatabase();
+            .AddRepositories();
         
         return services;
     }

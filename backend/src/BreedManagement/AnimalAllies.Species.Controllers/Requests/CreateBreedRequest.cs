@@ -1,7 +1,7 @@
 ﻿
 using AnimalAllies.Species.Application.SpeciesManagement.Commands.CreateBreed;
 
-namespace AnimalAllies.Species.Controllers.Requests;
+namespace AnimalAllies.Species.Presentation.Requests;
 
 public record CreateBreedRequest(string Name)
 {

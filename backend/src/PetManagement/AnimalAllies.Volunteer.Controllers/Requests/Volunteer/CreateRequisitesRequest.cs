@@ -1,7 +1,7 @@
 using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CreateRequisites;
 
-namespace AnimalAllies.Volunteer.Controllers.Requests.Volunteer;
+namespace AnimalAllies.Volunteer.Presentation.Requests.Volunteer;
 
 public record CreateRequisitesRequest(IEnumerable<RequisiteDto> Requisites)
 {

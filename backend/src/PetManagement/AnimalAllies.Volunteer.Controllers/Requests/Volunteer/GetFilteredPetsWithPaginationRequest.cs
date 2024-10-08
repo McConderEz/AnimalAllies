@@ -1,6 +1,6 @@
 ﻿using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetFilteredPetsWithPagination;
 
-namespace AnimalAllies.Volunteer.Controllers.Requests.Volunteer;
+namespace AnimalAllies.Volunteer.Presentation.Requests.Volunteer;
 
 public record GetFilteredPetsWithPaginationRequest(
     Guid? BreedId,

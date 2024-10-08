@@ -5,6 +5,8 @@ using AnimalAllies.Volunteer.Application;
 using AnimalAllies.Volunteer.Infrastructure;
 using Serilog;
 using AnimalAllies.Species.Infrastructure;
+using AnimalAllies.Species.Presentation;
+using AnimalAllies.Volunteer.Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,10 +19,12 @@ builder.Services.AddHttpLogging(o =>
 
 builder.Services.AddSerilog();
 builder.Services
-    .AddSpeciesApplication()
-    .AddSpeciesInfrastructure(builder.Configuration)
+    .AddVolunteerPresentation()
     .AddVolunteerApplication()
-    .AddVolunteerInfrastructure(builder.Configuration);
+    .AddVolunteerInfrastructure(builder.Configuration)
+    .AddSpeciesPresentation()
+    .AddSpeciesApplication()
+    .AddSpeciesInfrastructure(builder.Configuration);
 
 
 builder.Services.AddControllers();
