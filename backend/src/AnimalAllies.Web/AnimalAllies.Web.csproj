@@ -30,6 +30,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Accounts\AnimalAllies.Accounts.Infrastructure\AnimalAllies.Accounts.Infrastructure.csproj" />
+      <ProjectReference Include="..\Accounts\AnimalAllies.Accounts.Presentation\AnimalAllies.Accounts.Presentation.csproj" />
       <ProjectReference Include="..\BreedManagement\AnimalAllies.Species.Controllers\AnimalAllies.Species.Presentation.csproj" />
       <ProjectReference Include="..\BreedManagement\AnimalAllies.Species.Infrastructure\AnimalAllies.Species.Infrastructure.csproj" />
       <ProjectReference Include="..\PetManagement\AnimalAllies.Volunteer.Controllers\AnimalAllies.Volunteer.Presentation.csproj" />
