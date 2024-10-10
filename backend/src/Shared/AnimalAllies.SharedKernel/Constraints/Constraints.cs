@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace AnimalAllies.SharedKernel.Constraints;
 
 public static partial class Constraints
@@ -13,7 +15,12 @@ public static partial class Constraints
     public static readonly int MAX_EXP_VALUE = 90;
     public static readonly int MAX_PHONENUMBER_LENGTH = 14;
     public static readonly int MIDDLE_NAME_LENGTH = 50;
+    public static readonly int MIN_LENGTH_PASSWORD = 8;
+    
 
     public static string[] Extensions = [".jpg", ".png", ".jpeg", ".svg"];
     public static string[] HELP_STATUS_PET_FROM_VOLUNTEER = ["SearchingHome", "FoundHome"];
+    public static readonly Regex ValidationRegex = new Regex(
+        @"^[\w-\.]{1,40}@([\w-]+\.)+[\w-]{2,4}$",
+        RegexOptions.Singleline | RegexOptions.Compiled);
 }

@@ -27,10 +27,15 @@ public static class Errors
             var label = name == null ? "" : " " + name + " ";
             return Error.Validation("Invalid.length",$"invalid{label}length");
         }
+        public static Error AlreadyExist()
+        {
+            return Error.Validation("Record.already.exist", $"Records already exist");
+        }
     }
 
     public static class Volunteer
     {
+        //TODO: Удалить и поменять на General
         public static Error AlreadyExist()
         {
             return Error.Validation("Record.already.exist", $"Volunteer already exist");
@@ -39,6 +44,14 @@ public static class Errors
         public static Error PetPositionOutOfRange()
         {
             return Error.Validation("Position.out.of.range", "Pet position is out of range");
+        }
+    }
+
+    public static class User
+    {
+        public static Error InvalidCredentials()
+        {
+            return Error.Validation("credentials.is.invalid", "Your credentials is invalid");
         }
     }
     
