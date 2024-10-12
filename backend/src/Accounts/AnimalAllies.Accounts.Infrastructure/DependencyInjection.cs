@@ -3,6 +3,7 @@ using AnimalAllies.Accounts.Application;
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Core.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,7 +49,25 @@ public static class DependencyInjection
         
         return services;
     }
+
+    //TODO: Отрефачить, написать политики к контроллерам
     
+    public static IServiceCollection AddAuthorization(this IServiceCollection services)
+    {
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("CreatePetRequirement", policy =>
+            {
+                policy.AddRequirements(new PermissionRequirement("Pet"));
+            });
+        });
+
+        services.AddSingleton<IAuthorizationHandler, PermissionRequirementHandler>();
+        
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider >();
+        
+        return services;
+    }
 
     public static IServiceCollection AddJwtAuthentication(
         this IServiceCollection services,
