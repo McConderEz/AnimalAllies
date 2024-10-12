@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using AnimalAllies.Accounts.Application;
 using AnimalAllies.Accounts.Domain;
+using AnimalAllies.Core.Models;
 using AnimalAllies.Core.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -26,9 +27,9 @@ public class JwtTokenProvider : ITokenProvider
         
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-            new Claim(JwtRegisteredClaimNames.Name, user.UserName!)
+            new Claim(CustomClaims.Id, user.Id.ToString()),
+            new Claim(CustomClaims.Email, user.Email!),
+            new Claim(CustomClaims.Username, user.UserName!)
         };
         
         var jwtToken = new JwtSecurityToken(

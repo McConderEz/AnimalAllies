@@ -1,6 +1,6 @@
 ﻿using AnimalAllies.Accounts.Application.AccountManagement.Commands.Login;
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.Register;
-using AnimalAllies.Accounts.Presentation.Requests;
+using AnimalAllies.Accounts.Contracts.Requests;
 using AnimalAllies.Framework;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +14,7 @@ public class AccountController: ApplicationController
         [FromServices] RegisterUserHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var command = request.ToCommand();
+        var command = new RegisterUserCommand(request.Email, request.UserName, request.Password);
 
         var result = await handler.Handle(command, cancellationToken);
         if (result.IsFailure)
@@ -29,7 +29,7 @@ public class AccountController: ApplicationController
         [FromServices] LoginUserHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var command = request.ToCommand();
+        var command = new LoginUserCommand(request.Email, request.Password);
 
         var result = await handler.Handle(command, cancellationToken);
         if (result.IsFailure)
