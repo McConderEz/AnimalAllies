@@ -1,3 +1,5 @@
+using AnimalAllies.Accounts.Application;
+using AnimalAllies.Accounts.Infrastructure;
 using AnimalAllies.Web.Extensions;
 using AnimalAllies.Web.Middlewares;
 using AnimalAllies.Species.Application;
@@ -7,6 +9,7 @@ using Serilog;
 using AnimalAllies.Species.Infrastructure;
 using AnimalAllies.Species.Presentation;
 using AnimalAllies.Volunteer.Presentation;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +22,8 @@ builder.Services.AddHttpLogging(o =>
 
 builder.Services.AddSerilog();
 builder.Services
+    .AddAccountsApplication()
+    .AddAccountsInfrastructure(builder.Configuration)
     .AddVolunteerPresentation()
     .AddVolunteerApplication()
     .AddVolunteerInfrastructure(builder.Configuration)
@@ -27,10 +32,13 @@ builder.Services
     .AddSpeciesInfrastructure(builder.Configuration);
 
 
+
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwagger();
+
 
 
 var app = builder.Build();
@@ -51,6 +59,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

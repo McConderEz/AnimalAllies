@@ -92,6 +92,7 @@ public class PetConfiguration: IEntityTypeConfiguration<Pet>
                 .HasMaxLength(Constraints.MAX_VALUE_LENGTH);
             
         });
+        
 
         builder.ComplexProperty(x => x.PhoneNumber, p =>
         {
