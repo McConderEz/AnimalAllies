@@ -1,4 +1,3 @@
-
 dotnet-ef database drop -f -c AccountsDbContext -p .\src\Accounts\AnimalAllies.Accounts.Infrastructure\ -s .\src\AnimalAllies.Web\
 dotnet-ef database drop -f -c WriteDbContext -p .\src\PetManagement\AnimalAllies.Volunteer.Infrastructure\ -s .\src\AnimalAllies.Web\
 dotnet-ef database drop -f -c WriteDbContext -p .\src\BreedManagement\AnimalAllies.Species.Infrastructure\ -s .\src\AnimalAllies.Web\

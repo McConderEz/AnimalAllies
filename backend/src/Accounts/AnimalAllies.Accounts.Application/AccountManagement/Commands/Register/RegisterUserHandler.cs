@@ -46,6 +46,10 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
             return Result.Success();
         }
 
+        //TODO: Сделать принадлежность к ролям и разрешениям при создании нового пользователя
+        
+        //await _userManager.AddToRoleAsync(user, "Patricipant");
+        
         return result.Errors.ToErrorList();
     }
 }

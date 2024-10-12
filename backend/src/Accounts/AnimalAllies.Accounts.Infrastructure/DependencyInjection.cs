@@ -20,12 +20,12 @@ public static class DependencyInjection
             .AddJwtAuthentication(configuration)
             .AddDbContexts()
             .AddIdentityServices()
-            .AddAuthorization();
+            .AddAuthorizationServices();
         
         return services;
     }
 
-    public static IServiceCollection AddIdentityServices(this IServiceCollection services)
+    private static IServiceCollection AddIdentityServices(this IServiceCollection services)
     {
         services
             .AddIdentity<User,Role>(options =>
@@ -43,7 +43,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddDbContexts(this IServiceCollection services)
+    private static IServiceCollection AddDbContexts(this IServiceCollection services)
     {
         services.AddScoped<AccountsDbContext>();
         
@@ -51,16 +51,10 @@ public static class DependencyInjection
     }
 
     //TODO: Отрефачить, написать политики к контроллерам
-    
-    public static IServiceCollection AddAuthorization(this IServiceCollection services)
+
+    private static IServiceCollection AddAuthorizationServices(this IServiceCollection services)
     {
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy("CreatePetRequirement", policy =>
-            {
-                policy.AddRequirements(new PermissionRequirement("Pet"));
-            });
-        });
+        services.AddAuthorization();
 
         services.AddSingleton<IAuthorizationHandler, PermissionRequirementHandler>();
         
@@ -69,7 +63,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddJwtAuthentication(
+    private static IServiceCollection AddJwtAuthentication(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -98,7 +92,8 @@ public static class DependencyInjection
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
                 };
         
             });
