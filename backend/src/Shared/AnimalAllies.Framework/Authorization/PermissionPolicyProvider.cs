@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Options;
 
-namespace AnimalAllies.Accounts.Infrastructure;
+namespace AnimalAllies.Framework.Authorization;
 
 public class PermissionPolicyProvider : IAuthorizationPolicyProvider
 {
@@ -12,7 +11,7 @@ public class PermissionPolicyProvider : IAuthorizationPolicyProvider
 
         var policy = new AuthorizationPolicyBuilder()
             .RequireAuthenticatedUser()
-            .AddRequirements(new PermissionRequirement(policyName))
+            .AddRequirements(new PermissionAttribute(policyName))
             .Build();
 
         return Task.FromResult<AuthorizationPolicy?>(policy);
@@ -22,7 +21,6 @@ public class PermissionPolicyProvider : IAuthorizationPolicyProvider
         Task.FromResult(new AuthorizationPolicyBuilder()
             .RequireAuthenticatedUser()
             .Build());
-
 
     public Task<AuthorizationPolicy?> GetFallbackPolicyAsync() => 
         Task.FromResult<AuthorizationPolicy?>(null);

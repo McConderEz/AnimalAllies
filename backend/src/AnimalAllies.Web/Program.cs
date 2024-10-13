@@ -13,6 +13,8 @@ using AnimalAllies.Volunteer.Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//TODO: Вынести добавление всех сервисов в отдельный Extensions класс
+
 builder.Services.AddLogger(builder.Configuration);
 
 builder.Services.AddHttpLogging(o =>
@@ -39,9 +41,13 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwagger();
 
-
+//TODO: Пофиксить получение данных
 
 var app = builder.Build();
+
+var acountsSeeder = app.Services.GetRequiredService<AccountsSeeder>();
+
+await acountsSeeder.SeedAsync();
 
 app.UseExceptionMiddleware();
 

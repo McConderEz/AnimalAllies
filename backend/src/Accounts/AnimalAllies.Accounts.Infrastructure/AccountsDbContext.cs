@@ -13,6 +13,9 @@ namespace AnimalAllies.Accounts.Infrastructure;
 public class AccountsDbContext(IConfiguration configuration)
     : IdentityDbContext<User,Role,Guid>
 {
+    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+    public DbSet<Permission> Permissions => Set<Permission>();
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder
@@ -26,6 +29,9 @@ public class AccountsDbContext(IConfiguration configuration)
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<User>()
+            .ToTable("users");
+        
         modelBuilder.Entity<User>()
             .Property(u => u.SocialNetworks)
             .HasConversion(
@@ -129,10 +135,6 @@ public class AccountsDbContext(IConfiguration configuration)
         modelBuilder.Entity<Permission>()
             .HasIndex(p => p.Code)
             .IsUnique();
-
-        modelBuilder.Entity<Permission>()
-            .Property(p => p.Description)
-            .HasMaxLength(300);
         
         modelBuilder.Entity<RolePermission>()
             .ToTable("role_permissions");
@@ -165,6 +167,7 @@ public class AccountsDbContext(IConfiguration configuration)
         modelBuilder.Entity<IdentityUserRole<Guid>>()
             .ToTable("user_roles");
         
+        modelBuilder.HasDefaultSchema("accounts");
     }
 
     private static readonly ILoggerFactory CreateLoggerFactory

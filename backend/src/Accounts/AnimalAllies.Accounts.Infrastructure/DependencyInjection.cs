@@ -2,6 +2,7 @@
 using AnimalAllies.Accounts.Application;
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Core.Options;
+using AnimalAllies.Framework.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -39,6 +40,8 @@ public static class DependencyInjection
             })
             .AddEntityFrameworkStores<AccountsDbContext>()
             .AddDefaultTokenProviders();
+        
+        services.AddScoped<PermissionManager>();
 
         return services;
     }
@@ -59,6 +62,8 @@ public static class DependencyInjection
         services.AddSingleton<IAuthorizationHandler, PermissionRequirementHandler>();
         
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider >();
+
+        services.AddSingleton<AccountsSeeder>();
         
         return services;
     }

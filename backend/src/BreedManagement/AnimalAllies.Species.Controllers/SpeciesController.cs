@@ -6,10 +6,12 @@ using AnimalAllies.Species.Application.SpeciesManagement.Commands.DeleteSpecies;
 using AnimalAllies.Species.Application.SpeciesManagement.Queries.GetBreedsBySpeciesId;
 using AnimalAllies.Species.Application.SpeciesManagement.Queries.GetSpeciesWithPagination;
 using AnimalAllies.Species.Presentation.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnimalAllies.Species.Presentation;
 
+//[Authorize]
 public class SpeciesController : ApplicationController
 {
     [HttpPost]

@@ -62,6 +62,7 @@ public static class DependencyInjection
     
     private static IServiceCollection AddDbContexts(this IServiceCollection services)
     {
+        //TODO: Пофиксить IReadDbContext через KeyScoped
         services.AddScoped<WriteDbContext>();
         services.AddScoped<IReadDbContext, ReadDbContext>();
 

@@ -18,6 +18,7 @@ namespace AnimalAllies.Volunteer.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("volunteers")
                 .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -108,7 +109,7 @@ namespace AnimalAllies.Volunteer.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_volunteers");
 
-                    b.ToTable("volunteers", (string)null);
+                    b.ToTable("volunteers", "volunteers");
                 });
 
             modelBuilder.Entity("AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.Pet", b =>
@@ -276,7 +277,7 @@ namespace AnimalAllies.Volunteer.Infrastructure.Migrations
                     b.HasIndex("volunteer_id")
                         .HasDatabaseName("ix_pets_volunteer_id");
 
-                    b.ToTable("pets", (string)null);
+                    b.ToTable("pets", "volunteers");
                 });
 
             modelBuilder.Entity("AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.Pet", b =>
