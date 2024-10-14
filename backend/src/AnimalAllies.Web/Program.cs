@@ -1,5 +1,6 @@
 using AnimalAllies.Accounts.Application;
 using AnimalAllies.Accounts.Infrastructure;
+using AnimalAllies.Accounts.Presentation;
 using AnimalAllies.Web.Extensions;
 using AnimalAllies.Web.Middlewares;
 using AnimalAllies.Species.Application;
@@ -24,6 +25,7 @@ builder.Services.AddHttpLogging(o =>
 
 builder.Services.AddSerilog();
 builder.Services
+    .AddAccountsPresentation()
     .AddAccountsApplication()
     .AddAccountsInfrastructure(builder.Configuration)
     .AddVolunteerPresentation()
@@ -43,9 +45,9 @@ builder.Services.AddSwagger();
 
 var app = builder.Build();
 
-var acountsSeeder = app.Services.GetRequiredService<AccountsSeeder>();
+var accountsSeeder = app.Services.GetRequiredService<AccountsSeeder>();
 
-await acountsSeeder.SeedAsync();
+await accountsSeeder.SeedAsync();
 
 app.UseExceptionMiddleware();
 

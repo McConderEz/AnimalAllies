@@ -16,6 +16,7 @@
     </ItemGroup>
     
     <ItemGroup>
+      <ProjectReference Include="..\..\Accounts\AnimalAllies.Accounts.Contracts\AnimalAllies.Accounts.Contracts.csproj" />
       <ProjectReference Include="..\AnimalAllies.Core\AnimalAllies.Core.csproj" />
     </ItemGroup>
 

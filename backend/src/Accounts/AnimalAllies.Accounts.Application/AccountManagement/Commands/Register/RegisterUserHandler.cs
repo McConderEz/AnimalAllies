@@ -32,23 +32,20 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         var validatorResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validatorResult.IsValid)
             return validatorResult.ToErrorList();
-
+        
         var user = new User
         {
             Email = command.Email,
             UserName = command.UserName,
         };
-
+        
         var result = await _userManager.CreateAsync(user, command.Password);
         if (result.Succeeded)
         {
+            await _userManager.AddToRoleAsync(user, "Admin");
             _logger.LogInformation("User created:{name} a new account with password", command.UserName);
             return Result.Success();
         }
-
-        //TODO: Сделать принадлежность к ролям и разрешениям при создании нового пользователя
-        
-        //await _userManager.AddToRoleAsync(user, "Patricipant");
         
         return result.Errors.ToErrorList();
     }

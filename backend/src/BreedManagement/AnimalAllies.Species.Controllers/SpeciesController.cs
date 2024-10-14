@@ -1,4 +1,5 @@
 ﻿using AnimalAllies.Framework;
+using AnimalAllies.Framework.Authorization;
 using AnimalAllies.Species.Application.SpeciesManagement.Commands.CreateBreed;
 using AnimalAllies.Species.Application.SpeciesManagement.Commands.CreateSpecies;
 using AnimalAllies.Species.Application.SpeciesManagement.Commands.DeleteBreed;
@@ -11,9 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AnimalAllies.Species.Presentation;
 
-//[Authorize]
 public class SpeciesController : ApplicationController
 {
+    [Permission("species.create")]
     [HttpPost]
     public async Task<IActionResult> Create(
         [FromServices] CreateSpeciesHandler handler,
@@ -32,6 +33,7 @@ public class SpeciesController : ApplicationController
         return Ok(result.Value);
     }
     
+    [Permission("species.create")]
     [HttpPost("{speciesId:guid}")]
     public async Task<IActionResult> CreateBreed(
         [FromServices] CreateBreedHandler handler,
@@ -51,6 +53,7 @@ public class SpeciesController : ApplicationController
         return Ok(result.Value);
     }
     
+    [Permission("species.delete")]
     [HttpDelete("{speciesId:guid}")]
     public async Task<IActionResult> DeleteSpecies(
         [FromServices] DeleteSpeciesHandler handler,
@@ -69,6 +72,7 @@ public class SpeciesController : ApplicationController
         return Ok(result.Value);
     }
     
+    [Permission("species.delete")]
     [HttpDelete("{speciesId:guid}/{breedId:guid}")]
     public async Task<IActionResult> DeleteBreed(
         [FromServices] DeleteBreedHandler handler,
@@ -88,6 +92,7 @@ public class SpeciesController : ApplicationController
         return Ok(result.Value);
     }
     
+    [Permission("species.read")]
     [HttpGet]
     public async Task<IActionResult> GetSpecies(
         [FromServices] GetSpeciesWithPaginationHandlerDapper handler,
@@ -107,6 +112,7 @@ public class SpeciesController : ApplicationController
         return Ok(result.Value);
     }
     
+    [Permission("species.read")]
     [HttpGet("{speciesId:guid}")]
     public async Task<IActionResult> GetBreeds(
         [FromServices] GetBreedsBySpeciesIdWithPaginationHandlerDapper handler,

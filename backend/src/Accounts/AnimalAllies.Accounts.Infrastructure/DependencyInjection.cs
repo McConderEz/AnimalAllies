@@ -18,9 +18,9 @@ public static class DependencyInjection
         this IServiceCollection services, IConfiguration configuration)
     {
         services
+            .AddIdentityServices()
             .AddJwtAuthentication(configuration)
             .AddDbContexts()
-            .AddIdentityServices()
             .AddAuthorizationServices();
         
         return services;
@@ -56,12 +56,9 @@ public static class DependencyInjection
 
     private static IServiceCollection AddAuthorizationServices(this IServiceCollection services)
     {
-        services.AddAuthorization();
-
         services.AddSingleton<IAuthorizationHandler, PermissionRequirementHandler>();
-        
-        services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider >();
-
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+        services.AddAuthorization();
         services.AddSingleton<AccountsSeeder>();
         
         return services;
@@ -71,6 +68,7 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        
         services.AddTransient<ITokenProvider,JwtTokenProvider>();
         
         services.Configure<JwtOptions>(
@@ -82,6 +80,7 @@ public static class DependencyInjection
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {

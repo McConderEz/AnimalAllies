@@ -41,7 +41,7 @@ public class AccountsDbContext(IConfiguration configuration)
                     (c1, c2) => c1!.SequenceEqual(c2!),
                     c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v!.GetHashCode())),
                     c => c.ToList()));
-
+        
         modelBuilder.Entity<ParticipantAccount>()
             .ComplexProperty(pa => pa.FullName, pab =>
             {
@@ -129,6 +129,10 @@ public class AccountsDbContext(IConfiguration configuration)
         modelBuilder.Entity<Role>()
             .ToTable("roles");
 
+        modelBuilder.Entity<Role>()
+            .Navigation(r => r.RolePermissions)
+            .AutoInclude();
+        
         modelBuilder.Entity<Permission>()
             .ToTable("permissions");
 
@@ -151,6 +155,10 @@ public class AccountsDbContext(IConfiguration configuration)
         
         modelBuilder.Entity<RolePermission>()
             .HasKey(rp => new {rp.RoleId, rp.PermissionId });
+
+        modelBuilder.Entity<RolePermission>()
+            .Navigation(rp => rp.Permission)
+            .AutoInclude();
         
         modelBuilder.Entity<IdentityUserClaim<Guid>>()
             .ToTable("claims");
