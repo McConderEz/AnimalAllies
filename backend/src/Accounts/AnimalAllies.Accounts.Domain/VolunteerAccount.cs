@@ -3,6 +3,7 @@ namespace AnimalAllies.Accounts.Domain;
 
 public class VolunteerAccount
 {
+    public Guid Id { get; set; }
     public FullName FullName { get; set; }
     public int Experience { get; set; }
     public List<Certificate> Certificates { get; set; } = [];

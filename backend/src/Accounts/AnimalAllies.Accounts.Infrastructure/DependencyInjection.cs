@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using AnimalAllies.Accounts.Application;
+using AnimalAllies.Accounts.Application.Managers;
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Accounts.Infrastructure.IdentityManagers;
 using AnimalAllies.Accounts.Infrastructure.Seeding;
@@ -42,7 +43,8 @@ public static class DependencyInjection
             })
             .AddEntityFrameworkStores<AccountsDbContext>()
             .AddDefaultTokenProviders();
-        
+
+        services.AddScoped<IPermissionManager, PermissionManager>();
         services.AddScoped<PermissionManager>();
         services.AddScoped<RolePermissionManager>();
         

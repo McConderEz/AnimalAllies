@@ -1,5 +1,7 @@
 ﻿using AnimalAllies.Core.DTOs;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CheckIfPetByBreedIdExist;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CheckIfPetBySpeciesIdExist;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetPetsByBreedId;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetPetsBySpeciesId;
 using AnimalAllies.Volunteer.Contracts;
@@ -8,32 +10,32 @@ namespace AnimalAllies.Volunteer.Presentation;
 
 public class VolunteerContract: IVolunteerContract
 {
-    private readonly GetPetsBySpeciesIdHandler _getPetsBySpeciesIdHandler;
-    private readonly GetPetsByBreedIdHandler _getPetsByBreedIdHandler;
+    private readonly CheckIfPetBySpeciesIdExistHandler _checkIfPetBySpeciesIdExistHandler;
+    private readonly CheckIfPetByBreedIdExistHandler _checkIfPetByBreedIdExistHandler;
 
     public VolunteerContract(
-        GetPetsBySpeciesIdHandler getPetsBySpeciesIdHandler,
-        GetPetsByBreedIdHandler getPetsByBreedIdHandler)
+        CheckIfPetBySpeciesIdExistHandler checkIfPetBySpeciesIdExistHandler,
+        CheckIfPetByBreedIdExistHandler checkIfPetByBreedIdExistHandler)
     {
-        _getPetsBySpeciesIdHandler = getPetsBySpeciesIdHandler;
-        _getPetsByBreedIdHandler = getPetsByBreedIdHandler;
+        _checkIfPetBySpeciesIdExistHandler = checkIfPetBySpeciesIdExistHandler;
+        _checkIfPetByBreedIdExistHandler = checkIfPetByBreedIdExistHandler;
     }
-
-    public async Task<Result<List<PetDto>>> GetPetsBySpeciesId(
-        Guid speciesId, 
+    
+    public async Task<Result<bool>> CheckIfPetBySpeciesIdExist(
+        Guid speciesId,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetPetsBySpeciesIdQuery(speciesId);
+        var query = new CheckIfPetBySpeciesIdExistQuery(speciesId);
 
-        return await _getPetsBySpeciesIdHandler.Handle(query, cancellationToken);
+        return await _checkIfPetBySpeciesIdExistHandler.Handle(query, cancellationToken);
     }
 
-    public async Task<Result<List<PetDto>>> GetPetsByBreedId(
+    public async Task<Result<bool>> CheckIfPetByBreedIdExist(
         Guid breedId,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetPetsByBreedIdQuery(breedId);
-        
-        return await _getPetsByBreedIdHandler.Handle(query, cancellationToken);
+        var query = new CheckIfPetByBreedIdExistQuery(breedId);
+
+        return await _checkIfPetByBreedIdExistHandler.Handle(query, cancellationToken);
     }
 }

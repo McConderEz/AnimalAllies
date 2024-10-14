@@ -21,7 +21,6 @@ using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetPetsBySp
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetVolunteerById;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetVolunteersWithPagination;
 using AnimalAllies.Volunteer.Presentation.Requests.Volunteer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnimalAllies.Volunteer.Presentation;

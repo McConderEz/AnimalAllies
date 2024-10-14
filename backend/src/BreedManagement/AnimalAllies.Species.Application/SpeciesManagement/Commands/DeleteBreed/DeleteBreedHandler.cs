@@ -48,9 +48,10 @@ public class DeleteBreedHandler : ICommandHandler<DeleteBreedCommand, BreedId>
         if (species.IsFailure)
             return Errors.General.NotFound();
 
-        var petOfThisBreed = await _volunteerContract.GetPetsByBreedId(breedId.Id, cancellationToken);
+        var petOfThisBreed = await _volunteerContract
+            .CheckIfPetByBreedIdExist(breedId.Id, cancellationToken);
         
-        if (petOfThisBreed.IsFailure || petOfThisBreed.Value.Count > 0)
+        if (petOfThisBreed.IsFailure || petOfThisBreed.Value)
             return Errors.Species.DeleteConflict();
         
         var result = species.Value.DeleteBreed(breedId);

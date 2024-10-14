@@ -43,7 +43,7 @@ public class GetPetsByBreedIdHandler: IQueryHandler<List<PetDto>, GetPetsByBreed
         var parameters = new DynamicParameters();
         
         parameters.Add("@BreedId", query.BreedId);
-
+        //TODO: добавить пагинацию
         var sql = new StringBuilder("""
                                     select 
                                         id,

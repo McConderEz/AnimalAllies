@@ -9,6 +9,7 @@ using AnimalAllies.Core.Extension;
 using AnimalAllies.Core.Models;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.Volunteer.Application.Database;
 using Dapper;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +25,7 @@ public class GetFilteredVolunteersWithPaginationHandler :
     private readonly ILogger<GetFilteredVolunteersWithPaginationHandler> _logger;
 
     public GetFilteredVolunteersWithPaginationHandler(
-        [FromKeyedServices(Constraints.Context.PetManagement)]IReadDbContext readDbContext, 
+        IReadDbContext readDbContext, 
         IValidator<GetFilteredVolunteersWithPaginationQuery> validator,
         ILogger<GetFilteredVolunteersWithPaginationHandler> logger)
     {

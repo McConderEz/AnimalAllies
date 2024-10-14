@@ -11,11 +11,10 @@ using Serilog;
 using AnimalAllies.Species.Infrastructure;
 using AnimalAllies.Species.Presentation;
 using AnimalAllies.Volunteer.Presentation;
+using AnimalAllies.Web;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
-//TODO: Вынести добавление всех сервисов в отдельный Extensions класс
 
 builder.Services.AddLogger(builder.Configuration);
 
@@ -25,18 +24,8 @@ builder.Services.AddHttpLogging(o =>
 });
 
 builder.Services.AddSerilog();
-builder.Services
-    .AddAccountsPresentation()
-    .AddAccountsApplication()
-    .AddAccountsInfrastructure(builder.Configuration)
-    .AddVolunteerPresentation()
-    .AddVolunteerApplication()
-    .AddVolunteerInfrastructure(builder.Configuration)
-    .AddSpeciesPresentation()
-    .AddSpeciesApplication()
-    .AddSpeciesInfrastructure(builder.Configuration);
 
-
+builder.Services.AddModules(builder.Configuration);
 
 builder.Services.AddControllers();
 
@@ -61,8 +50,6 @@ if (app.Environment.IsDevelopment())
 
     //await app.ApplyMigrations();
 }
-
-    
 
 app.UseHttpsRedirection();
 

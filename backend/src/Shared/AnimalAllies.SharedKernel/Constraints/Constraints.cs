@@ -24,9 +24,9 @@ public static partial class Constraints
         @"^[\w-\.]{1,40}@([\w-]+\.)+[\w-]{2,4}$",
         RegexOptions.Singleline | RegexOptions.Compiled);
 
-    public static class Context
+    public enum Context
     {
-        public const string PetManagement = nameof(PetManagement);
-        public const string BreedManagement = nameof(BreedManagement);
+        PetManagement,
+        BreedManagement
     }
 }

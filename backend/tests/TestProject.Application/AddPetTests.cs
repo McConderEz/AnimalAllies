@@ -4,6 +4,7 @@ using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
+using AnimalAllies.Species.Application.Database;
 using AnimalAllies.Species.Application.Repository;
 using AnimalAllies.Species.Contracts;
 using AnimalAllies.Volunteer.Application.Repository;

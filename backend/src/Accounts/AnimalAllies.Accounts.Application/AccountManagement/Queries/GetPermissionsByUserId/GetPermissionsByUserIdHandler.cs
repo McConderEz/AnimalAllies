@@ -1,4 +1,5 @@
-﻿using AnimalAllies.Accounts.Domain;
+﻿using AnimalAllies.Accounts.Application.Managers;
+using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Shared;
@@ -8,52 +9,34 @@ using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Accounts.Application.AccountManagement.Queries.GetPermissionsByUserId;
 
-public class GetPermissionsByUserIdHandler: IQueryHandler<List<Permission>, GetPermissionsByUserIdQuery>
+public class GetPermissionsByUserIdHandler: IQueryHandler<List<string>, GetPermissionsByUserIdQuery>
 {
-    private readonly UserManager<User> _userManager;
-    private readonly RoleManager<Role> _roleManager;
+    private readonly IPermissionManager _permissionManager;
     private readonly ILogger<GetPermissionsByUserIdHandler> _logger;
     private readonly IValidator<GetPermissionsByUserIdQuery> _validator;
 
     public GetPermissionsByUserIdHandler(
-        UserManager<User> userManager,
-        RoleManager<Role> roleManager,
         ILogger<GetPermissionsByUserIdHandler> logger,
-        IValidator<GetPermissionsByUserIdQuery> validator)
+        IValidator<GetPermissionsByUserIdQuery> validator,
+        IPermissionManager permissionManager)
     {
-        _userManager = userManager;
-        _roleManager = roleManager;
         _logger = logger;
         _validator = validator;
+        _permissionManager = permissionManager;
     }
     
-    public async Task<Result<List<Permission>>> Handle(
+    public async Task<Result<List<string>>> Handle(
         GetPermissionsByUserIdQuery query,
         CancellationToken cancellationToken = default)
     {
         var validatorResult = await _validator.ValidateAsync(query, cancellationToken);
         if (!validatorResult.IsValid)
             return validatorResult.ToErrorList();
-        
-        var isUserExist = await _userManager.FindByIdAsync(query.UserId.ToString());
-        if (isUserExist is null)
-            return Errors.General.NotFound();
 
-        var roles = await _userManager.GetRolesAsync(isUserExist);
-        
-        var permissions = new List<Permission>();
+        var result = await _permissionManager.GetPermissionsByUserId(query.UserId, cancellationToken);
+        if (result.IsFailure)
+            return result.Errors;
 
-        foreach (var role in roles)
-        {
-            var roleEntity = await _roleManager.FindByNameAsync(role);
-            if (roleEntity != null)
-            {
-                var permissionOfRole = roleEntity.RolePermissions.Select(rp => rp.Permission);
-                permissions.AddRange(permissionOfRole);
-            }
-
-        }
-
-        return permissions.Distinct().ToList();
+        return result.Value;
     }
 }

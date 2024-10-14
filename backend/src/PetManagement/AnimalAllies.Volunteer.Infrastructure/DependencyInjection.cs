@@ -3,6 +3,7 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Messaging;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.Volunteer.Application.Database;
 using AnimalAllies.Volunteer.Application.Providers;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Infrastructure.BackgroundServices;
@@ -63,7 +64,7 @@ public static class DependencyInjection
     private static IServiceCollection AddDbContexts(this IServiceCollection services)
     {
         services.AddScoped<WriteDbContext>();
-        services.AddKeyedScoped<IReadDbContext, ReadDbContext>(Constraints.Context.PetManagement);
+        services.AddScoped<IReadDbContext, ReadDbContext>();
 
         return services;
     }

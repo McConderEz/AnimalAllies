@@ -1,9 +1,12 @@
-﻿using AnimalAllies.Accounts.Domain;
+﻿using AnimalAllies.Accounts.Application.Managers;
+using AnimalAllies.Accounts.Domain;
+using AnimalAllies.SharedKernel.Shared;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AnimalAllies.Accounts.Infrastructure.IdentityManagers;
 
-public class PermissionManager(AccountsDbContext accountsDbContext)
+public class PermissionManager(AccountsDbContext accountsDbContext) : IPermissionManager
 {
     public async Task<Permission?> FindByCode(string code)
     {
@@ -25,4 +28,20 @@ public class PermissionManager(AccountsDbContext accountsDbContext)
 
         await accountsDbContext.SaveChangesAsync();
     }
+
+    public async Task<Result<List<string>>> GetPermissionsByUserId(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var user = await accountsDbContext.Users
+            .Include(u => u.Role)
+                .ThenInclude(r => r.RolePermissions)
+            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+        
+        if (user is null)
+            return Errors.General.NotFound();
+
+        var permissions = user.Role.RolePermissions.Select(rp => rp.Permission.Code).ToList();
+        
+        return permissions;
+    }
+    
 }

@@ -45,7 +45,7 @@ public class GetPetsBySpeciesIdHandler: IQueryHandler<List<PetDto>, GetPetsBySpe
         var parameters = new DynamicParameters();
         
         parameters.Add("@SpeciesId", query.SpeciesId);
-
+        //TODO: добавить пагинацию
         var sql = new StringBuilder("""
                                     select 
                                         id,

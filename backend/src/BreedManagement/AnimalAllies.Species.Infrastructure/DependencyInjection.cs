@@ -1,5 +1,6 @@
 using AnimalAllies.Core.Database;
 using AnimalAllies.SharedKernel.Constraints;
+using AnimalAllies.Species.Application.Database;
 using AnimalAllies.Species.Application.Repository;
 using AnimalAllies.Species.Infrastructure.DbContexts;
 using AnimalAllies.Species.Infrastructure.Repository;
@@ -41,7 +42,7 @@ public static class DependencyInjection
     private static IServiceCollection AddDbContexts(this IServiceCollection services)
     {
         services.AddScoped<WriteDbContext>();
-        services.AddKeyedScoped<IReadDbContext,ReadDbContext>(Constraints.Context.BreedManagement);
+        services.AddScoped<IReadDbContext,ReadDbContext>();
 
         return services;
     }

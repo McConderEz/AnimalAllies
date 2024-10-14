@@ -23,9 +23,7 @@ public class AccountContract: IAccountContract
         var result = await _getPermissionsByUserIdHandler.Handle(query, cancellationToken);
         if (result.IsFailure)
             return result.Errors;
-
-        var permissions = result.Value.Select(p => p.Code);
         
-        return permissions.ToList();
+        return result.Value;
     }
 }

@@ -41,6 +41,12 @@ public class AccountsDbContext(IConfiguration configuration)
                     (c1, c2) => c1!.SequenceEqual(c2!),
                     c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v!.GetHashCode())),
                     c => c.ToList()));
+
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Role)
+            .WithMany(r => r.Users)
+            .HasForeignKey(u => u.RoleId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<ParticipantAccount>()
             .ComplexProperty(pa => pa.FullName, pab =>
@@ -58,11 +64,12 @@ public class AccountsDbContext(IConfiguration configuration)
 
         modelBuilder.Entity<ParticipantAccount>()
             .HasOne(pa => pa.User)
-            .WithOne();
+            .WithMany(u => u.ParticipantAccounts)
+            .HasForeignKey(pa => pa.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<ParticipantAccount>()
-            .HasKey(pa => pa.UserId);
-        
+            .HasKey(pa => pa.Id);
         
         modelBuilder.Entity<AdminProfile>()
             .ComplexProperty(ap => ap.FullName, apb =>
@@ -80,10 +87,12 @@ public class AccountsDbContext(IConfiguration configuration)
 
         modelBuilder.Entity<AdminProfile>()
             .HasOne(ap => ap.User)
-            .WithOne();
+            .WithMany(u => u.AdminProfiles)
+            .HasForeignKey(a => a.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<AdminProfile>()
-            .HasKey(pa => pa.UserId);
+            .HasKey(pa => pa.Id);
         
         modelBuilder.Entity<VolunteerAccount>()
             .ComplexProperty(va => va.FullName, vab =>
@@ -121,10 +130,12 @@ public class AccountsDbContext(IConfiguration configuration)
         
         modelBuilder.Entity<VolunteerAccount>()
             .HasOne(va => va.User)
-            .WithOne();
+            .WithMany(u => u.VolunteerAccounts)
+            .HasForeignKey(va => va.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<VolunteerAccount>()
-            .HasKey(pa => pa.UserId);
+            .HasKey(pa => pa.Id);
         
         modelBuilder.Entity<Role>()
             .ToTable("roles");

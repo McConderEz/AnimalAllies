@@ -46,9 +46,10 @@ public class DeleteSpeciesHandler: ICommandHandler<DeleteSpeciesCommand, Species
         if (species.IsFailure)
             return Errors.General.NotFound();
 
-        var petOfThisSpecies = await _volunteerContract.GetPetsBySpeciesId(command.SpeciesId,cancellationToken);
+        var petOfThisSpecies = await _volunteerContract
+            .CheckIfPetBySpeciesIdExist(command.SpeciesId,cancellationToken);
         
-        if (petOfThisSpecies.IsFailure || petOfThisSpecies.Value.Count > 0)
+        if (petOfThisSpecies.IsFailure || petOfThisSpecies.Value)
             return Errors.Species.DeleteConflict();
         
         var result =  _repository.Delete(species.Value, cancellationToken);
