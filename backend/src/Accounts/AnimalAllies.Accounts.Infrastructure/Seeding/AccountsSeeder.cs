@@ -1,12 +1,12 @@
 ﻿using System.Text.Json;
 using AnimalAllies.Accounts.Domain;
+using AnimalAllies.Accounts.Infrastructure.IdentityManagers;
 using AnimalAllies.Framework;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace AnimalAllies.Accounts.Infrastructure;
+namespace AnimalAllies.Accounts.Infrastructure.Seeding;
 
 public class AccountsSeeder
 {

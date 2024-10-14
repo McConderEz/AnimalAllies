@@ -1,7 +1,7 @@
 ﻿using AnimalAllies.Accounts.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace AnimalAllies.Accounts.Infrastructure;
+namespace AnimalAllies.Accounts.Infrastructure.IdentityManagers;
 
 public class PermissionManager(AccountsDbContext accountsDbContext)
 {

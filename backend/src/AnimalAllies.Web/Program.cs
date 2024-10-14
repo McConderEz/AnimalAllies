@@ -1,5 +1,6 @@
 using AnimalAllies.Accounts.Application;
 using AnimalAllies.Accounts.Infrastructure;
+using AnimalAllies.Accounts.Infrastructure.Seeding;
 using AnimalAllies.Accounts.Presentation;
 using AnimalAllies.Web.Extensions;
 using AnimalAllies.Web.Middlewares;

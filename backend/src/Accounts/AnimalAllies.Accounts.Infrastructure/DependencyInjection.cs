@@ -1,6 +1,8 @@
 ﻿using System.Text;
 using AnimalAllies.Accounts.Application;
 using AnimalAllies.Accounts.Domain;
+using AnimalAllies.Accounts.Infrastructure.IdentityManagers;
+using AnimalAllies.Accounts.Infrastructure.Seeding;
 using AnimalAllies.Core.Options;
 using AnimalAllies.Framework.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
