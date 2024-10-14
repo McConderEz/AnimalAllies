@@ -1,5 +1,5 @@
 using AnimalAllies.Core.Database;
-using AnimalAllies.Species.Application.Database;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.Species.Application.Repository;
 using AnimalAllies.Species.Infrastructure.DbContexts;
 using AnimalAllies.Species.Infrastructure.Repository;
@@ -30,8 +30,8 @@ public static class DependencyInjection
 
     private static IServiceCollection AddDatabase(this IServiceCollection services)
     {
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddSingleton<ISqlConnectionFactory,SqlConnectionFactory>();
+        services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(Constraints.Context.BreedManagement);
+        services.AddKeyedSingleton<ISqlConnectionFactory,SqlConnectionFactory>(Constraints.Context.BreedManagement);
 
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         
@@ -41,7 +41,7 @@ public static class DependencyInjection
     private static IServiceCollection AddDbContexts(this IServiceCollection services)
     {
         services.AddScoped<WriteDbContext>();
-        services.AddScoped<IReadDbContext,ReadDbContext>();
+        services.AddKeyedScoped<IReadDbContext,ReadDbContext>(Constraints.Context.BreedManagement);
 
         return services;
     }

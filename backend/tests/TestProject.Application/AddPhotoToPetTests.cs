@@ -1,12 +1,10 @@
 ﻿using System.Data;
-using System.Runtime.InteropServices.JavaScript;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Messaging;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
-using AnimalAllies.Species.Application.Database;
 using AnimalAllies.Volunteer.Application.FileProvider;
 using AnimalAllies.Volunteer.Application.Providers;
 using AnimalAllies.Volunteer.Application.Repository;
@@ -27,7 +25,7 @@ public class AddPhotoToPetTests
 {
     private readonly Mock<IVolunteerRepository> _volunteerRepositoryMock = new();
     private readonly Mock<ILogger<AddPetPhotosHandler>> _loggerMock = new();
-    private readonly Mock<AnimalAllies.Volunteer.Application.Database.IUnitOfWork> _unitOfWorkMock = new();
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly Mock<IFileProvider> _fileProviderMock = new();
     private readonly Mock<IDbTransaction> _dbTransactionMock = new();
     private readonly Mock<IValidator<AddPetPhotosCommand>> _validatorMock = new();

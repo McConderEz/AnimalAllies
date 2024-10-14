@@ -42,7 +42,8 @@ public static class DependencyInjection
             .AddDefaultTokenProviders();
         
         services.AddScoped<PermissionManager>();
-
+        services.AddScoped<RolePermissionManager>();
+        
         return services;
     }
 
@@ -52,8 +53,6 @@ public static class DependencyInjection
         
         return services;
     }
-
-    //TODO: Отрефачить, написать политики к контроллерам
 
     private static IServiceCollection AddAuthorizationServices(this IServiceCollection services)
     {

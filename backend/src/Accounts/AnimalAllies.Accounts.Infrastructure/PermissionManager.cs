@@ -5,6 +5,11 @@ namespace AnimalAllies.Accounts.Infrastructure;
 
 public class PermissionManager(AccountsDbContext accountsDbContext)
 {
+    public async Task<Permission?> FindByCode(string code)
+    {
+        return await accountsDbContext.Permissions.FirstOrDefaultAsync(p => p.Code == code);
+    }
+    
     public async Task AddRangeIfExist(IEnumerable<string> permissions)
     {
         foreach (var permissionCode in permissions)
@@ -13,7 +18,7 @@ public class PermissionManager(AccountsDbContext accountsDbContext)
                 .AnyAsync(p => p.Code == permissionCode);
         
             if(isPermissionExist)
-                return;
+                continue;
 
             await accountsDbContext.Permissions.AddAsync(new Permission { Code = permissionCode });
         }

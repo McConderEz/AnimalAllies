@@ -4,9 +4,11 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.DTOs;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.Core.Models;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using Dapper;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Species.Application.SpeciesManagement.Queries.GetBreedsBySpeciesId;
@@ -18,7 +20,7 @@ public class GetBreedsBySpeciesIdWithPaginationHandlerDapper: IQueryHandler<Page
     private readonly ILogger<GetBreedsBySpeciesIdWithPaginationHandlerDapper> _logger;
 
     public GetBreedsBySpeciesIdWithPaginationHandlerDapper(
-        ISqlConnectionFactory sqlConnectionFactory,
+        [FromKeyedServices(Constraints.Context.BreedManagement)]ISqlConnectionFactory sqlConnectionFactory,
         ILogger<GetBreedsBySpeciesIdWithPaginationHandlerDapper> logger,
         IValidator<GetBreedsBySpeciesIdWithPaginationQuery> validator)
     {
@@ -44,7 +46,7 @@ public class GetBreedsBySpeciesIdWithPaginationHandlerDapper: IQueryHandler<Page
                                         id,
                                         name,
                                         species_id
-                                        from breeds
+                                        from species.breeds
                                     where species_id = @SpeciesId
                                     """);
         
@@ -70,8 +72,6 @@ public class GetBreedsBySpeciesIdWithPaginationHandlerDapper: IQueryHandler<Page
     
     public async Task<Result<List<BreedDto>>> Handle(Guid speciesId, CancellationToken cancellationToken = default)
     {
-        //TODO: Возможно валидация
-
         var connection = _sqlConnectionFactory.Create();
 
         var parameters = new DynamicParameters();
@@ -83,7 +83,7 @@ public class GetBreedsBySpeciesIdWithPaginationHandlerDapper: IQueryHandler<Page
                                         id,
                                         name,
                                         species_id
-                                        from breeds
+                                        from species.breeds
                                     where species_id = @SpeciesId
                                     """);
         

@@ -1,12 +1,13 @@
 ﻿using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
-using AnimalAllies.Volunteer.Application.Database;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.UpdatePetStatus;
@@ -22,7 +23,7 @@ public class UpdatePetStatusHandler : ICommandHandler<UpdatePetStatusCommand, Pe
         IVolunteerRepository volunteerRepository,
         ILogger<UpdatePetStatusHandler> logger,
         IValidator<UpdatePetStatusCommand> validator,
-        IUnitOfWork unitOfWork)
+        [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork)
     {
         _volunteerRepository = volunteerRepository;
         _logger = logger;

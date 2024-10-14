@@ -7,9 +7,11 @@ using AnimalAllies.Core.DTOs;
 using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.Core.Models;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using Dapper;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetVolunteersWithPagination;
@@ -22,7 +24,7 @@ public class GetFilteredVolunteersWithPaginationHandler :
     private readonly ILogger<GetFilteredVolunteersWithPaginationHandler> _logger;
 
     public GetFilteredVolunteersWithPaginationHandler(
-        IReadDbContext readDbContext, 
+        [FromKeyedServices(Constraints.Context.PetManagement)]IReadDbContext readDbContext, 
         IValidator<GetFilteredVolunteersWithPaginationQuery> validator,
         ILogger<GetFilteredVolunteersWithPaginationHandler> logger)
     {
@@ -107,7 +109,7 @@ public class GetFilteredVolunteersWithPaginationHandlerDapper :
     private readonly ILogger<GetFilteredVolunteersWithPaginationHandlerDapper> _logger;
 
     public GetFilteredVolunteersWithPaginationHandlerDapper(
-        ISqlConnectionFactory sqlConnectionFactory,
+        [FromKeyedServices(Constraints.Context.PetManagement)]ISqlConnectionFactory sqlConnectionFactory,
         ILogger<GetFilteredVolunteersWithPaginationHandlerDapper> logger)
     {
         _sqlConnectionFactory = sqlConnectionFactory;
@@ -134,7 +136,7 @@ public class GetFilteredVolunteersWithPaginationHandlerDapper :
                                         work_experience,
                                         requisites,
                                         social_networks
-                                        from volunteers 
+                                        from volunteers.volunteers 
                                             where is_deleted = false
                                     """);
 

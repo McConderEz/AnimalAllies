@@ -41,8 +41,6 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwagger();
 
-//TODO: Пофиксить получение данных
-
 var app = builder.Build();
 
 var acountsSeeder = app.Services.GetRequiredService<AccountsSeeder>();

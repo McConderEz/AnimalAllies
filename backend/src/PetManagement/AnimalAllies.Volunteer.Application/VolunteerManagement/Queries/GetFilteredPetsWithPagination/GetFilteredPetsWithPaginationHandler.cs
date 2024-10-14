@@ -6,9 +6,11 @@ using AnimalAllies.Core.DTOs;
 using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.Core.Models;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using Dapper;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetFilteredPetsWithPagination;
@@ -20,7 +22,7 @@ public class GetFilteredPetsWithPaginationHandler : IQueryHandler<PagedList<PetD
     private readonly IValidator<GetFilteredPetsWithPaginationQuery> _validator;
 
     public GetFilteredPetsWithPaginationHandler(
-        ISqlConnectionFactory sqlConnectionFactory,
+        [FromKeyedServices(Constraints.Context.PetManagement)]ISqlConnectionFactory sqlConnectionFactory,
         ILogger<GetFilteredPetsWithPaginationHandler> logger,
         IValidator<GetFilteredPetsWithPaginationQuery> validator)
     {
@@ -65,7 +67,7 @@ public class GetFilteredPetsWithPaginationHandler : IQueryHandler<PagedList<PetD
                                         position,
                                         requisites,
                                         pet_photos
-                                        from pets
+                                        from volunteers.pets
                                         where volunteer_id = @VolunteerId and 
                                               is_deleted = false
                                     """);

@@ -1,13 +1,14 @@
 ﻿using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
-using AnimalAllies.Species.Application.Database;
 using AnimalAllies.Species.Application.Repository;
 using AnimalAllies.Species.Domain.Entities;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Species.Application.SpeciesManagement.Commands.CreateBreed;
@@ -23,7 +24,7 @@ public class CreateBreedHandler : ICommandHandler<CreateBreedCommand, BreedId>
         ISpeciesRepository repository,
         IValidator<CreateBreedCommand> validator,
         ILogger<CreateBreedHandler> logger,
-        IUnitOfWork unitOfWork)
+        [FromKeyedServices(Constraints.Context.BreedManagement)]IUnitOfWork unitOfWork)
     {
         _repository = repository;
         _validator = validator;

@@ -2,14 +2,15 @@ using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.Core.Messaging;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
-using AnimalAllies.Volunteer.Application.Database;
 using AnimalAllies.Volunteer.Application.FileProvider;
 using AnimalAllies.Volunteer.Application.Providers;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using FileInfo = AnimalAllies.Volunteer.Application.FileProvider.FileInfo;
 
@@ -30,7 +31,7 @@ public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
         IFileProvider fileProvider,
         IVolunteerRepository volunteerRepository,
         ILogger<AddPetPhotosHandler> logger,
-        IUnitOfWork unitOfWork,
+        [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork,
         IMessageQueue<IEnumerable<FileInfo>> messageQueue,
         IValidator<AddPetPhotosCommand> validator)
     {

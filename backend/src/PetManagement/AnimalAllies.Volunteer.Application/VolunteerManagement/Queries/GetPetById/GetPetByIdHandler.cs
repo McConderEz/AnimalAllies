@@ -5,9 +5,11 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.DTOs;
 using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Extension;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using Dapper;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetPetById;
@@ -19,7 +21,7 @@ public class GetPetByIdHandler : IQueryHandler<PetDto, GetPetByIdQuery>
     private readonly IValidator<GetPetByIdQuery> _validator;
 
     public GetPetByIdHandler(
-        ISqlConnectionFactory sqlConnectionFactory,
+        [FromKeyedServices(Constraints.Context.PetManagement)]ISqlConnectionFactory sqlConnectionFactory,
         ILogger<GetPetByIdHandler> logger,
         IValidator<GetPetByIdQuery> validator)
     {
@@ -64,7 +66,7 @@ public class GetPetByIdHandler : IQueryHandler<PetDto, GetPetByIdQuery>
                                         pet_details_description,
                                         requisites,
                                         pet_photos
-                                        from pets
+                                        from volunteers.pets
                                     """);
         
         var pets = 

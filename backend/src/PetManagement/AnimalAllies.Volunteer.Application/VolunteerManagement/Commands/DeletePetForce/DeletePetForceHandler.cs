@@ -1,12 +1,13 @@
 ﻿using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
-using AnimalAllies.Volunteer.Application.Database;
 using AnimalAllies.Volunteer.Application.Providers;
 using AnimalAllies.Volunteer.Application.Repository;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeletePetForce;
@@ -24,7 +25,7 @@ public class DeletePetForceHandler: ICommandHandler<DeletePetForceCommand, PetId
         IVolunteerRepository volunteerRepository,
         ILogger<DeletePetForceHandler> logger,
         IValidator<DeletePetForceCommand> validator,
-        IUnitOfWork unitOfWork,
+        [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork,
         IFileProvider fileProvider)
     {
         _volunteerRepository = volunteerRepository;

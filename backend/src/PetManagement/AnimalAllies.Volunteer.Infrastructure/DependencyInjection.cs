@@ -1,8 +1,8 @@
 using AnimalAllies.Core.Common;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Messaging;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
-using AnimalAllies.Volunteer.Application.Database;
 using AnimalAllies.Volunteer.Application.Providers;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Infrastructure.BackgroundServices;
@@ -52,8 +52,8 @@ public static class DependencyInjection
 
     private static IServiceCollection AddDatabase(this IServiceCollection services)
     {
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddSingleton<ISqlConnectionFactory,SqlConnectionFactory>();
+        services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(Constraints.Context.PetManagement);
+        services.AddKeyedScoped<ISqlConnectionFactory,SqlConnectionFactory>(Constraints.Context.PetManagement);
 
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         
@@ -62,9 +62,8 @@ public static class DependencyInjection
     
     private static IServiceCollection AddDbContexts(this IServiceCollection services)
     {
-        //TODO: Пофиксить IReadDbContext через KeyScoped
         services.AddScoped<WriteDbContext>();
-        services.AddScoped<IReadDbContext, ReadDbContext>();
+        services.AddKeyedScoped<IReadDbContext, ReadDbContext>(Constraints.Context.PetManagement);
 
         return services;
     }
