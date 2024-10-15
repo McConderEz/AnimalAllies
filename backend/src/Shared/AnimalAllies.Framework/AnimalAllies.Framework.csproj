@@ -11,10 +11,12 @@
     </ItemGroup>
     
     <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     </ItemGroup>
     
     <ItemGroup>
+      <ProjectReference Include="..\..\Accounts\AnimalAllies.Accounts.Contracts\AnimalAllies.Accounts.Contracts.csproj" />
       <ProjectReference Include="..\AnimalAllies.Core\AnimalAllies.Core.csproj" />
     </ItemGroup>
 

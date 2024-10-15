@@ -1,8 +1,13 @@
 ﻿using System.Text;
 using AnimalAllies.Accounts.Application;
+using AnimalAllies.Accounts.Application.Managers;
 using AnimalAllies.Accounts.Domain;
+using AnimalAllies.Accounts.Infrastructure.IdentityManagers;
+using AnimalAllies.Accounts.Infrastructure.Seeding;
 using AnimalAllies.Core.Options;
+using AnimalAllies.Framework.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,15 +21,15 @@ public static class DependencyInjection
         this IServiceCollection services, IConfiguration configuration)
     {
         services
+            .AddIdentityServices()
             .AddJwtAuthentication(configuration)
             .AddDbContexts()
-            .AddIdentityServices()
-            .AddAuthorization();
+            .AddAuthorizationServices();
         
         return services;
     }
 
-    public static IServiceCollection AddIdentityServices(this IServiceCollection services)
+    private static IServiceCollection AddIdentityServices(this IServiceCollection services)
     {
         services
             .AddIdentity<User,Role>(options =>
@@ -39,21 +44,35 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<AccountsDbContext>()
             .AddDefaultTokenProviders();
 
+        services.AddScoped<IPermissionManager, PermissionManager>();
+        services.AddScoped<PermissionManager>();
+        services.AddScoped<RolePermissionManager>();
+        
         return services;
     }
 
-    public static IServiceCollection AddDbContexts(this IServiceCollection services)
+    private static IServiceCollection AddDbContexts(this IServiceCollection services)
     {
         services.AddScoped<AccountsDbContext>();
         
         return services;
     }
-    
 
-    public static IServiceCollection AddJwtAuthentication(
+    private static IServiceCollection AddAuthorizationServices(this IServiceCollection services)
+    {
+        services.AddSingleton<IAuthorizationHandler, PermissionRequirementHandler>();
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+        services.AddAuthorization();
+        services.AddSingleton<AccountsSeeder>();
+        
+        return services;
+    }
+
+    private static IServiceCollection AddJwtAuthentication(
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        
         services.AddTransient<ITokenProvider,JwtTokenProvider>();
         
         services.Configure<JwtOptions>(
@@ -65,6 +84,7 @@ public static class DependencyInjection
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
@@ -79,7 +99,8 @@ public static class DependencyInjection
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
                 };
         
             });

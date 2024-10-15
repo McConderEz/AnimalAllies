@@ -5,9 +5,11 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.DTOs;
 using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Extension;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using Dapper;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetVolunteerById;
@@ -20,7 +22,7 @@ public class GetVolunteerByIdHandler : IQueryHandler<VolunteerDto, GetVolunteerB
 
     public GetVolunteerByIdHandler(
         ILogger<GetVolunteerByIdHandler> logger,
-        ISqlConnectionFactory sqlConnectionFactory, IValidator<GetVolunteerByIdQuery> validator)
+        [FromKeyedServices(Constraints.Context.PetManagement)]ISqlConnectionFactory sqlConnectionFactory, IValidator<GetVolunteerByIdQuery> validator)
     {
         _logger = logger;
         _sqlConnectionFactory = sqlConnectionFactory;
@@ -54,7 +56,7 @@ public class GetVolunteerByIdHandler : IQueryHandler<VolunteerDto, GetVolunteerB
                                     work_experience,
                                     requisites,
                                     social_networks
-                                    from volunteers
+                                    from volunteers.volunteers
                                     where id = @VolunteerId
                                     limit 1
                                     """);

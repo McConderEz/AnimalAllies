@@ -2,6 +2,7 @@ using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.UpdateVolunteer;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.ValueObject;

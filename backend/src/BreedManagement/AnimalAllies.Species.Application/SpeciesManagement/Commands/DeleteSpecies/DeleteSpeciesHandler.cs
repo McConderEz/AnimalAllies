@@ -1,12 +1,13 @@
 ﻿using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
-using AnimalAllies.Species.Application.Database;
 using AnimalAllies.Species.Application.Repository;
 using AnimalAllies.Volunteer.Contracts;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Species.Application.SpeciesManagement.Commands.DeleteSpecies;
@@ -23,7 +24,7 @@ public class DeleteSpeciesHandler: ICommandHandler<DeleteSpeciesCommand, Species
         ISpeciesRepository repository,
         IValidator<DeleteSpeciesCommand> validator,
         ILogger<DeleteSpeciesHandler> logger, 
-        IUnitOfWork unitOfWork,
+        [FromKeyedServices(Constraints.Context.BreedManagement)]IUnitOfWork unitOfWork,
         IVolunteerContract volunteerContract)
     {
         _repository = repository;
@@ -45,9 +46,10 @@ public class DeleteSpeciesHandler: ICommandHandler<DeleteSpeciesCommand, Species
         if (species.IsFailure)
             return Errors.General.NotFound();
 
-        var petOfThisSpecies = await _volunteerContract.GetPetsBySpeciesId(command.SpeciesId,cancellationToken);
+        var petOfThisSpecies = await _volunteerContract
+            .CheckIfPetBySpeciesIdExist(command.SpeciesId,cancellationToken);
         
-        if (petOfThisSpecies.IsFailure || petOfThisSpecies.Value.Count > 0)
+        if (petOfThisSpecies.IsFailure || petOfThisSpecies.Value)
             return Errors.Species.DeleteConflict();
         
         var result =  _repository.Delete(species.Value, cancellationToken);

@@ -6,10 +6,12 @@ using AnimalAllies.Core.DTOs;
 using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.Core.Models;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetPetById;
 using Dapper;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetPetsBySpeciesId;
@@ -21,7 +23,7 @@ public class GetPetsBySpeciesIdHandler: IQueryHandler<List<PetDto>, GetPetsBySpe
     private readonly IValidator<GetPetsBySpeciesIdQuery> _validator;
 
     public GetPetsBySpeciesIdHandler(
-        ISqlConnectionFactory sqlConnectionFactory,
+        [FromKeyedServices(Constraints.Context.PetManagement)]ISqlConnectionFactory sqlConnectionFactory,
         ILogger<GetPetsBySpeciesIdHandler> logger,
         IValidator<GetPetsBySpeciesIdQuery> validator)
     {
@@ -43,7 +45,7 @@ public class GetPetsBySpeciesIdHandler: IQueryHandler<List<PetDto>, GetPetsBySpe
         var parameters = new DynamicParameters();
         
         parameters.Add("@SpeciesId", query.SpeciesId);
-
+        //TODO: добавить пагинацию
         var sql = new StringBuilder("""
                                     select 
                                         id,
@@ -68,7 +70,7 @@ public class GetPetsBySpeciesIdHandler: IQueryHandler<List<PetDto>, GetPetsBySpe
                                         pet_details_description,
                                         requisites,
                                         pet_photos
-                                        from pets
+                                        from volunteers.pets
                                         where species_id = @SpeciesId and
                                             is_deleted = false
                                     """);

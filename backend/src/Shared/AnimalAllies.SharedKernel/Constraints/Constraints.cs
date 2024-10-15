@@ -23,4 +23,10 @@ public static partial class Constraints
     public static readonly Regex ValidationRegex = new Regex(
         @"^[\w-\.]{1,40}@([\w-]+\.)+[\w-]{2,4}$",
         RegexOptions.Singleline | RegexOptions.Compiled);
+
+    public enum Context
+    {
+        PetManagement,
+        BreedManagement
+    }
 }

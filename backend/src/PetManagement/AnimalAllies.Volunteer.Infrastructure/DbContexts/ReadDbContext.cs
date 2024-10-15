@@ -1,5 +1,6 @@
 ﻿using AnimalAllies.Core.Database;
 using AnimalAllies.Core.DTOs;
+using AnimalAllies.Volunteer.Application.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -21,6 +22,7 @@ public class ReadDbContext(IConfiguration configuration) : DbContext, IReadDbCon
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema("volunteers");
         modelBuilder.ApplyConfigurationsFromAssembly(
             typeof(ReadDbContext).Assembly,
             type => type.FullName?.Contains("Configurations.Read") ?? false);
@@ -30,7 +32,5 @@ public class ReadDbContext(IConfiguration configuration) : DbContext, IReadDbCon
         = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
     public IQueryable<VolunteerDto> Volunteers => Set<VolunteerDto>();
-    public IQueryable<BreedDto> Breeds => Set<BreedDto>();
-    public IQueryable<SpeciesDto> Species => Set<SpeciesDto>();
     public IQueryable<PetDto> Pets => Set<PetDto>();
 }

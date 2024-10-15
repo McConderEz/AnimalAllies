@@ -1,8 +1,6 @@
 using System.Text.RegularExpressions;
-using AnimalAllies.SharedKernel.Shared;
 
-
-namespace AnimalAllies.Volunteer.Domain.VolunteerManagement.ValueObject;
+namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
 public class FullName : SharedKernel.Shared.ValueObject
 {

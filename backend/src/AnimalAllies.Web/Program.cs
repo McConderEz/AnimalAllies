@@ -1,5 +1,7 @@
 using AnimalAllies.Accounts.Application;
 using AnimalAllies.Accounts.Infrastructure;
+using AnimalAllies.Accounts.Infrastructure.Seeding;
+using AnimalAllies.Accounts.Presentation;
 using AnimalAllies.Web.Extensions;
 using AnimalAllies.Web.Middlewares;
 using AnimalAllies.Species.Application;
@@ -9,6 +11,7 @@ using Serilog;
 using AnimalAllies.Species.Infrastructure;
 using AnimalAllies.Species.Presentation;
 using AnimalAllies.Volunteer.Presentation;
+using AnimalAllies.Web;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,17 +24,8 @@ builder.Services.AddHttpLogging(o =>
 });
 
 builder.Services.AddSerilog();
-builder.Services
-    .AddAccountsApplication()
-    .AddAccountsInfrastructure(builder.Configuration)
-    .AddVolunteerPresentation()
-    .AddVolunteerApplication()
-    .AddVolunteerInfrastructure(builder.Configuration)
-    .AddSpeciesPresentation()
-    .AddSpeciesApplication()
-    .AddSpeciesInfrastructure(builder.Configuration);
 
-
+builder.Services.AddModules(builder.Configuration);
 
 builder.Services.AddControllers();
 
@@ -39,9 +33,11 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwagger();
 
-
-
 var app = builder.Build();
+
+var accountsSeeder = app.Services.GetRequiredService<AccountsSeeder>();
+
+await accountsSeeder.SeedAsync();
 
 app.UseExceptionMiddleware();
 
@@ -54,8 +50,6 @@ if (app.Environment.IsDevelopment())
 
     //await app.ApplyMigrations();
 }
-
-    
 
 app.UseHttpsRedirection();
 

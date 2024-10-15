@@ -5,6 +5,6 @@ namespace AnimalAllies.Volunteer.Contracts;
 
 public interface IVolunteerContract
 {
-    Task<Result<List<PetDto>>> GetPetsBySpeciesId(Guid speciesId, CancellationToken cancellationToken = default);
-    Task<Result<List<PetDto>>> GetPetsByBreedId(Guid breedId, CancellationToken cancellationToken = default);
+    Task<Result<bool>> CheckIfPetBySpeciesIdExist(Guid speciesId, CancellationToken cancellationToken = default);
+    Task<Result<bool>> CheckIfPetByBreedIdExist(Guid breedId, CancellationToken cancellationToken = default);
 }

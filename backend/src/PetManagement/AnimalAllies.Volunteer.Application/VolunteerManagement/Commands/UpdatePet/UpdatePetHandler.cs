@@ -1,16 +1,16 @@
 ﻿using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using AnimalAllies.Species.Contracts;
-using AnimalAllies.Volunteer.Application.Database;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.UpdatePet;
@@ -29,7 +29,7 @@ public class UpdatePetHandler: ICommandHandler<UpdatePetCommand, Guid>
         ILogger<UpdatePetHandler> logger,
         IDateTimeProvider dateTimeProvider,
         IValidator<UpdatePetCommand> validator,
-        IUnitOfWork unitOfWork,
+        [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork,
         ISpeciesContracts speciesContracts)
     {
         _volunteerRepository = volunteerRepository;

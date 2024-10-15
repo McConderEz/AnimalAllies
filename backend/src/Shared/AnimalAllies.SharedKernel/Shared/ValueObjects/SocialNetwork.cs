@@ -1,9 +1,6 @@
 using System.Text.Json.Serialization;
-using AnimalAllies.SharedKernel.Constraints;
-using AnimalAllies.SharedKernel.Shared;
 
-
-namespace AnimalAllies.Volunteer.Domain.VolunteerManagement.ValueObject;
+namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
 public class SocialNetwork: SharedKernel.Shared.ValueObject
 {
@@ -22,12 +19,12 @@ public class SocialNetwork: SharedKernel.Shared.ValueObject
     
     public static Result<SocialNetwork> Create(string title, string url)
     {
-        if (string.IsNullOrWhiteSpace(title) || title.Length > Constraints.MAX_VALUE_LENGTH)
+        if (string.IsNullOrWhiteSpace(title) || title.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
             return Errors.General.ValueIsRequired(title);
         }
 
-        if (string.IsNullOrWhiteSpace(url) || url.Length > Constraints.MAX_URL_LENGTH)
+        if (string.IsNullOrWhiteSpace(url) || url.Length > Constraints.Constraints.MAX_URL_LENGTH)
         {
             return Errors.General.ValueIsRequired(url);
         }

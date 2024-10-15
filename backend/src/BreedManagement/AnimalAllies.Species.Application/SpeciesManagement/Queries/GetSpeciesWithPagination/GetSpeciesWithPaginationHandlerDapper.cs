@@ -4,9 +4,11 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.DTOs;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.Core.Models;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using Dapper;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Species.Application.SpeciesManagement.Queries.GetSpeciesWithPagination;
@@ -18,7 +20,7 @@ public class GetSpeciesWithPaginationHandlerDapper : IQueryHandler<PagedList<Spe
     private readonly ILogger<GetSpeciesWithPaginationHandlerDapper> _logger;
 
     public GetSpeciesWithPaginationHandlerDapper(
-        ISqlConnectionFactory sqlConnectionFactory,
+        [FromKeyedServices(Constraints.Context.BreedManagement)]ISqlConnectionFactory sqlConnectionFactory,
         ILogger<GetSpeciesWithPaginationHandlerDapper> logger, IValidator<GetSpeciesWithPaginationQuery> validator)
     {
         _sqlConnectionFactory = sqlConnectionFactory;
@@ -40,7 +42,7 @@ public class GetSpeciesWithPaginationHandlerDapper : IQueryHandler<PagedList<Spe
                                     select 
                                         id,
                                         name
-                                        from species
+                                        from species.species
                                     """);
         
         sql.ApplySorting(query.SortBy, query.SortDirection);

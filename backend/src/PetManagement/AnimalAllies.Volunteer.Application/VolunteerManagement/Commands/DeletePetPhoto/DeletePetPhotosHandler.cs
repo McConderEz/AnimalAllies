@@ -1,12 +1,13 @@
 using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
-using AnimalAllies.Volunteer.Application.Database;
 using AnimalAllies.Volunteer.Application.Providers;
 using AnimalAllies.Volunteer.Application.Repository;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 
@@ -25,7 +26,7 @@ public class DeletePetPhotosHandler : ICommandHandler<DeletePetPhotosCommand, Gu
         IFileProvider fileProvider,
         IVolunteerRepository volunteerRepository,
         ILogger<DeletePetPhotosHandler> logger,
-        IUnitOfWork unitOfWork,
+        [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork,
         IValidator<DeletePetPhotosCommand> validator)
     {
         _fileProvider = fileProvider;
