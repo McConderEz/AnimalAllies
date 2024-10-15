@@ -1,4 +1,6 @@
-﻿namespace AnimalAllies.Accounts.Domain;
+﻿using AnimalAllies.SharedKernel.Shared.ValueObjects;
+
+namespace AnimalAllies.Accounts.Domain;
 
 public class AdminProfile
 {

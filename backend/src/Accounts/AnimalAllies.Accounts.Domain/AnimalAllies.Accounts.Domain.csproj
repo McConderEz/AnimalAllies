@@ -10,4 +10,8 @@
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Shared\AnimalAllies.SharedKernel\AnimalAllies.SharedKernel.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -1,4 +1,6 @@
 ﻿
+using AnimalAllies.SharedKernel.Shared.ValueObjects;
+
 namespace AnimalAllies.Accounts.Domain;
 
 public class VolunteerAccount

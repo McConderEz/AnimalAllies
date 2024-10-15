@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.SharedKernel.Constraints;
+using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -61,11 +62,11 @@ public class AccountsDbContext(IConfiguration configuration)
                     .HasMaxLength(Constraints.MAX_VALUE_LENGTH)
                     .HasColumnName("patronymic");
             });
-
+        
         modelBuilder.Entity<ParticipantAccount>()
             .HasOne(pa => pa.User)
-            .WithMany(u => u.ParticipantAccounts)
-            .HasForeignKey(pa => pa.UserId)
+            .WithOne()
+            .HasForeignKey<ParticipantAccount>(pa => pa.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<ParticipantAccount>()
@@ -87,8 +88,8 @@ public class AccountsDbContext(IConfiguration configuration)
 
         modelBuilder.Entity<AdminProfile>()
             .HasOne(ap => ap.User)
-            .WithMany(u => u.AdminProfiles)
-            .HasForeignKey(a => a.UserId)
+            .WithOne()
+            .HasForeignKey<AdminProfile>(a => a.UserId)
             .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<AdminProfile>()
@@ -130,8 +131,8 @@ public class AccountsDbContext(IConfiguration configuration)
         
         modelBuilder.Entity<VolunteerAccount>()
             .HasOne(va => va.User)
-            .WithMany(u => u.VolunteerAccounts)
-            .HasForeignKey(va => va.UserId)
+            .WithOne()
+            .HasForeignKey<VolunteerAccount>(va => va.UserId)
             .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<VolunteerAccount>()

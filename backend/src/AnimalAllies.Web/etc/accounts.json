@@ -22,13 +22,13 @@
     ]
   },
   "Permissions": {
-    "Species": [
+    "BreedManagement": [
       "species.read",
       "species.create",
       "species.update",
       "species.delete"
     ],
-    "Volunteer": [
+    "PetManagement": [
       "volunteer.read",
       "volunteer.create",
       "volunteer.update",
