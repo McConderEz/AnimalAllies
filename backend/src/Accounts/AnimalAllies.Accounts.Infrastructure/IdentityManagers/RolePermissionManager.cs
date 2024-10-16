@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AnimalAllies.Accounts.Infrastructure.IdentityManagers;
 
-public class RolePermissionManager(AccountsDbContext accountsDbContext)
+public class  RolePermissionManager(AccountsDbContext accountsDbContext)
 {
     public async Task AddRangeIfExist(Guid roleId,IEnumerable<string> permissions)
     {

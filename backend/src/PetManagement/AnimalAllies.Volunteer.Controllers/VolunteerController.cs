@@ -4,7 +4,6 @@ using AnimalAllies.Framework.Processors;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPet;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPetPhoto;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CreateRequisites;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CreateSocialNetworks;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CreateVolunteer;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeletePetForce;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeletePetPhoto;
@@ -176,26 +175,6 @@ public class VolunteerController: ApplicationController
         [FromRoute] Guid id,
         [FromBody] CreateRequisitesRequest request,
         [FromServices] CreateRequisitesHandler handler,
-        CancellationToken cancellationToken = default)
-    {
-        var command = request.ToCommand(id);
-        
-        var response = await handler.Handle(command, cancellationToken);
-        
-        if (response.IsFailure)
-        {
-            return response.Errors.ToResponse();
-        }
-        
-        return Ok(response.Value);
-    }
-    
-    [Permission("volunteer.update")]
-    [HttpPut("{id:guid}/social-networks")]
-    public async Task<IActionResult> CreateSocialNetworksToVolunteer(
-        [FromRoute] Guid id,
-        [FromBody] CreateSocialNetworksRequest request,
-        [FromServices] CreateSocialNetworksHandler handler,
         CancellationToken cancellationToken = default)
     {
         var command = request.ToCommand(id);
