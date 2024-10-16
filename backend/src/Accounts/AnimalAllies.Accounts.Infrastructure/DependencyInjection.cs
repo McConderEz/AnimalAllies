@@ -3,6 +3,7 @@ using AnimalAllies.Accounts.Application;
 using AnimalAllies.Accounts.Application.Managers;
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Accounts.Infrastructure.IdentityManagers;
+using AnimalAllies.Accounts.Infrastructure.Options;
 using AnimalAllies.Accounts.Infrastructure.Seeding;
 using AnimalAllies.Core.Options;
 using AnimalAllies.Framework.Authorization;
@@ -21,7 +22,7 @@ public static class DependencyInjection
         this IServiceCollection services, IConfiguration configuration)
     {
         services
-            .AddIdentityServices()
+            .AddIdentityServices(configuration)
             .AddJwtAuthentication(configuration)
             .AddDbContexts()
             .AddAuthorizationServices();
@@ -29,7 +30,9 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddIdentityServices(this IServiceCollection services)
+    private static IServiceCollection AddIdentityServices(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         services
             .AddIdentity<User,Role>(options =>
@@ -45,8 +48,13 @@ public static class DependencyInjection
             .AddDefaultTokenProviders();
 
         services.AddScoped<IPermissionManager, PermissionManager>();
+        services.AddScoped<IParticipantManager, ParticipantManager>();
         services.AddScoped<PermissionManager>();
         services.AddScoped<RolePermissionManager>();
+        services.AddScoped<AdminManager>();
+
+        services.Configure<AdminOptions>(configuration.GetSection(AdminOptions.ADMIN));
+        services.AddScoped<AccountSeedService>();
         
         return services;
     }

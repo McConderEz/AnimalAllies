@@ -9,5 +9,4 @@ public record CreateVolunteerCommand(
     string Description,
     int WorkExperience,
     string PhoneNumber,
-    IEnumerable<SocialNetworkDto> SocialNetworks,
     IEnumerable<RequisiteDto> Requisites) : ICommand;
