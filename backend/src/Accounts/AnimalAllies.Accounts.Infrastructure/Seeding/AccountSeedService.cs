@@ -16,7 +16,7 @@ public class AccountSeedService
     private readonly RoleManager<Role> _roleManager;
     private readonly PermissionManager _permissionManager;
     private readonly RolePermissionManager _rolePermissionManager;
-    private readonly AdminManager _adminManager;
+    private readonly AccountManager _accountManager;
     private readonly AdminOptions _adminOptions;
     private readonly ILogger<AccountSeedService> _logger;
 
@@ -27,14 +27,14 @@ public class AccountSeedService
         RolePermissionManager rolePermissionManager,
         IOptions<AdminOptions> adminOptions, 
         ILogger<AccountSeedService> logger,
-        AdminManager adminManager)
+        AccountManager accountManager)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _permissionManager = permissionManager;
         _rolePermissionManager = rolePermissionManager;
         _logger = logger;
-        _adminManager = adminManager;
+        _accountManager = accountManager;
         _adminOptions = adminOptions.Value;
     }
 
@@ -71,7 +71,7 @@ public class AccountSeedService
         
         var adminProfile = new AdminProfile(fullName.Value, adminUser);
 
-        await _adminManager.CreateAdminAccount(adminProfile);
+        await _accountManager.CreateAdminAccount(adminProfile);
     }
 
     private  async Task SeedRolePermissions(RolePermissionOptions seedData)

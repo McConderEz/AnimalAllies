@@ -8,5 +8,4 @@ public record RegisterUserCommand(
     string Email,
     string UserName,
     FullNameDto FullNameDto,
-    IEnumerable<SocialNetworkDto>? SocialNetworkDtos,
     string Password): ICommand;

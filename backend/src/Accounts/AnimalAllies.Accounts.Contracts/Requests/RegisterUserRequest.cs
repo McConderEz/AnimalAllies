@@ -7,5 +7,4 @@ public record RegisterUserRequest(
     string Email,
     string UserName,
     FullNameDto FullNameDto,
-    IEnumerable<SocialNetworkDto>? SocialNetworkDtos,
     string Password);

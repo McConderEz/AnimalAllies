@@ -25,9 +25,6 @@ public class RegisterUserCommandValidator: AbstractValidator<RegisterUserCommand
             .NotEmpty()
             .WithError(Errors.General.ValueIsInvalid("username"));
 
-        RuleForEach(r => r.SocialNetworkDtos)
-            .MustBeValueObject(s => SocialNetwork.Create(s.Title, s.Url));
-
         RuleFor(r => r.FullNameDto)
             .MustBeValueObject(f => FullName.Create(f.FirstName, f.SecondName,f.Patronymic));
     }
