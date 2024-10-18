@@ -42,7 +42,8 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         if (!validatorResult.IsValid)
             return validatorResult.ToErrorList();
 
-        var role = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Name == "Participant",cancellationToken);
+        var role = await _roleManager.Roles
+            .FirstOrDefaultAsync(r => r.Name == ParticipantAccount.Participant,cancellationToken);
         if (role is null)
             return Errors.General.NotFound();
         
