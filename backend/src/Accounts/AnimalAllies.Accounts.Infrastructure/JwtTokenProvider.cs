@@ -85,7 +85,7 @@ public class JwtTokenProvider : ITokenProvider
         return refreshSession.RefreshToken;
     }
     
-    public async Task<Result<IReadOnlyList<Claim>>> GetUserClaims(
+    public async Task<Result<IReadOnlyList<Claim>>> GetUserClaimsFromJwtToken(
         string jwtToken,
         CancellationToken cancellationToken = default)
     {

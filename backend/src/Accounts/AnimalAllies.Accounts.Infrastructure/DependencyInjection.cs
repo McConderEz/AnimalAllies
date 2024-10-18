@@ -51,10 +51,10 @@ public static class DependencyInjection
             .AddDefaultTokenProviders();
 
         services.AddScoped<IPermissionManager, PermissionManager>();
-        services.AddScoped<IParticipantManager, ParticipantManager>();
         services.AddScoped<PermissionManager>();
         services.AddScoped<RolePermissionManager>();
-        services.AddScoped<AdminManager>();
+        services.AddScoped<AccountManager>();
+        services.AddScoped<IAccountManager,AccountManager>();
         services.AddScoped<IRefreshSessionManager, RefreshSessionManager>();
 
         services.Configure<AdminOptions>(configuration.GetSection(AdminOptions.ADMIN));

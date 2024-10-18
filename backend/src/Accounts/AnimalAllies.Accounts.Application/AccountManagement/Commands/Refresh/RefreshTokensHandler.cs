@@ -50,7 +50,8 @@ public class RefreshTokensHandler: ICommandHandler<RefreshTokensCommand, LoginRe
         if (refreshSession.Value.ExpiresIn < _dateTimeProvider.UtcNow)
             return Errors.Tokens.ExpiredToken();
 
-        var userClaims = await _tokenProvider.GetUserClaims(command.AccessToken, cancellationToken);
+        var userClaims = await _tokenProvider
+            .GetUserClaimsFromJwtToken(command.AccessToken, cancellationToken);
         if (userClaims.IsFailure)
             return userClaims.Errors;
 
