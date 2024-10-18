@@ -3,9 +3,13 @@ using AnimalAllies.Accounts.Application;
 using AnimalAllies.Accounts.Application.Managers;
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Accounts.Infrastructure.IdentityManagers;
+using AnimalAllies.Accounts.Infrastructure.Options;
 using AnimalAllies.Accounts.Infrastructure.Seeding;
+using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Options;
+using AnimalAllies.Framework;
 using AnimalAllies.Framework.Authorization;
+using AnimalAllies.SharedKernel.Constraints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -21,7 +25,7 @@ public static class DependencyInjection
         this IServiceCollection services, IConfiguration configuration)
     {
         services
-            .AddIdentityServices()
+            .AddIdentityServices(configuration)
             .AddJwtAuthentication(configuration)
             .AddDbContexts()
             .AddAuthorizationServices();
@@ -29,7 +33,9 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddIdentityServices(this IServiceCollection services)
+    private static IServiceCollection AddIdentityServices(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         services
             .AddIdentity<User,Role>(options =>
@@ -45,14 +51,21 @@ public static class DependencyInjection
             .AddDefaultTokenProviders();
 
         services.AddScoped<IPermissionManager, PermissionManager>();
+        services.AddScoped<IParticipantManager, ParticipantManager>();
         services.AddScoped<PermissionManager>();
         services.AddScoped<RolePermissionManager>();
+        services.AddScoped<AdminManager>();
+        services.AddScoped<IRefreshSessionManager, RefreshSessionManager>();
+
+        services.Configure<AdminOptions>(configuration.GetSection(AdminOptions.ADMIN));
+        services.AddScoped<AccountSeedService>();
         
         return services;
     }
 
     private static IServiceCollection AddDbContexts(this IServiceCollection services)
     {
+        services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(Constraints.Context.Accounts);
         services.AddScoped<AccountsDbContext>();
         
         return services;
@@ -78,6 +91,9 @@ public static class DependencyInjection
         services.Configure<JwtOptions>(
             configuration.GetSection(JwtOptions.JWT));
         
+        services.Configure<RefreshSessionOptions>(
+            configuration.GetSection(RefreshSessionOptions.REFRESH_SESSION));
+        
         services
             .AddAuthentication(options =>
             {
@@ -90,19 +106,9 @@ public static class DependencyInjection
             {
                 var jwtOptions = configuration.GetSection(JwtOptions.JWT).Get<JwtOptions>()
                                  ?? throw new ApplicationException("missing jwt options");
-                    
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
-                    ValidIssuer = jwtOptions.Issuer,
-                    ValidAudience = jwtOptions.Audience,
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
-                };
-        
+
+                options.TokenValidationParameters =
+                    TokenValidationParametersFactory.CreateWithLifeTime(jwtOptions);
             });
 
         return services;

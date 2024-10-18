@@ -1,4 +1,5 @@
-﻿using AnimalAllies.Accounts.Domain;
+﻿using AnimalAllies.Accounts.Contracts.Responses;
+using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Shared;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Accounts.Application.AccountManagement.Commands.Login;
 
-public class LoginUserHandler : ICommandHandler<LoginUserCommand,string>
+public class LoginUserHandler : ICommandHandler<LoginUserCommand,LoginResponse>
 {
     private readonly UserManager<User> _userManager;
     private readonly ILogger<LoginUserHandler> _logger;
@@ -28,7 +29,7 @@ public class LoginUserHandler : ICommandHandler<LoginUserCommand,string>
         _validator = validator;
     }
     
-    public async Task<Result<string>> Handle(
+    public async Task<Result<LoginResponse>> Handle(
         LoginUserCommand command, CancellationToken cancellationToken = default)
     {
         var validatorResult = await _validator.ValidateAsync(command, cancellationToken);
@@ -45,10 +46,11 @@ public class LoginUserHandler : ICommandHandler<LoginUserCommand,string>
             return Errors.User.InvalidCredentials();
         }
 
-        var token = _tokenProvider.GenerateAccessToken(user);
+        var accessToken = _tokenProvider.GenerateAccessToken(user);
+        var refreshToken = await _tokenProvider.GenerateRefreshToken(user, accessToken.Jti,cancellationToken);
 
         _logger.LogInformation("Successfully logged in");
         
-        return token;
+        return new LoginResponse(accessToken.AccessToken, refreshToken);
     }
 }

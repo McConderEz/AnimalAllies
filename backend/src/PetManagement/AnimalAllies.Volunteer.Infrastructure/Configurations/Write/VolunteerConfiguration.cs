@@ -75,12 +75,6 @@ public class VolunteerConfiguration
                 dto => Requisite.Create(dto.Title, dto.Description).Value)
             .HasColumnName("requisites");
         
-        builder.Property(v => v.SocialNetworks)
-            .ValueObjectJsonConverter(
-                sn => new SocialNetworkDto { Title = sn.Title, Url = sn.Url },
-                dto => SocialNetwork.Create(dto.Title, dto.Url).Value)
-            .HasColumnName("social_networks");
-        
         builder.Property<bool>("_isDeleted")
             .UsePropertyAccessMode(PropertyAccessMode.Field)
             .HasColumnName("is_deleted");

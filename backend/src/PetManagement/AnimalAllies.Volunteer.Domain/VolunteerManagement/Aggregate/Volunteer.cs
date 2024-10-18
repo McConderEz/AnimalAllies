@@ -23,7 +23,6 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         VolunteerDescription volunteerDescription,
         WorkExperience workExperience,
         PhoneNumber phone,
-        ValueObjectList<SocialNetwork> socialNetworks,
         ValueObjectList<Requisite> requisites)
     : base(volunteerId)
     {
@@ -32,7 +31,6 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         Description = volunteerDescription;
         WorkExperience = workExperience;
         Phone = phone;
-        _socialNetworks = socialNetworks;
         _requisites = requisites;       
     }
     
@@ -42,7 +40,6 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
     public VolunteerDescription Description { get; private set; }
     public WorkExperience WorkExperience { get; private set; }
     public IReadOnlyList<Requisite> Requisites => _requisites;
-    public IReadOnlyList<SocialNetwork> SocialNetworks => _socialNetworks;
     public IReadOnlyList<Pet> Pets => _pets;
 
     public Result AddPet(Pet pet)

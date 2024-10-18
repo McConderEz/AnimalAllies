@@ -50,14 +50,9 @@ public class CreateVolunteerHandler : ICommandHandler<CreateVolunteerCommand, Vo
         var description = VolunteerDescription.Create(command.Description).Value;
         var workExperience = WorkExperience.Create(command.WorkExperience).Value;
         
-
-        var socialNetworks = command.SocialNetworks
-            .Select(x => SocialNetwork.Create(x.Title, x.Url).Value);
         var requisites = command.Requisites
             .Select(x => Requisite.Create(x.Title, x.Description).Value);
-
         
-        var volunteerSocialNetworks = new ValueObjectList<SocialNetwork>(socialNetworks.ToList());
         var volunteerRequisites = new ValueObjectList<Requisite>(requisites.ToList());
         
         var volunteerId = VolunteerId.NewGuid();
@@ -69,7 +64,6 @@ public class CreateVolunteerHandler : ICommandHandler<CreateVolunteerCommand, Vo
             description,
             workExperience,
             phoneNumber,
-            volunteerSocialNetworks,
             volunteerRequisites);
         
         var result = await _repository.Create(volunteerEntity, cancellationToken);
