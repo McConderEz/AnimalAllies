@@ -47,7 +47,7 @@ public class RefreshTokensHandler: ICommandHandler<RefreshTokensCommand, LoginRe
         if (refreshSession.IsFailure)
             return refreshSession.Errors;
 
-        if (refreshSession.Value.ExpiresIn > _dateTimeProvider.UtcNow)
+        if (refreshSession.Value.ExpiresIn < _dateTimeProvider.UtcNow)
             return Errors.Tokens.ExpiredToken();
 
         var userClaims = await _tokenProvider.GetUserClaims(command.AccessToken, cancellationToken);
