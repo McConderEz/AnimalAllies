@@ -4,11 +4,13 @@ using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Accounts.Application.AccountManagement.Commands.Register;
@@ -28,7 +30,7 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         IValidator<RegisterUserCommand> validator,
         RoleManager<Role> roleManager, 
         IAccountManager accountManager,
-        IUnitOfWork unitOfWork)
+        [FromKeyedServices(Constraints.Context.Accounts)]IUnitOfWork unitOfWork)
     {
         _userManager = userManager;
         _logger = logger;
@@ -56,10 +58,7 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
             if (role is null)
                 return Errors.General.NotFound();
 
-            var socialNetworks = command.SocialNetworkDtos?
-                .Select(s => SocialNetwork.Create(s.Title, s.Url).Value) ?? [];
-
-            var user = User.CreateParticipant(command.UserName, command.Email, socialNetworks, role);
+            var user = User.CreateParticipant(command.UserName, command.Email, role);
 
             var result = await _userManager.CreateAsync(user, command.Password);
             if (!result.Succeeded)

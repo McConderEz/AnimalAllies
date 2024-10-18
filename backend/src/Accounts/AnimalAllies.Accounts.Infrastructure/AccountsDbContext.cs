@@ -40,8 +40,8 @@ public class AccountsDbContext(IConfiguration configuration)
             .Property(u => u.SocialNetworks)
             .HasConversion(
                 u => JsonSerializer.Serialize(u, JsonSerializerOptions.Default),
-                json => JsonSerializer.Deserialize<List<SocialNetwork>>(json, JsonSerializerOptions.Default)!,
-                new ValueComparer<List<SocialNetwork>>(
+                json => JsonSerializer.Deserialize<IReadOnlyList<SocialNetwork>>(json, JsonSerializerOptions.Default)!,
+                new ValueComparer<IReadOnlyList<SocialNetwork>>(
                     (c1, c2) => c1!.SequenceEqual(c2!),
                     c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v!.GetHashCode())),
                     c => c.ToList()));
