@@ -18,6 +18,7 @@ public class AccountsDbContext(IConfiguration configuration)
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<AdminProfile> AdminProfiles => Set<AdminProfile>();
     public DbSet<ParticipantAccount> ParticipantAccounts => Set<ParticipantAccount>();
+    public DbSet<RefreshSession> RefreshSessions => Set<RefreshSession>();
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -180,6 +181,14 @@ public class AccountsDbContext(IConfiguration configuration)
         modelBuilder.Entity<RolePermission>()
             .Navigation(rp => rp.Permission)
             .AutoInclude();
+
+        modelBuilder.Entity<RefreshSession>()
+            .ToTable("refresh_sessions");
+
+        modelBuilder.Entity<RefreshSession>()
+            .HasOne(rs => rs.User)
+            .WithMany()
+            .HasForeignKey(rs => rs.UserId);
         
         modelBuilder.Entity<IdentityUserClaim<Guid>>()
             .ToTable("claims");

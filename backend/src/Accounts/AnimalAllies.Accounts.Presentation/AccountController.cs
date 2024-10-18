@@ -1,7 +1,9 @@
 ﻿using AnimalAllies.Accounts.Application.AccountManagement.Commands.Login;
+using AnimalAllies.Accounts.Application.AccountManagement.Commands.Refresh;
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.Register;
 using AnimalAllies.Accounts.Contracts.Requests;
 using AnimalAllies.Framework;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnimalAllies.Accounts.Presentation;
@@ -41,6 +43,21 @@ public class AccountController: ApplicationController
             return result.Errors.ToResponse();
         
         return Ok(result.Value);
-    } 
+    }
+
+    [HttpPost("refreshing")]
+    public async Task<IActionResult> Refresh(
+        [FromBody] RefreshTokenRequest request,
+        [FromServices] RefreshTokensHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new RefreshTokensCommand(request.AccessToken, request.RefreshToken);
+
+        var result = await handler.Handle(command, cancellationToken);
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
+
+        return Ok(result.Value);
+    }
     
 }
