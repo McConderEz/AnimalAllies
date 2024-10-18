@@ -35,11 +35,6 @@ namespace AnimalAllies.Volunteer.Infrastructure.Migrations
                         .HasColumnType("jsonb")
                         .HasColumnName("requisites");
 
-                    b.Property<string>("SocialNetworks")
-                        .IsRequired()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("social_networks");
-
                     b.Property<bool>("_isDeleted")
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");

@@ -29,19 +29,21 @@ public class PermissionManager(AccountsDbContext accountsDbContext) : IPermissio
         await accountsDbContext.SaveChangesAsync();
     }
 
-    public async Task<Result<List<string>>> GetPermissionsByUserId(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<Result<List<string>>> GetPermissionsByUserId(
+        Guid userId,
+        CancellationToken cancellationToken = default)
     {
         var user = await accountsDbContext.Users
-            .Include(u => u.Role)
+            .Include(u => u.Roles)
                 .ThenInclude(r => r.RolePermissions)
             .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
         
         if (user is null)
             return Errors.General.NotFound();
 
-        var permissions = user.Role.RolePermissions.Select(rp => rp.Permission.Code).ToList();
+        var permissions = user.Roles
+            .SelectMany(r => r.RolePermissions.Select(rp => rp.Permission.Code)).ToList();
         
         return permissions;
     }
-    
 }

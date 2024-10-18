@@ -13,6 +13,7 @@ using AnimalAllies.Species.Presentation;
 using AnimalAllies.Volunteer.Presentation;
 using AnimalAllies.Web;
 
+DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 

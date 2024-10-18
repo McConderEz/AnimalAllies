@@ -343,7 +343,6 @@ public class AddPhotoToPetTests
         var volunteerDescription = VolunteerDescription.Create("Test").Value;
         var workExperience = WorkExperience.Create(20).Value;
         var phoneNumber = PhoneNumber.Create("+12345678910").Value;
-        var socialNetworks = new ValueObjectList<SocialNetwork>([SocialNetwork.Create("Test", "Test").Value]);
         var requisites = new ValueObjectList<Requisite>([Requisite.Create("Test", "Test").Value]);
 
         var volunteer = new AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer(
@@ -353,7 +352,6 @@ public class AddPhotoToPetTests
             volunteerDescription,
             workExperience,
             phoneNumber,
-            socialNetworks,
             requisites);
 
         return volunteer;

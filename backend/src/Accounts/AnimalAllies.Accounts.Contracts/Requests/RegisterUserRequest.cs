@@ -1,3 +1,11 @@
-﻿namespace AnimalAllies.Accounts.Contracts.Requests;
+﻿using AnimalAllies.Core.DTOs.ValueObjects;
+using AnimalAllies.SharedKernel.Shared.ValueObjects;
 
-public record RegisterUserRequest(string Email, string UserName, string Password);
+namespace AnimalAllies.Accounts.Contracts.Requests;
+
+public record RegisterUserRequest(
+    string Email,
+    string UserName,
+    FullNameDto FullNameDto,
+    IEnumerable<SocialNetworkDto>? SocialNetworkDtos,
+    string Password);

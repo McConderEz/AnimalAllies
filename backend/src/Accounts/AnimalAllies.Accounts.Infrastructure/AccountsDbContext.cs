@@ -16,6 +16,8 @@ public class AccountsDbContext(IConfiguration configuration)
 {
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<Permission> Permissions => Set<Permission>();
+    public DbSet<AdminProfile> AdminProfiles => Set<AdminProfile>();
+    public DbSet<ParticipantAccount> ParticipantAccounts => Set<ParticipantAccount>();
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -44,10 +46,11 @@ public class AccountsDbContext(IConfiguration configuration)
                     c => c.ToList()));
 
         modelBuilder.Entity<User>()
-            .HasOne(u => u.Role)
-            .WithMany(r => r.Users)
-            .HasForeignKey(u => u.RoleId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasMany(u => u.Roles)
+            .WithMany(r => r.Users);
+        
+        modelBuilder.Entity<ParticipantAccount>()
+            .ToTable("participant_accounts");
         
         modelBuilder.Entity<ParticipantAccount>()
             .ComplexProperty(pa => pa.FullName, pab =>
@@ -73,6 +76,9 @@ public class AccountsDbContext(IConfiguration configuration)
             .HasKey(pa => pa.Id);
         
         modelBuilder.Entity<AdminProfile>()
+            .ToTable("admin_profiles");
+        
+        modelBuilder.Entity<AdminProfile>()
             .ComplexProperty(ap => ap.FullName, apb =>
             {
                 apb.Property(f => f.FirstName)
@@ -94,6 +100,9 @@ public class AccountsDbContext(IConfiguration configuration)
         
         modelBuilder.Entity<AdminProfile>()
             .HasKey(pa => pa.Id);
+
+        modelBuilder.Entity<VolunteerAccount>()
+            .ToTable("volunteer_accounts");
         
         modelBuilder.Entity<VolunteerAccount>()
             .ComplexProperty(va => va.FullName, vab =>
