@@ -18,6 +18,7 @@ public class AccountsDbContext(IConfiguration configuration)
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<AdminProfile> AdminProfiles => Set<AdminProfile>();
     public DbSet<ParticipantAccount> ParticipantAccounts => Set<ParticipantAccount>();
+    public DbSet<RefreshSession> RefreshSessions => Set<RefreshSession>();
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -39,8 +40,8 @@ public class AccountsDbContext(IConfiguration configuration)
             .Property(u => u.SocialNetworks)
             .HasConversion(
                 u => JsonSerializer.Serialize(u, JsonSerializerOptions.Default),
-                json => JsonSerializer.Deserialize<List<SocialNetwork>>(json, JsonSerializerOptions.Default)!,
-                new ValueComparer<List<SocialNetwork>>(
+                json => JsonSerializer.Deserialize<IReadOnlyList<SocialNetwork>>(json, JsonSerializerOptions.Default)!,
+                new ValueComparer<IReadOnlyList<SocialNetwork>>(
                     (c1, c2) => c1!.SequenceEqual(c2!),
                     c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v!.GetHashCode())),
                     c => c.ToList()));
@@ -180,6 +181,14 @@ public class AccountsDbContext(IConfiguration configuration)
         modelBuilder.Entity<RolePermission>()
             .Navigation(rp => rp.Permission)
             .AutoInclude();
+
+        modelBuilder.Entity<RefreshSession>()
+            .ToTable("refresh_sessions");
+
+        modelBuilder.Entity<RefreshSession>()
+            .HasOne(rs => rs.User)
+            .WithMany()
+            .HasForeignKey(rs => rs.UserId);
         
         modelBuilder.Entity<IdentityUserClaim<Guid>>()
             .ToTable("claims");

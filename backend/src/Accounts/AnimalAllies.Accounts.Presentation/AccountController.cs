@@ -1,7 +1,14 @@
-﻿using AnimalAllies.Accounts.Application.AccountManagement.Commands.Login;
+﻿using System.Globalization;
+using AnimalAllies.Accounts.Application.AccountManagement.Commands.AddSocialNetworks;
+using AnimalAllies.Accounts.Application.AccountManagement.Commands.Login;
+using AnimalAllies.Accounts.Application.AccountManagement.Commands.Refresh;
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.Register;
 using AnimalAllies.Accounts.Contracts.Requests;
+using AnimalAllies.Core.Models;
 using AnimalAllies.Framework;
+using AnimalAllies.SharedKernel.Shared;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnimalAllies.Accounts.Presentation;
@@ -18,7 +25,6 @@ public class AccountController: ApplicationController
             request.Email,
             request.UserName,
             request.FullNameDto,
-            request.SocialNetworkDtos,
             request.Password);
 
         var result = await handler.Handle(command, cancellationToken);
@@ -41,6 +47,44 @@ public class AccountController: ApplicationController
             return result.Errors.ToResponse();
         
         return Ok(result.Value);
-    } 
+    }
+
+    [HttpPost("refreshing")]
+    public async Task<IActionResult> Refresh(
+        [FromBody] RefreshTokenRequest request,
+        [FromServices] RefreshTokensHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new RefreshTokensCommand(request.AccessToken, request.RefreshToken);
+
+        var result = await handler.Handle(command, cancellationToken);
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
+
+        return Ok(result.Value);
+    }
+    
+    [Authorize]
+    [HttpPost("social-networks-to-user")]
+    public async Task<IActionResult> AddSocialNetworksToUser(
+        [FromBody] AddSocialNetworksRequest request,
+        [FromServices] AddSocialNetworkHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
+        if (userIdString is null)
+            return Error.Null("user.id.null", "user id is null").ToResponse();
+
+        if (!Guid.TryParse(userIdString, out var userId))
+            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
+        
+        var command = new AddSocialNetworkCommand(userId, request.SocialNetworkDtos);
+
+        var result = await handler.Handle(command, cancellationToken);
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
+
+        return Ok(result.IsSuccess);
+    }
     
 }

@@ -33,6 +33,19 @@ public static class Errors
         }
     }
 
+    public static class Tokens
+    {
+        public static Error ExpiredToken()
+        {
+            return Error.Validation("token.is.expired", $"Your token is expired");
+        }
+        
+        public static Error InvalidToken()
+        {
+            return Error.Validation("token.is.invalid", $"Your token is invalid");
+        }
+    }
+
     public static class Volunteer
     {
         //TODO: Удалить и поменять на General

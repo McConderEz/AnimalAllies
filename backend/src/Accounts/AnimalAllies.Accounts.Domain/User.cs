@@ -1,4 +1,5 @@
 ﻿using System.Dynamic;
+using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using Microsoft.AspNetCore.Identity;
 
@@ -12,7 +13,10 @@ public class User:IdentityUser<Guid>
     }
     
     public string? Photo { get; set; }
-    public List<SocialNetwork> SocialNetworks { get; set; } = [];
+
+    private List<SocialNetwork> _socialNetworks = [];
+    public IReadOnlyList<SocialNetwork> SocialNetworks => _socialNetworks;
+    
     private List<Role> _roles = [];
     public IReadOnlyList<Role> Roles => _roles;
     
@@ -26,18 +30,23 @@ public class User:IdentityUser<Guid>
         };
     }
 
+    public Result AddSocialNetwork(IEnumerable<SocialNetwork> socialNetworks)
+    {
+        _socialNetworks = socialNetworks.ToList();
+
+        return Result.Success();
+    }
+
     public static User CreateParticipant(
         string userName,
         string email,
-        IEnumerable<SocialNetwork> socialNetworks,
         Role role)
     {
         return new User
         {
             UserName = userName,
             Email = email,
-            _roles = [role],
-            SocialNetworks = socialNetworks.ToList()
+            _roles = [role]
         };
     }
 }
