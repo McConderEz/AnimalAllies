@@ -75,7 +75,7 @@ public class VolunteerConfiguration
                 dto => Requisite.Create(dto.Title, dto.Description).Value)
             .HasColumnName("requisites");
         
-        builder.Property<bool>("_isDeleted")
+        builder.Property<bool>("IsDeleted")
             .UsePropertyAccessMode(PropertyAccessMode.Field)
             .HasColumnName("is_deleted");
         

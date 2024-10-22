@@ -6,10 +6,8 @@ using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObject
 
 namespace AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet;
 
-public class Pet : Entity<PetId>, ISoftDeletable
+public class Pet : SoftDeletableEntity<PetId>
 {
-    private bool _isDeleted = false;
-    
     private Pet(PetId id) : base(id)
     {
     }
@@ -65,8 +63,6 @@ public class Pet : Entity<PetId>, ISoftDeletable
     {
         Position = position;
     }
-    
-    public void Delete() => _isDeleted = !_isDeleted;
 
     public Result MoveForward()
     {

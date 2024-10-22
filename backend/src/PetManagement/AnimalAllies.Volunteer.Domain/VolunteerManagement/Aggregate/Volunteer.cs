@@ -7,9 +7,8 @@ using AnimalAllies.Volunteer.Domain.VolunteerManagement.ValueObject;
 
 namespace AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate;
 
-public class Volunteer: Entity<VolunteerId>, ISoftDeletable
+public class Volunteer: SoftDeletableEntity<VolunteerId>
 {
-    private bool _isDeleted = false;
     private readonly List<Pet> _pets = [];
     private List<Requisite> _requisites = [];
     private List<SocialNetwork> _socialNetworks = [];
@@ -233,5 +232,10 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         return Result.Success();
     }
 
-    public void Delete() => _isDeleted = !_isDeleted;
+    public override void Delete()
+    {
+        base.Delete();
+        
+        _pets.ForEach(p => p.Delete());
+    }
 }
