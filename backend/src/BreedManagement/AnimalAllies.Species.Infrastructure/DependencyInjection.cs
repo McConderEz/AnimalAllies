@@ -21,8 +21,7 @@ public static class DependencyInjection
             .AddDatabase()
             .AddDbContexts()
             .AddRepositories()
-            .AddServices(configuration)
-            .AddHostedServices();
+            .AddServices(configuration);
         
         return services;
     }
