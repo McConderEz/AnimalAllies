@@ -3,6 +3,7 @@ using AnimalAllies.Accounts.Application.AccountManagement.Commands.AddSocialNetw
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.Login;
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.Refresh;
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.Register;
+using AnimalAllies.Accounts.Application.AccountManagement.Queries.GetUserById;
 using AnimalAllies.Accounts.Contracts.Requests;
 using AnimalAllies.Core.Models;
 using AnimalAllies.Framework;
@@ -85,6 +86,22 @@ public class AccountController: ApplicationController
             return result.Errors.ToResponse();
 
         return Ok(result.IsSuccess);
+    }
+    
+    [HttpGet("{userId:guid}")]
+    public async Task<ActionResult> Get(
+        [FromRoute] Guid userId,
+        [FromServices] GetUserByIdHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetUserByIdQuery(userId);
+
+        var result = await handler.Handle(query, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
     }
     
 }
