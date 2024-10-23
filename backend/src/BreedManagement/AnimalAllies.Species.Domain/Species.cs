@@ -45,21 +45,33 @@ public class Species: SoftDeletableEntity<SpeciesId>
         return breed;
     }
 
-    public Result DeleteBreed(BreedId id)
+    public Result DeleteBreed(BreedId id, DateTime deletionTime)
     {
         var breed = GetById(id);
         if (breed.IsFailure)
             return Errors.General.NotFound();
 
         _breeds.Remove(breed.Value);
-        breed.Value.Delete();
+        breed.Value.Delete(deletionTime);
         
         return Result.Success();
     }
 
-    public override void Delete()
+    public override void Delete(DateTime deletionTime)
     {
-        base.Delete();
-        _breeds.ForEach(b => b.Delete());
+        base.Delete(deletionTime);
+        _breeds.ForEach(b => b.Delete(deletionTime));
+    }
+
+    public override void Restore()
+    {
+        base.Restore();
+        _breeds.ForEach(b => b.Restore());
+    }
+    
+    public void DeleteExpiredBreeds(int expiredTime)
+    {
+        _breeds.RemoveAll(p => p.DeletionDate != null 
+                             && p.DeletionDate.Value.AddDays(expiredTime) <= DateTime.UtcNow);
     }
 }

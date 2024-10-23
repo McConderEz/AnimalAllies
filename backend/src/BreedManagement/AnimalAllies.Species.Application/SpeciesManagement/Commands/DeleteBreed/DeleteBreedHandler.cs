@@ -19,23 +19,27 @@ public class DeleteBreedHandler : ICommandHandler<DeleteBreedCommand, BreedId>
     private readonly IValidator<DeleteBreedCommand> _validator;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DeleteBreedHandler> _logger;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
     public DeleteBreedHandler(
         ISpeciesRepository repository, 
         IValidator<DeleteBreedCommand> validator,
         ILogger<DeleteBreedHandler> logger,
         [FromKeyedServices(Constraints.Context.BreedManagement)]IUnitOfWork unitOfWork,
-        IVolunteerContract volunteerContract)
+        IVolunteerContract volunteerContract, 
+        IDateTimeProvider dateTimeProvider)
     {
         _repository = repository;
         _validator = validator;
         _logger = logger;
         _unitOfWork = unitOfWork;
         _volunteerContract = volunteerContract;
+        _dateTimeProvider = dateTimeProvider;
     }
     
     
-    public async Task<Result<BreedId>> Handle(DeleteBreedCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result<BreedId>> Handle(
+        DeleteBreedCommand command, CancellationToken cancellationToken = default)
     {
         var validatorResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validatorResult.IsValid)
@@ -54,7 +58,7 @@ public class DeleteBreedHandler : ICommandHandler<DeleteBreedCommand, BreedId>
         if (petOfThisBreed.IsFailure || petOfThisBreed.Value)
             return Errors.Species.DeleteConflict();
         
-        var result = species.Value.DeleteBreed(breedId);
+        var result = species.Value.DeleteBreed(breedId, _dateTimeProvider.UtcNow);
         if (result.IsFailure)
             return result.Errors;
 

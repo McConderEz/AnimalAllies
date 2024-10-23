@@ -17,17 +17,20 @@ public class DeleteVolunteerHandler : ICommandHandler<DeleteVolunteerCommand, Vo
     private readonly ILogger<DeleteVolunteerHandler> _logger;
     private readonly IValidator<DeleteVolunteerCommand> _validator;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IDateTimeProvider _dateTimeProvider;
     
     public DeleteVolunteerHandler(
         IVolunteerRepository repository, 
         ILogger<DeleteVolunteerHandler> logger,
         IValidator<DeleteVolunteerCommand> validator, 
-        [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork)
+        [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork, 
+        IDateTimeProvider dateTimeProvider)
     {
         _repository = repository;
         _logger = logger;
         _validator = validator;
         _unitOfWork = unitOfWork;
+        _dateTimeProvider = dateTimeProvider;
     }
     
     public async Task<Result<VolunteerId>> Handle(
@@ -47,7 +50,7 @@ public class DeleteVolunteerHandler : ICommandHandler<DeleteVolunteerCommand, Vo
             return Errors.General.NotFound();
         
         
-        volunteer.Value.Delete();
+        volunteer.Value.Delete(_dateTimeProvider.UtcNow);
 
         await _unitOfWork.SaveChanges(cancellationToken);
         

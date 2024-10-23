@@ -30,14 +30,18 @@ namespace AnimalAllies.Volunteer.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<DateTime?>("DeletionDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deletion_date");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
                     b.Property<string>("Requisites")
                         .IsRequired()
                         .HasColumnType("jsonb")
                         .HasColumnName("requisites");
-
-                    b.Property<bool>("_isDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
 
                     b.ComplexProperty<Dictionary<string, object>>("Description", "AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer.Description#VolunteerDescription", b1 =>
                         {
@@ -113,6 +117,14 @@ namespace AnimalAllies.Volunteer.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<DateTime?>("DeletionDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deletion_date");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
                     b.Property<string>("PetPhotoDetails")
                         .IsRequired()
                         .HasColumnType("jsonb")
@@ -122,10 +134,6 @@ namespace AnimalAllies.Volunteer.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb")
                         .HasColumnName("requisites");
-
-                    b.Property<bool>("_isDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
 
                     b.Property<Guid?>("volunteer_id")
                         .HasColumnType("uuid")

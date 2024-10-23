@@ -1,6 +1,9 @@
+using System.Data;
+using AnimalAllies.Core.Models;
 using AnimalAllies.Framework;
 using AnimalAllies.Framework.Authorization;
 using AnimalAllies.Framework.Processors;
+using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPet;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPetPhoto;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CreateRequisites;
@@ -10,6 +13,8 @@ using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeletePetP
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeletePetSoft;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeleteVolunteer;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.MovePetPosition;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.RestorePet;
+using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.RestoreVolunteer;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.SetMainPhotoOfPet;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.UpdatePet;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.UpdatePetStatus;
@@ -315,6 +320,43 @@ public class VolunteerController: ApplicationController
         CancellationToken cancellationToken = default)
     {
         var command = request.ToCommand(volunteerId, petId);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
+
+        return Ok(result.Value);
+    }
+    
+    //TODO: перенести все реквесты в Contract и убрать ToCommand
+    
+    [Permission("volunteer.restore")]
+    [HttpPut("{volunteerId:guid}/volunteer-recovery")]
+    public async Task<ActionResult> VolunteerRestore(
+        [FromRoute] Guid volunteerId,
+        [FromServices] RestoreVolunteerHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new RestoreVolunteerCommand(volunteerId);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
+
+        return Ok(result.Value);
+    }
+    
+    [Permission("volunteer.update")]
+    [HttpPut("{volunteerId:guid}/{petId:guid}/volunteer-recovery")]
+    public async Task<ActionResult> PetRestore(
+        [FromRoute] Guid volunteerId,
+        [FromRoute] Guid petId,
+        [FromServices] RestorePetHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new RestorePetCommand(volunteerId, petId);
 
         var result = await handler.Handle(command, cancellationToken);
 

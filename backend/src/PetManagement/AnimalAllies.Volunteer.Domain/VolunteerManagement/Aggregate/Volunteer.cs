@@ -107,27 +107,38 @@ public class Volunteer: SoftDeletableEntity<VolunteerId>
         return Result.Success();
     }
     
-    public Result DeletePetSoft(PetId petId)
+    
+    public Result DeletePetSoft(PetId petId, DateTime deletionDate)
     {
         var pet = GetPetById(petId);
         if (pet.IsFailure)
             return pet.Errors;
 
-        pet.Value.Delete();
+        RecalculatePositionOfOtherPets(pet.Value.Position);
+        
+        pet.Value.Delete(deletionDate);
         return Result.Success();
     }
     
-    public Result DeletePetForce(PetId petId)
+    public Result DeletePetForce(PetId petId, DateTime deletionDate)
     {
         var pet = GetPetById(petId);
         if (pet.IsFailure)
             return pet.Errors;
+        
+        RecalculatePositionOfOtherPets(pet.Value.Position);
 
         _pets.Remove(pet.Value);
-        pet.Value.Delete();
+        pet.Value.Delete(deletionDate);
         return Result.Success();
     }
 
+    public void DeleteExpiredPets(int expiredTime)
+    {
+        _pets.RemoveAll(p => p.DeletionDate != null 
+                             && p.DeletionDate.Value.AddDays(expiredTime) <= DateTime.UtcNow);
+    }
+    
     public Result MovePet(Pet pet, Position newPosition)
     {
         var currentPosition = pet.Position;
@@ -232,10 +243,45 @@ public class Volunteer: SoftDeletableEntity<VolunteerId>
         return Result.Success();
     }
 
-    public override void Delete()
+    public override void Delete(DateTime deletionDate)
     {
-        base.Delete();
+        base.Delete(deletionDate);
         
-        _pets.ForEach(p => p.Delete());
+        _pets.ForEach(p => p.Delete(deletionDate));
+    }
+
+    private Result RecalculatePositionOfOtherPets(Position currentPosition)
+    {
+        if (currentPosition.Value == _pets.Count)
+            return Result.Success();
+
+        var petsToMove = _pets.Where(p => p.Position.Value > currentPosition.Value);
+        foreach (var pet in petsToMove)
+        {
+            var result = pet.MoveBack();
+            if (result.IsFailure)
+                return result.Errors;
+        }
+        
+        return Result.Success();
+    }
+    
+    public override void Restore()
+    {
+        base.Restore();
+        _pets.ForEach(p => p.Restore());
+    }
+
+    public Result RestorePet(PetId id)
+    {
+        var pet = GetPetById(id);
+        if (pet.IsFailure)
+            return pet.Errors;
+
+        var resultMove = MovePet(pet.Value, Position.Create(_pets.Count).Value);
+        if (resultMove.IsFailure)
+            return resultMove.Errors;
+
+        return Result.Success();
     }
 }

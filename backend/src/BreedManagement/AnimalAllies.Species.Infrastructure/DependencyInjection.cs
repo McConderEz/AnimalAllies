@@ -1,9 +1,12 @@
 using AnimalAllies.Core.Database;
+using AnimalAllies.Core.Options;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.Species.Application.Database;
 using AnimalAllies.Species.Application.Repository;
+using AnimalAllies.Species.Infrastructure.Backgroundservices;
 using AnimalAllies.Species.Infrastructure.DbContexts;
 using AnimalAllies.Species.Infrastructure.Repository;
+using AnimalAllies.Species.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,7 +20,9 @@ public static class DependencyInjection
         services
             .AddDatabase()
             .AddDbContexts()
-            .AddRepositories();
+            .AddRepositories()
+            .AddServices(configuration)
+            .AddHostedServices();
         
         return services;
     }
@@ -29,6 +34,23 @@ public static class DependencyInjection
         return services;
     }
 
+    private static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<EntityDeletion>(configuration.GetSection(EntityDeletion.ENTITY_DELETION));
+
+        services.AddScoped<DeleteExpiredBreedsService>();
+        services.AddScoped<DeleteExpiredSpeciesService>();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddHostedServices(this IServiceCollection services)
+    {
+        services.AddHostedService<EntityCleanerIfDeletedBackgroundService>();
+
+        return services;
+    }
+    
     private static IServiceCollection AddDatabase(this IServiceCollection services)
     {
         services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(Constraints.Context.BreedManagement);
