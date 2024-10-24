@@ -6,5 +6,7 @@ public class ParticipantAccountDto
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
-    public FullNameDto FullName { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string SecondName { get; set; } = string.Empty;
+    public string Patronymic { get; set; } = string.Empty;
 }
