@@ -5,6 +5,7 @@ namespace AnimalAllies.Accounts.Domain;
 
 public class VolunteerAccount
 {
+    public static readonly string Volunteer = nameof(Volunteer);
     public Guid Id { get; set; }
     public FullName FullName { get; set; }
     public int Experience { get; set; }

@@ -10,5 +10,7 @@ public class UserDto
     public SocialNetworkDto[] SocialNetworks { get; set; } = [];
     public RoleDto[] Roles { get; set; } = [];
     public VolunteerAccountDto? VolunteerAccount { get; set; }
-    public ParticipantAccountDto? ParticipantAccountDto { get; set; }
+    public Guid? VolunteerAccountId { get; set; }
+    public ParticipantAccountDto? ParticipantAccount { get; set; }
+    public Guid? ParticipantAccountId { get; set; }
 }

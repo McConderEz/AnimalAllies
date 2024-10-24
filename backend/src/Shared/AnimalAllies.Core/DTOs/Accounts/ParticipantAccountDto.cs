@@ -4,7 +4,7 @@ namespace AnimalAllies.Core.DTOs.Accounts;
 
 public class ParticipantAccountDto
 {
-    public Guid Id { get; set; }
+    public Guid ParticipantId { get; set; }
     public Guid UserId { get; set; }
     public string FirstName { get; set; } = string.Empty;
     public string SecondName { get; set; } = string.Empty;

@@ -50,6 +50,7 @@ public class AccountsDbContext(IConfiguration configuration)
             .HasMany(u => u.Roles)
             .WithMany(r => r.Users);
         
+        
         modelBuilder.Entity<ParticipantAccount>()
             .ToTable("participant_accounts");
         

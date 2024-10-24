@@ -45,63 +45,22 @@ public class GetUserByIdHandler: IQueryHandler<UserDto?, GetUserByIdQuery>
         
         parameters.Add("@UserId", query.UserId);
 
-        var user = await GetUser(connection, parameters);
+        var user = (await GetUser(connection, parameters)).FirstOrDefault();
 
-        var participantAccount = await GetParticipantAccount(connection, parameters);
+        if(user!.Roles.Any(r => r.Name == ParticipantAccount.Participant))
+            user.ParticipantAccount = (await GetParticipantAccount(connection, parameters)).FirstOrDefault();
 
-        var volunteerAccount = await GetVolunteerAccount(connection, parameters);
-
-        var roles = await GetRoles(connection);
+        if(user.Roles.Any(r => r.Name == VolunteerAccount.Volunteer))
+            user.VolunteerAccount = (await GetVolunteerAccount(connection, parameters)).FirstOrDefault();
         
-        var roleUser = await GetRoleUser(connection, parameters);
-        
-        var result = user.FirstOrDefault();
-
-        if (participantAccount.FirstOrDefault() is not null)
-            result.ParticipantAccountDto = participantAccount.FirstOrDefault();
-
-        if (volunteerAccount.FirstOrDefault() is not null)
-            result.VolunteerAccount = volunteerAccount.FirstOrDefault();
-        
-        result.Roles = roles.Where(r => roleUser.Any(ru => ru.RolesId == r.Id)).ToArray();
-
-        return result;
-    }
-
-    private static async Task<IEnumerable<RoleUserDto>> GetRoleUser(IDbConnection connection, DynamicParameters parameters)
-    {
-        var sqlForRoleUser = new StringBuilder("""
-                                                 select
-                                                    roles_id, 
-                                                    users_id
-                                                    from accounts.role_user
-                                                    where users_id = @UserId
-                                               """);
-
-        var roleUser = await connection
-            .QueryAsync<RoleUserDto>(sqlForRoleUser.ToString(), parameters);
-        return roleUser;
-    }
-
-    private static async Task<IEnumerable<RoleDto>> GetRoles(IDbConnection connection)
-    {
-        var sqlForRoles = new StringBuilder("""
-                                              select
-                                                 id,
-                                                 name
-                                                 from accounts.roles
-                                            """);
-
-        var roles = await connection
-            .QueryAsync<RoleDto>(sqlForRoles.ToString());
-        return roles;
+        return user;
     }
 
     private static async Task<IEnumerable<VolunteerAccountDto>> GetVolunteerAccount(IDbConnection connection, DynamicParameters parameters)
     {
         var sqlForVolunteerAccount = new StringBuilder("""
                                                        select
-                                                            id,
+                                                            id as volunteer_id,
                                                             user_id,
                                                             experience,
                                                             first_name,
@@ -138,7 +97,7 @@ public class GetUserByIdHandler: IQueryHandler<UserDto?, GetUserByIdQuery>
     {
         var sqlForParticipantAccount = new StringBuilder("""
                                                          select
-                                                              id,
+                                                              id as participant_id,
                                                               user_id,
                                                               first_name,
                                                               second_name,
@@ -155,27 +114,34 @@ public class GetUserByIdHandler: IQueryHandler<UserDto?, GetUserByIdQuery>
     private static async Task<IEnumerable<UserDto>> GetUser(IDbConnection connection, DynamicParameters parameters)
     {
         var sql = new StringBuilder("""
-                                    select 
-                                        u.id,
+                                    select
+                                        u.id ,
                                         u.user_name,
                                         u.photo,
+                                        r.id as role_id,
+                                        r.name as name,
                                         u.social_networks as social_networks
                                     from accounts.users u
+                                             join accounts.role_user ru on u.id = ru.users_id
+                                             join accounts.roles r on ru.roles_id = r.id
                                     where u.id = @UserId
                                     """);
 
         var user = await connection
-            .QueryAsync<UserDto, string, UserDto>(
+            .QueryAsync<UserDto, RoleDto,string, UserDto>(
                 sql.ToString(),
-                (user,jsonSocialNetworks) =>
+                (user, role, jsonSocialNetworks) =>
                 {
                     var socialNetworks = JsonSerializer
                         .Deserialize<SocialNetworkDto[]>(jsonSocialNetworks) ?? [];
                     user.SocialNetworks = socialNetworks;
+
+                    user.Roles = [role];
+                    
                     return user;
                 },
                 param: parameters,
-                splitOn: "social_networks"
+                splitOn: "role_id, social_networks"
             );
         return user;
     }
