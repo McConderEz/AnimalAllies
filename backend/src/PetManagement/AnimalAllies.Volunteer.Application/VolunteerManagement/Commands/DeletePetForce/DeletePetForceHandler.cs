@@ -20,19 +20,22 @@ public class DeletePetForceHandler: ICommandHandler<DeletePetForceCommand, PetId
     private readonly ILogger<DeletePetForceHandler> _logger;
     private readonly IValidator<DeletePetForceCommand> _validator;
     private readonly IFileProvider _fileProvider;
+    private readonly IDateTimeProvider _dateTimeProvider;
     
     public DeletePetForceHandler(
         IVolunteerRepository volunteerRepository,
         ILogger<DeletePetForceHandler> logger,
         IValidator<DeletePetForceCommand> validator,
         [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork,
-        IFileProvider fileProvider)
+        IFileProvider fileProvider, 
+        IDateTimeProvider dateTimeProvider)
     {
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _validator = validator;
         _unitOfWork = unitOfWork;
         _fileProvider = fileProvider;
+        _dateTimeProvider = dateTimeProvider;
     }
     
     
@@ -53,7 +56,7 @@ public class DeletePetForceHandler: ICommandHandler<DeletePetForceCommand, PetId
         if(pet.IsFailure)
             return pet.Errors;
 
-        var result = volunteer.Value.DeletePetForce(petId);
+        var result = volunteer.Value.DeletePetForce(petId,_dateTimeProvider.UtcNow);
         if (result.IsFailure)
             return result.Errors;
         

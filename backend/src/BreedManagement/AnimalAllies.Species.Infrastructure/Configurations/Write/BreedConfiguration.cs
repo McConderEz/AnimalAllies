@@ -27,7 +27,7 @@ public class BreedConfiguration: IEntityTypeConfiguration<Breed>
                 .HasColumnName("name");
         });
 
-        builder.Property<bool>("_isDeleted")
+        builder.Property<bool>("IsDeleted")
             .UsePropertyAccessMode(PropertyAccessMode.Field)
             .HasColumnName("is_deleted");
     }

@@ -28,7 +28,8 @@ public static class DependencyInjection
         
         return services;
     }
-
+    
+    
     private static IServiceCollection AddDatabase(this IServiceCollection services)
     {
         services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(Constraints.Context.BreedManagement);

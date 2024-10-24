@@ -15,7 +15,7 @@ public class WriteDbContext(IConfiguration configuration) : DbContext
             .EnableSensitiveDataLogging()
             .UseSnakeCaseNamingConvention();
 
-        optionsBuilder.AddInterceptors(new SoftDeleteInterceptor());
+        //optionsBuilder.AddInterceptors(new SoftDeleteInterceptor());
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

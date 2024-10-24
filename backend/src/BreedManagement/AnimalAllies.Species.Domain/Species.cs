@@ -5,11 +5,10 @@ using AnimalAllies.Species.Domain.Entities;
 
 namespace AnimalAllies.Species.Domain;
 
-public class Species: Entity<SpeciesId>, ISoftDeletable
+public class Species: Entity<SpeciesId>
 {
-    private bool _isDeleted = false;
     private readonly List<Breed> _breeds = [];
-    private Species(){}
+    private Species(SpeciesId id): base(id){}
     public Species(SpeciesId speciesId,Name name)
         : base(speciesId)
     {
@@ -46,18 +45,15 @@ public class Species: Entity<SpeciesId>, ISoftDeletable
         return breed;
     }
 
-    public Result DeleteBreed(BreedId id)
+    public Result DeleteBreed(BreedId id, DateTime deletionTime)
     {
         var breed = GetById(id);
         if (breed.IsFailure)
             return Errors.General.NotFound();
 
         _breeds.Remove(breed.Value);
-        breed.Value.Delete();
         
         return Result.Success();
     }
     
-    public void Delete() => _isDeleted = !_isDeleted;
-
 }

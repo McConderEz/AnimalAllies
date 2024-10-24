@@ -1,9 +1,12 @@
 using AnimalAllies.Core.Abstractions;
+using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.Volunteer.Application.Repository;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeleteVolunteer;
@@ -13,15 +16,21 @@ public class DeleteVolunteerHandler : ICommandHandler<DeleteVolunteerCommand, Vo
     private readonly IVolunteerRepository _repository;
     private readonly ILogger<DeleteVolunteerHandler> _logger;
     private readonly IValidator<DeleteVolunteerCommand> _validator;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IDateTimeProvider _dateTimeProvider;
     
     public DeleteVolunteerHandler(
         IVolunteerRepository repository, 
         ILogger<DeleteVolunteerHandler> logger,
-        IValidator<DeleteVolunteerCommand> validator)
+        IValidator<DeleteVolunteerCommand> validator, 
+        [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork, 
+        IDateTimeProvider dateTimeProvider)
     {
         _repository = repository;
         _logger = logger;
         _validator = validator;
+        _unitOfWork = unitOfWork;
+        _dateTimeProvider = dateTimeProvider;
     }
     
     public async Task<Result<VolunteerId>> Handle(
@@ -41,10 +50,12 @@ public class DeleteVolunteerHandler : ICommandHandler<DeleteVolunteerCommand, Vo
             return Errors.General.NotFound();
         
         
-        var result = await _repository.Delete(volunteer.Value, cancellationToken);
+        volunteer.Value.Delete(_dateTimeProvider.UtcNow);
+
+        await _unitOfWork.SaveChanges(cancellationToken);
         
         _logger.LogInformation("volunteer with id {volunteerId} deleted ", command.Id);
 
-        return result;
+        return volunteer.Value.Id;
     }
 }

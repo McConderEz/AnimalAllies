@@ -25,7 +25,7 @@ public class SpeciesConfiguration: IEntityTypeConfiguration<Domain.Species>
                 .HasColumnName("name");
         });
         
-        builder.Property<bool>("_isDeleted")
+        builder.Property<bool>("IsDeleted")
             .UsePropertyAccessMode(PropertyAccessMode.Field)
             .HasColumnName("is_deleted");
         
