@@ -5,7 +5,7 @@ using AnimalAllies.Species.Domain.Entities;
 
 namespace AnimalAllies.Species.Domain;
 
-public class Species: SoftDeletableEntity<SpeciesId>
+public class Species: Entity<SpeciesId>
 {
     private readonly List<Breed> _breeds = [];
     private Species(SpeciesId id): base(id){}
@@ -52,26 +52,8 @@ public class Species: SoftDeletableEntity<SpeciesId>
             return Errors.General.NotFound();
 
         _breeds.Remove(breed.Value);
-        breed.Value.Delete(deletionTime);
         
         return Result.Success();
     }
-
-    public override void Delete(DateTime deletionTime)
-    {
-        base.Delete(deletionTime);
-        _breeds.ForEach(b => b.Delete(deletionTime));
-    }
-
-    public override void Restore()
-    {
-        base.Restore();
-        _breeds.ForEach(b => b.Restore());
-    }
     
-    public void DeleteExpiredBreeds(int expiredTime)
-    {
-        _breeds.RemoveAll(p => p.DeletionDate != null 
-                             && p.DeletionDate.Value.AddDays(expiredTime) <= DateTime.UtcNow);
-    }
 }
