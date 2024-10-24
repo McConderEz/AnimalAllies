@@ -88,6 +88,7 @@ public class AccountController: ApplicationController
         return Ok(result.IsSuccess);
     }
     
+    [Authorize]
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult> Get(
         [FromRoute] Guid userId,
