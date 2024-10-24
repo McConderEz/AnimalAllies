@@ -72,7 +72,7 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
             var participantAccount = new ParticipantAccount(fullName, user);
 
             await _accountManager.CreateParticipantAccount(participantAccount, cancellationToken);
-
+            
             transaction.Commit();
                 
             _logger.LogInformation("User created:{name} a new account with password", command.UserName);

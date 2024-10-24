@@ -269,6 +269,10 @@ namespace AnimalAllies.Accounts.Infrastructure.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("normalized_user_name");
 
+                    b.Property<Guid?>("ParticipantAccountId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("participant_account_id");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text")
                         .HasColumnName("password_hash");
@@ -302,6 +306,10 @@ namespace AnimalAllies.Accounts.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("user_name");
+
+                    b.Property<Guid?>("VolunteerAccountId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("volunteer_account_id");
 
                     b.HasKey("Id")
                         .HasName("pk_users");

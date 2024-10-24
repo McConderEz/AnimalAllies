@@ -62,6 +62,11 @@ public class AccountSeedService
                         ?? throw new ApplicationException("Could not find admin role");
 
         var adminUser = User.CreateAdmin(_adminOptions.UserName, _adminOptions.Email, adminRole);
+
+        var isAdminExist = await _userManager.FindByNameAsync(AdminProfile.ADMIN);
+        if(isAdminExist is not null)
+            return;
+        
         await _userManager.CreateAsync(adminUser, _adminOptions.Password);
 
         var fullName = FullName.Create(
