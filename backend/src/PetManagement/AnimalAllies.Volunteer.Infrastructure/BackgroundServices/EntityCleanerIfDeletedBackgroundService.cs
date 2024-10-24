@@ -26,13 +26,14 @@ public class EntityCleanerIfDeletedBackgroundService : BackgroundService
     {
         _logger.LogInformation("EntityCleanerIfDeletedBackgroundService is starting");
         
-        await using var scope = _scopeFactory.CreateAsyncScope();
-        
-        var deleteExpiredPetsService = scope.ServiceProvider.GetRequiredService<DeleteExpiredPetsService>();
-        var deleteExpiredVolunteerService = scope.ServiceProvider.GetRequiredService<DeleteExpiredVolunteerService>();
         
         while (!stoppingToken.IsCancellationRequested)
         {
+            await using var scope = _scopeFactory.CreateAsyncScope();
+        
+            var deleteExpiredPetsService = scope.ServiceProvider.GetRequiredService<DeleteExpiredPetsService>();
+            var deleteExpiredVolunteerService = scope.ServiceProvider.GetRequiredService<DeleteExpiredVolunteerService>();
+            
             _logger.LogInformation("EntityCleanerIfDeletedBackgroundService is working");
             await deleteExpiredPetsService.Process(stoppingToken);
             await deleteExpiredVolunteerService.Process(stoppingToken);
