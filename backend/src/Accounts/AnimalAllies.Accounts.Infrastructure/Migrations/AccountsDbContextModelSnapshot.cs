@@ -269,6 +269,10 @@ namespace AnimalAllies.Accounts.Infrastructure.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("normalized_user_name");
 
+                    b.Property<Guid?>("ParticipantAccountId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("participant_account_id");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text")
                         .HasColumnName("password_hash");
@@ -302,6 +306,10 @@ namespace AnimalAllies.Accounts.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("user_name");
+
+                    b.Property<Guid?>("VolunteerAccountId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("volunteer_account_id");
 
                     b.HasKey("Id")
                         .HasName("pk_users");
@@ -537,7 +545,7 @@ namespace AnimalAllies.Accounts.Infrastructure.Migrations
             modelBuilder.Entity("AnimalAllies.Accounts.Domain.ParticipantAccount", b =>
                 {
                     b.HasOne("AnimalAllies.Accounts.Domain.User", "User")
-                        .WithOne()
+                        .WithOne("ParticipantAccount")
                         .HasForeignKey("AnimalAllies.Accounts.Domain.ParticipantAccount", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -587,7 +595,7 @@ namespace AnimalAllies.Accounts.Infrastructure.Migrations
             modelBuilder.Entity("AnimalAllies.Accounts.Domain.VolunteerAccount", b =>
                 {
                     b.HasOne("AnimalAllies.Accounts.Domain.User", "User")
-                        .WithOne()
+                        .WithOne("VolunteerAccount")
                         .HasForeignKey("AnimalAllies.Accounts.Domain.VolunteerAccount", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -678,6 +686,13 @@ namespace AnimalAllies.Accounts.Infrastructure.Migrations
             modelBuilder.Entity("AnimalAllies.Accounts.Domain.Role", b =>
                 {
                     b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("AnimalAllies.Accounts.Domain.User", b =>
+                {
+                    b.Navigation("ParticipantAccount");
+
+                    b.Navigation("VolunteerAccount");
                 });
 #pragma warning restore 612, 618
         }

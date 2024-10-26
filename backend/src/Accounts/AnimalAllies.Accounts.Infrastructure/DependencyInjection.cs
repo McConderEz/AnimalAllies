@@ -28,7 +28,8 @@ public static class DependencyInjection
             .AddIdentityServices(configuration)
             .AddJwtAuthentication(configuration)
             .AddDbContexts()
-            .AddAuthorizationServices();
+            .AddAuthorizationServices()
+            .AddDatabase();
         
         return services;
     }
@@ -71,6 +72,15 @@ public static class DependencyInjection
         return services;
     }
 
+    private static IServiceCollection AddDatabase(this IServiceCollection services)
+    {
+        services.AddKeyedScoped<ISqlConnectionFactory,SqlConnectionFactory>(Constraints.Context.Accounts);
+
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+        
+        return services;
+    }
+    
     private static IServiceCollection AddAuthorizationServices(this IServiceCollection services)
     {
         services.AddSingleton<IAuthorizationHandler, PermissionRequirementHandler>();

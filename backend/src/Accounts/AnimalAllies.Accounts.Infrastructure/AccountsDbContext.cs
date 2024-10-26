@@ -17,6 +17,7 @@ public class AccountsDbContext(IConfiguration configuration)
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<AdminProfile> AdminProfiles => Set<AdminProfile>();
+    public DbSet<VolunteerAccount> VolunteerAccounts => Set<VolunteerAccount>();
     public DbSet<ParticipantAccount> ParticipantAccounts => Set<ParticipantAccount>();
     public DbSet<RefreshSession> RefreshSessions => Set<RefreshSession>();
     
@@ -50,6 +51,7 @@ public class AccountsDbContext(IConfiguration configuration)
             .HasMany(u => u.Roles)
             .WithMany(r => r.Users);
         
+        
         modelBuilder.Entity<ParticipantAccount>()
             .ToTable("participant_accounts");
         
@@ -69,7 +71,7 @@ public class AccountsDbContext(IConfiguration configuration)
         
         modelBuilder.Entity<ParticipantAccount>()
             .HasOne(pa => pa.User)
-            .WithOne()
+            .WithOne(u => u.ParticipantAccount)
             .HasForeignKey<ParticipantAccount>(pa => pa.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
@@ -141,7 +143,7 @@ public class AccountsDbContext(IConfiguration configuration)
         
         modelBuilder.Entity<VolunteerAccount>()
             .HasOne(va => va.User)
-            .WithOne()
+            .WithOne(u => u.VolunteerAccount)
             .HasForeignKey<VolunteerAccount>(va => va.UserId)
             .OnDelete(DeleteBehavior.Cascade);
         

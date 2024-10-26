@@ -3,6 +3,7 @@ using AnimalAllies.Accounts.Application.Managers;
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
+using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
@@ -70,9 +71,14 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
                 command.FullNameDto.Patronymic).Value;
 
             var participantAccount = new ParticipantAccount(fullName, user);
-
+            
             await _accountManager.CreateParticipantAccount(participantAccount, cancellationToken);
 
+            user.ParticipantAccount = participantAccount;
+            user.ParticipantAccountId = participantAccount.Id;
+
+            await _unitOfWork.SaveChanges(cancellationToken);
+            
             transaction.Commit();
                 
             _logger.LogInformation("User created:{name} a new account with password", command.UserName);
