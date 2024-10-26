@@ -18,6 +18,7 @@ public class VolunteerRequest: Entity<VolunteerRequestId>
         CreatedAt = createdAt;
         VolunteerInfo = volunteerInfo;
         UserId = userId;
+        RequestStatus = RequestStatus.Waiting;
     }
     
     public CreatedAt CreatedAt { get; private set; }
@@ -31,14 +32,36 @@ public class VolunteerRequest: Entity<VolunteerRequestId>
 
     public Result TakeRequestForSubmit(AdminId adminId, DiscussionId discussionId)
     {
+        if (RequestStatus != RequestStatus.Waiting)
+            return Errors.General.ValueIsInvalid("volunteer request status");
+
+        if (adminId is null || discussionId is null)
+            return Errors.General.ValueIsRequired();
+        
         RequestStatus = RequestStatus.Submitted;
         AdminId = adminId;
         DiscussionId = discussionId;
         return Result.Success();
     }
+
+    public Result ResendVolunteerRequest()
+    {
+        if (RequestStatus != RequestStatus.RevisionRequired)
+            return Errors.General.ValueIsInvalid("volunteer request status");
+        
+        RequestStatus = RequestStatus.Submitted;
+
+        return Result.Success();
+    }
     
     public Result SendRequestForRevision(RejectionComment rejectionComment)
     {
+        if(RequestStatus != RequestStatus.Submitted)
+            return Errors.General.ValueIsInvalid("volunteer request status");
+        
+        if (rejectionComment is null)
+            return Errors.General.ValueIsRequired();
+        
         RequestStatus = RequestStatus.RevisionRequired;
         RejectionComment = rejectionComment;
         
@@ -47,6 +70,12 @@ public class VolunteerRequest: Entity<VolunteerRequestId>
     
     public Result RejectRequest(RejectionComment rejectionComment)
     {
+        if(RequestStatus != RequestStatus.Submitted)
+            return Errors.General.ValueIsInvalid("volunteer request status");
+        
+        if (rejectionComment is null)
+            return Errors.General.ValueIsRequired();
+        
         RequestStatus = RequestStatus.Rejected;
         RejectionComment = rejectionComment;
         
@@ -55,6 +84,9 @@ public class VolunteerRequest: Entity<VolunteerRequestId>
 
     public Result ApproveRequest()
     {
+        if(RequestStatus != RequestStatus.Submitted)
+            return Errors.General.ValueIsInvalid("volunteer request status");
+        
         RequestStatus = RequestStatus.Approved;
         return Result.Success();
     }

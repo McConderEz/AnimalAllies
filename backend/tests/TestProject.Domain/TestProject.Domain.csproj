@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\PetManagement\AnimalAllies.Volunteer.Application\AnimalAllies.Volunteer.Application.csproj" />
+      <ProjectReference Include="..\..\src\VolunteerRequests\VolunteerRequests.Domain\VolunteerRequests.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
