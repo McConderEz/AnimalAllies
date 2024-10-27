@@ -12,7 +12,7 @@ public class VolunteerRequest: Entity<VolunteerRequestId>
         VolunteerRequestId id,
         CreatedAt createdAt,
         VolunteerInfo volunteerInfo,
-        UserId userId) 
+        Guid userId) 
     : base(id)
     {
         CreatedAt = createdAt;
@@ -20,22 +20,34 @@ public class VolunteerRequest: Entity<VolunteerRequestId>
         UserId = userId;
         RequestStatus = RequestStatus.Waiting;
     }
+
+    public static Result<VolunteerRequest> Create(
+        VolunteerRequestId id,
+        CreatedAt createdAt,
+        VolunteerInfo volunteerInfo,
+        Guid userId)
+    {
+        if (userId == Guid.Empty)
+            return Errors.General.Null("user id");
+
+        return new VolunteerRequest(id, createdAt, volunteerInfo, userId);
+    }
     
     public CreatedAt CreatedAt { get; private set; }
     public RequestStatus RequestStatus { get; private set; }
     public VolunteerInfo VolunteerInfo { get; private set; }
-    public AdminId AdminId { get; private set; }
-    public UserId UserId { get; private set; }
-    public DiscussionId DiscussionId { get; private set; }
+    public Guid AdminId { get; private set; }
+    public Guid UserId { get; private set; }
+    public Guid DiscussionId { get; private set; }
     public RejectionComment? RejectionComment { get; private set; }
     
 
-    public Result TakeRequestForSubmit(AdminId adminId, DiscussionId discussionId)
+    public Result TakeRequestForSubmit(Guid adminId, Guid discussionId)
     {
         if (RequestStatus != RequestStatus.Waiting)
             return Errors.General.ValueIsInvalid("volunteer request status");
 
-        if (adminId is null || discussionId is null)
+        if (adminId == Guid.Empty || discussionId == Guid.Empty)
             return Errors.General.ValueIsRequired();
         
         RequestStatus = RequestStatus.Submitted;
