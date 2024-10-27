@@ -1,6 +1,4 @@
-﻿using AnimalAllies.SharedKernel.Shared;
-
-namespace VolunteerRequests.Domain.ValueObjects;
+﻿namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
 public class CreatedAt : ValueObject
 {
