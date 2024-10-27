@@ -32,7 +32,7 @@ public class Discussion: Entity<DiscussionId>
 
     public Result SendComment(Message message)
     {
-        if (Users.FirstUserId != message.UserId && Users.SecondUserId != message.UserId)
+        if (Users.FirstMember != message.UserId && Users.SecondMember != message.UserId)
             return Error.Failure("access.denied",
                 "Send comment can user that take part in discussion");
         

@@ -4,28 +4,28 @@ namespace Discussion.Domain.ValueObjects;
 
 public class Users: ValueObject
 {
-    public Guid FirstUserId { get; }
-    public Guid SecondUserId { get; }
+    public Guid FirstMember { get; }
+    public Guid SecondMember{ get; }
     
     private Users(){}
 
-    private Users(Guid firstUserId, Guid secondUserId)
+    private Users(Guid firstMember, Guid secondMember)
     {
-        FirstUserId = firstUserId;
-        SecondUserId = secondUserId;
+        FirstMember = firstMember;
+        SecondMember = secondMember;
     }
 
-    public static Result<Users> Create(Guid firstUserId, Guid secondUserId)
+    public static Result<Users> Create(Guid firstMember, Guid secondMember)
     {
-        if (firstUserId == Guid.Empty || secondUserId == Guid.Empty)
+        if (firstMember == Guid.Empty || secondMember == Guid.Empty)
             return Errors.General.Null("one of users ids");
 
-        return new Users(firstUserId, secondUserId);
+        return new Users(firstMember, secondMember);
     }
     
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return FirstUserId;
-        yield return SecondUserId;
+        yield return FirstMember;
+        yield return SecondMember;
     }
 }

@@ -47,7 +47,7 @@ public class DiscussionTests
         // arrange
         var createdAt = CreatedAt.Create(DateTime.UtcNow);
         var discussion = InitDiscussion();
-        var userId = discussion.Users.FirstUserId;
+        var userId = discussion.Users.FirstMember;
         var message = Message.Create(
             MessageId.NewGuid(),
             Text.Create("test").Value,
@@ -173,7 +173,7 @@ public class DiscussionTests
             Text.Create("test").Value,
             createdAt.Value,
             new IsEdited(false),
-            discussion.Users.FirstUserId).Value;
+            discussion.Users.FirstMember).Value;
         discussion.SendComment(message);
         
         return discussion;
