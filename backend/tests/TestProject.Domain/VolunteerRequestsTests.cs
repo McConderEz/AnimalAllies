@@ -13,8 +13,8 @@ public class VolunteerRequestsTests
     public void Create_Volunteer_Request_And_Approve_Successfully()
     {
         // arrange
-        var adminId = AdminId.NewGuid();
-        var discussionId = DiscussionId.NewGuid();
+        var adminId = Guid.NewGuid();
+        var discussionId = Guid.NewGuid();
         
         var volunteerRequest = InitVolunteerRequest();
 
@@ -30,8 +30,8 @@ public class VolunteerRequestsTests
     public void Create_Volunteer_Request_Send_On_Revision_Edit_Request_Successfully_Approve()
     {
         // arrange
-        var adminId = AdminId.NewGuid();
-        var discussionId = DiscussionId.NewGuid();
+        var adminId = Guid.NewGuid();
+        var discussionId = Guid.NewGuid();
         var rejectComment = RejectionComment.Create("Переделай").Value;
         
         var volunteerRequest = InitVolunteerRequest();
@@ -53,8 +53,8 @@ public class VolunteerRequestsTests
     public void Create_Volunteer_Request_Send_On_Revision_Edit_Request_Not_Successfully_Reject()
     {
         // arrange
-        var adminId = AdminId.NewGuid();
-        var discussionId = DiscussionId.NewGuid();
+        var adminId = Guid.NewGuid();
+        var discussionId = Guid.NewGuid();
         var rejectComment = RejectionComment.Create("Переделай").Value;
         var rejectionCommentFinally = RejectionComment.Create("Вам отказано").Value;
         
@@ -81,9 +81,12 @@ public class VolunteerRequestsTests
         var volunteerInfo = new VolunteerInfo(
             FullName.Create("test", "test", "test").Value,
             Email.Create("test@gmail.com").Value,
-            PhoneNumber.Create("+12345678910").Value);
-        
-        var userId = UserId.NewGuid();
+            PhoneNumber.Create("+12345678910").Value,
+            WorkExperience.Create(10).Value,
+            VolunteerDescription.Create("test").Value,
+            new List<SocialNetwork>());
+
+        var userId = Guid.NewGuid();
         
         var volunteerRequest = new VolunteerRequest(volunteerRequestId,createdAt, volunteerInfo, userId);
         return volunteerRequest;

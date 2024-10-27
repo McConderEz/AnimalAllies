@@ -4,7 +4,6 @@ using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
-using AnimalAllies.Volunteer.Domain.VolunteerManagement.ValueObject;
 using FluentAssertions;
 
 namespace TestProject.Domain;

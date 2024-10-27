@@ -11,7 +11,6 @@ using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPetPhoto;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
-using AnimalAllies.Volunteer.Domain.VolunteerManagement.ValueObject;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;

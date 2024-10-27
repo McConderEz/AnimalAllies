@@ -1,7 +1,6 @@
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
-using AnimalAllies.Volunteer.Domain.VolunteerManagement.ValueObject;
 
 namespace AnimalAllies.Volunteer.Application.Repository;
 
