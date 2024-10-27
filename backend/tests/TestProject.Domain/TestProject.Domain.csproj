@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\Discussion\Discussion.Domain\Discussion.Domain.csproj" />
       <ProjectReference Include="..\..\src\PetManagement\AnimalAllies.Volunteer.Application\AnimalAllies.Volunteer.Application.csproj" />
       <ProjectReference Include="..\..\src\VolunteerRequests\VolunteerRequests.Domain\VolunteerRequests.Domain.csproj" />
     </ItemGroup>
