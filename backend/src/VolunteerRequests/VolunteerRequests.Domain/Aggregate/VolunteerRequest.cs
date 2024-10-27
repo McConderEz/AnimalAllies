@@ -1,5 +1,6 @@
 ﻿using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using VolunteerRequests.Domain.ValueObjects;
 
 namespace VolunteerRequests.Domain.Aggregate;
