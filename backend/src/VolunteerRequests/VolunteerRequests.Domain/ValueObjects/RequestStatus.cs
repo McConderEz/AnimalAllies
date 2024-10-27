@@ -1,0 +1,42 @@
+﻿using System.Security.AccessControl;
+using AnimalAllies.SharedKernel.Shared;
+
+namespace VolunteerRequests.Domain.ValueObjects;
+
+public class RequestStatus : ValueObject
+{
+    public static readonly RequestStatus Waiting = new(nameof(Waiting));
+    public static readonly RequestStatus Submitted = new(nameof(Submitted));
+    public static readonly RequestStatus Rejected = new(nameof(Rejected));
+    public static readonly RequestStatus RevisionRequired = new(nameof(RevisionRequired));
+    public static readonly RequestStatus Approved = new(nameof(Approved));
+
+    private static readonly RequestStatus[] _all = [Submitted, Rejected, RevisionRequired, Approved];
+    
+    public string Value { get; }
+    
+    private RequestStatus(){}
+
+    private RequestStatus(string value)
+    {
+        Value = value;
+    }
+    
+    public static Result<RequestStatus> Create(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return Errors.General.ValueIsRequired(value);
+
+        if(_all.Any(s => s.Value.ToLower() == value.ToLower()) == false)
+        {
+            return Errors.General.ValueIsInvalid(value);
+        }
+
+        return new RequestStatus(value);
+    }
+
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Value;
+    }
+}

@@ -1,6 +1,5 @@
 using AnimalAllies.Core.Validators;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
-using AnimalAllies.Volunteer.Domain.VolunteerManagement.ValueObject;
 using FluentValidation;
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CreateVolunteer;
