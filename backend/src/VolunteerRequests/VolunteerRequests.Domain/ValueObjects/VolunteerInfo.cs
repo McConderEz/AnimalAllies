@@ -10,7 +10,7 @@ public class VolunteerInfo : ValueObject
     public PhoneNumber PhoneNumber { get; }
     public WorkExperience WorkExperience { get; }
     public VolunteerDescription VolunteerDescription { get; }
-    public IReadOnlyCollection<SocialNetwork> SocialNetworks { get; }
+    public IReadOnlyList<SocialNetwork> SocialNetworks { get; }
     
     private VolunteerInfo(){}
 

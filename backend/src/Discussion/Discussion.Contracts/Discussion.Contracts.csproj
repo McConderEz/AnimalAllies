@@ -6,9 +6,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\Shared\AnimalAllies.Core\AnimalAllies.Core.csproj" />
-      <ProjectReference Include="..\Discussion.Application\Discussion.Application.csproj" />
-    </ItemGroup>
-
 </Project>

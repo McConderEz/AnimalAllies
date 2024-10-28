@@ -6,4 +6,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Shared\AnimalAllies.Core\AnimalAllies.Core.csproj" />
+      <ProjectReference Include="..\VolunteerRequests.Application\VolunteerRequests.Application.csproj" />
+      <ProjectReference Include="..\VolunteerRequests.Domain\VolunteerRequests.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
