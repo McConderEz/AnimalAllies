@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
-public class SocialNetwork: SharedKernel.Shared.ValueObject
+public class SocialNetwork: ValueObject
 {
     public string Title { get; }
     public string Url { get; }

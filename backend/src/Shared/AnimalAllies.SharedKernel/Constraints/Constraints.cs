@@ -28,6 +28,8 @@ public static partial class Constraints
     {
         PetManagement,
         BreedManagement,
-        Accounts
+        Accounts,
+        Discussion,
+        VolunteerRequests
     }
 }

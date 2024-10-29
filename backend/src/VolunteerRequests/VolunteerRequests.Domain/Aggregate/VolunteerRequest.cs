@@ -40,7 +40,7 @@ public class VolunteerRequest: Entity<VolunteerRequestId>
     public Guid AdminId { get; private set; }
     public Guid UserId { get; private set; }
     public Guid DiscussionId { get; private set; }
-    public RejectionComment? RejectionComment { get; private set; }
+    public RejectionComment RejectionComment { get; private set; }
     
 
     public Result TakeRequestForSubmit(Guid adminId, Guid discussionId)

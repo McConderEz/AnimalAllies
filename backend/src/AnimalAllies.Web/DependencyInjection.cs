@@ -7,6 +7,10 @@ using AnimalAllies.Species.Presentation;
 using AnimalAllies.Volunteer.Application;
 using AnimalAllies.Volunteer.Infrastructure;
 using AnimalAllies.Volunteer.Presentation;
+using Discussion.Application;
+using Discussion.Infrastructure;
+using VolunteerRequests.Application;
+using VolunteerRequests.Infrastructure;
 
 namespace AnimalAllies.Web;
 
@@ -19,11 +23,35 @@ public static class DependencyInjection
         services
             .AddAccountsManagementModule(configuration)
             .AddPetsManagementModule(configuration)
-            .AddBreedsManagementModule(configuration);
+            .AddBreedsManagementModule(configuration)
+            .AddVolunteerRequestsManagementModule(configuration)
+            .AddDiscussionManagementModule(configuration);
 
         return services;
     }
 
+    private static IServiceCollection AddVolunteerRequestsManagementModule(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services
+            .AddVolunteerRequestsInfrastructure(configuration)
+            .AddVolunteerRequestsApplication();
+        
+        return services;
+    }
+    
+    private static IServiceCollection AddDiscussionManagementModule(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services
+            .AddDiscussionInfrastructure(configuration)
+            .AddDiscussionApplication();
+        
+        return services;
+    }
+    
     private static IServiceCollection AddAccountsManagementModule(
         this IServiceCollection services,
         IConfiguration configuration)
