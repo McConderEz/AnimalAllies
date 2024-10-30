@@ -5,6 +5,7 @@ using AnimalAllies.SharedKernel.Shared;
 using Microsoft.AspNetCore.Mvc;
 using VolunteerRequests.Application.Features.Commands;
 using VolunteerRequests.Application.Features.Commands.CreateVolunteerRequest;
+using VolunteerRequests.Application.Features.Commands.SendRequestForRevision;
 using VolunteerRequests.Application.Features.Commands.TakeRequestForSubmit;
 using VolunteerRequests.Contracts.Requests;
 
@@ -58,6 +59,30 @@ public class VolunteerRequestsController: ApplicationController
             return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
         
         var command = new TakeRequestForSubmitCommand(userId, volunteerRequestId);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [Permission("volunteerRequests.review")]
+    [HttpPost("sending-for-revision")]
+    public async Task<IActionResult> SendRequestForRevision(
+        [FromBody] SendRequestForRevisionRequest request,
+        [FromServices] SendRequestForRevisionHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
+        if (userIdString is null)
+            return Error.Null("user.id.null", "user id is null").ToResponse();
+
+        if (!Guid.TryParse(userIdString, out var userId))
+            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
+        
+        var command = new SendRequestForRevisionCommand(userId, request.VolunteerRequestId, request.RejectComment);
 
         var result = await handler.Handle(command, cancellationToken);
 
