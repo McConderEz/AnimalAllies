@@ -35,6 +35,12 @@ public class VolunteerRequestsRepository : IVolunteerRequestsRepository
         return volunteerRequest;
     }
 
+    public async Task<Result<IReadOnlyList<VolunteerRequest>>> GetByUserId(Guid userId, CancellationToken cancellationToken = default)
+    {
+        return await _context.VolunteerRequests
+            .Where(v => v.UserId == userId).ToListAsync(cancellationToken);
+    }
+
     public Result<VolunteerRequestId> Delete(VolunteerRequest entity)
     { 
         _context.VolunteerRequests.Remove(entity);

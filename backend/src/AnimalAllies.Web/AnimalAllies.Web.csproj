@@ -41,6 +41,7 @@
       <ProjectReference Include="..\PetManagement\AnimalAllies.Volunteer.Infrastructure\AnimalAllies.Volunteer.Infrastructure.csproj" />
       <ProjectReference Include="..\VolunteerRequests\VolunteerRequests.Application\VolunteerRequests.Application.csproj" />
       <ProjectReference Include="..\VolunteerRequests\VolunteerRequests.Infrastructure\VolunteerRequests.Infrastructure.csproj" />
+      <ProjectReference Include="..\VolunteerRequests\VolunteerRequests.Presentation\VolunteerRequests.Presentation.csproj" />
     </ItemGroup>
 
 </Project>

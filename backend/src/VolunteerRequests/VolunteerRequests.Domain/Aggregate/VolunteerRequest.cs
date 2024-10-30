@@ -20,6 +20,7 @@ public class VolunteerRequest: Entity<VolunteerRequestId>
         VolunteerInfo = volunteerInfo;
         UserId = userId;
         RequestStatus = RequestStatus.Waiting;
+        RejectionComment = RejectionComment.Create(" ").Value;
     }
 
     public static Result<VolunteerRequest> Create(
