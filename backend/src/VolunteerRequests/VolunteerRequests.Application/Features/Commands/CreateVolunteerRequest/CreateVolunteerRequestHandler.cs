@@ -12,7 +12,7 @@ using VolunteerRequests.Application.Repository;
 using VolunteerRequests.Domain.Aggregate;
 using VolunteerRequests.Domain.ValueObjects;
 
-namespace VolunteerRequests.Application.Features.Commands;
+namespace VolunteerRequests.Application.Features.Commands.CreateVolunteerRequest;
 
 public class CreateVolunteerRequestHandler: ICommandHandler<CreateVolunteerRequestCommand,VolunteerRequestId>
 {

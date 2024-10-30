@@ -11,7 +11,7 @@
       "volunteer.delete",
       "volunteer.restore",
       "volunteerRequests.read",
-      "volunteerRequests.update",
+      "volunteerRequests.review",
       "volunteerRequests.delete"
     ],
     "Volunteer": [
@@ -24,6 +24,7 @@
       "volunteer.read",
       "species.read",
       "volunteerRequests.readOwn",
+      "volunteerRequests.update",
       "volunteerRequests.create"
     ]
   },
@@ -44,6 +45,7 @@
     "VolunteerRequests": [
       "volunteerRequests.read",
       "volunteerRequests.readOwn",
+      "volunteerRequests.review",
       "volunteerRequests.create",
       "volunteerRequests.update",
       "volunteerRequests.delete"

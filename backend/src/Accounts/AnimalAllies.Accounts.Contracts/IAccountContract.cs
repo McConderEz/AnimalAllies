@@ -8,4 +8,5 @@ namespace AnimalAllies.Accounts.Contracts;
 public interface IAccountContract
 {
     Task<Result<List<string>>> GetPermissionsByUserId(Guid id, CancellationToken cancellationToken = default);
+    Task<Result<bool>> IsUserExistById(Guid userId, CancellationToken cancellationToken = default);
 }

@@ -1,8 +1,7 @@
 ﻿using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.DTOs.ValueObjects;
-using AnimalAllies.SharedKernel.Shared.ValueObjects;
 
-namespace VolunteerRequests.Application.Features.Commands;
+namespace VolunteerRequests.Application.Features.Commands.CreateVolunteerRequest;
 
 public record CreateVolunteerRequestCommand(
     Guid UserId,

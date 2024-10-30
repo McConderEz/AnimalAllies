@@ -3,7 +3,7 @@ using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using FluentValidation;
 
-namespace VolunteerRequests.Application.Features.Commands;
+namespace VolunteerRequests.Application.Features.Commands.CreateVolunteerRequest;
 
 public class CreateVolunteerRequestValidator: AbstractValidator<CreateVolunteerRequestCommand>
 {

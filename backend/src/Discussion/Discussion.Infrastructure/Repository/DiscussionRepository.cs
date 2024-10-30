@@ -32,6 +32,17 @@ public class DiscussionRepository: IDiscussionRepository
         return discussion;
     }
 
+    public async Task<Result<Domain.Aggregate.Discussion>> GetByRelationId(Guid relationId, CancellationToken cancellationToken = default)
+    {
+        var discussion = await _context.Discussions.Include(d => d.Messages)
+            .FirstOrDefaultAsync(v => v.RelationId == relationId, cancellationToken);
+
+        if (discussion == null)
+            return Errors.General.NotFound();
+
+        return discussion;
+    }
+
     public Result<DiscussionId> Delete(Domain.Aggregate.Discussion entity)
     {
         _context.Discussions.Remove(entity);
