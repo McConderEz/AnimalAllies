@@ -9,6 +9,7 @@ using VolunteerRequests.Application.Features.Commands.CreateVolunteerRequest;
 using VolunteerRequests.Application.Features.Commands.RejectVolunteerRequest;
 using VolunteerRequests.Application.Features.Commands.SendRequestForRevision;
 using VolunteerRequests.Application.Features.Commands.TakeRequestForSubmit;
+using VolunteerRequests.Application.Features.Queries.GetVolunteerRequestsInWaitingWithPagination;
 using VolunteerRequests.Contracts.Requests;
 
 namespace VolunteerRequests.Presentation;
@@ -138,6 +139,27 @@ public class VolunteerRequestsController: ApplicationController
 
         if (result.IsFailure)
             return result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [Permission("volunteerRequests.read")]
+    [HttpGet("volunteer-requests-in-waiting-with-pagination")]
+    public async Task<ActionResult> GetVolunteerRequestsInWaiting(
+        [FromQuery] GetVolunteerRequestsInWaitingWithPaginationRequest request,
+        [FromServices] GetVolunteerRequestsInWaitingWithPaginationHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetVolunteerRequestsInWaitingWithPaginationQuery(
+            request.SortBy,
+            request.SortDirection,
+            request.Page, 
+            request.PageSize);
+
+        var result = await handler.Handle(query, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
 
         return Ok(result);
     }
