@@ -4,6 +4,7 @@ using AnimalAllies.Framework.Authorization;
 using AnimalAllies.SharedKernel.Shared;
 using Microsoft.AspNetCore.Mvc;
 using VolunteerRequests.Application.Features.Commands;
+using VolunteerRequests.Application.Features.Commands.ApproveVolunteerRequest;
 using VolunteerRequests.Application.Features.Commands.CreateVolunteerRequest;
 using VolunteerRequests.Application.Features.Commands.RejectVolunteerRequest;
 using VolunteerRequests.Application.Features.Commands.SendRequestForRevision;
@@ -46,7 +47,7 @@ public class VolunteerRequestsController: ApplicationController
     }
     
     [Permission("volunteerRequests.review")]
-    [HttpPost("{volunteerRequestId:guid}")]
+    [HttpPost("{volunteerRequestId:guid}/taking-request-for-submitting")]
     public async Task<IActionResult> TakeRequestForSubmit(
         [FromRoute] Guid volunteerRequestId,
         [FromServices] TakeRequestForSubmitHandler handler,
@@ -108,6 +109,30 @@ public class VolunteerRequestsController: ApplicationController
             return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
         
         var command = new RejectVolunteerRequestCommand(userId, request.VolunteerRequestId, request.RejectComment);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [Permission("volunteerRequests.review")]
+    [HttpPost("{volunteerRequestId:guid}approving-request")]
+    public async Task<IActionResult> ApproveRequest(
+        [FromRoute] Guid volunteerRequestId,
+        [FromServices] ApproveVolunteerRequestHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
+        if (userIdString is null)
+            return Error.Null("user.id.null", "user id is null").ToResponse();
+
+        if (!Guid.TryParse(userIdString, out var userId))
+            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
+        
+        var command = new ApproveVolunteerRequestCommand(userId, volunteerRequestId);
 
         var result = await handler.Handle(command, cancellationToken);
 

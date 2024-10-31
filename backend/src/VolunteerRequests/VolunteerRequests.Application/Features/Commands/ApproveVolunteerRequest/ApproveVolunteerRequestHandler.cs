@@ -5,40 +5,38 @@ using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
-using Discussion.Contracts;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VolunteerRequests.Application.Repository;
-using VolunteerRequests.Domain.ValueObjects;
 
-namespace VolunteerRequests.Application.Features.Commands.RejectVolunteerRequest;
+namespace VolunteerRequests.Application.Features.Commands.ApproveVolunteerRequest;
 
-public class RejectVolunteerRequestHandler: ICommandHandler<RejectVolunteerRequestCommand, string>
+public class ApproveVolunteerRequestHandler: ICommandHandler<ApproveVolunteerRequestCommand>
 {
-    private readonly ILogger<RejectVolunteerRequestHandler> _logger;
+    private readonly ILogger<ApproveVolunteerRequestHandler> _logger;
+    private readonly IValidator<ApproveVolunteerRequestCommand> _validator;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IVolunteerRequestsRepository _repository;
     private readonly IAccountContract _accountContract;
-    private readonly IValidator<RejectVolunteerRequestCommand> _validator;
 
 
-    public RejectVolunteerRequestHandler(
-        ILogger<RejectVolunteerRequestHandler> logger, 
+    public ApproveVolunteerRequestHandler(
+        ILogger<ApproveVolunteerRequestHandler> logger,
+        IValidator<ApproveVolunteerRequestCommand> validator, 
         [FromKeyedServices(Constraints.Context.VolunteerRequests)]IUnitOfWork unitOfWork, 
         IVolunteerRequestsRepository repository, 
-        IValidator<RejectVolunteerRequestCommand> validator,
         IAccountContract accountContract)
     {
         _logger = logger;
+        _validator = validator;
         _unitOfWork = unitOfWork;
         _repository = repository;
-        _validator = validator;
         _accountContract = accountContract;
     }
-    
-    public async Task<Result<string>> Handle(
-        RejectVolunteerRequestCommand command, CancellationToken cancellationToken = default)
+
+    public async Task<Result> Handle(
+        ApproveVolunteerRequestCommand command, CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
@@ -57,34 +55,32 @@ public class RejectVolunteerRequestHandler: ICommandHandler<RejectVolunteerReque
             if (volunteerRequest.Value.AdminId != command.AdminId)
                 return Error.Failure("access.denied", 
                     "this request is under consideration by another admin");
-            
-            var banUserResult = await _accountContract
-                .BanUser(volunteerRequest.Value.UserId, volunteerRequest.Value.Id.Id, cancellationToken);
 
-            if (banUserResult.IsFailure)
-                return banUserResult.Errors;
+            var approveResult = volunteerRequest.Value.ApproveRequest();
+            if (approveResult.IsFailure)
+                return approveResult.Errors;
 
-            var rejectionComment = RejectionComment.Create(command.RejectionComment).Value;
 
-            var rejectResult = volunteerRequest.Value.RejectRequest(rejectionComment);
-            if (rejectResult.IsFailure)
-                return rejectResult.Errors;
+            var createVolunteerAccountResult = await _accountContract.CreateVolunteerAccount(
+                volunteerRequest.Value.UserId, volunteerRequest.Value.VolunteerInfo, cancellationToken);
+            if (createVolunteerAccountResult.IsFailure)
+                return createVolunteerAccountResult.Errors;
 
             await _unitOfWork.SaveChanges(cancellationToken);
             
             transaction.Commit();
             
-            _logger.LogInformation("Volunteer request with id {volunteerRequestId} was rejected",
-                command.VolunteerRequestId);
+            _logger.LogInformation("Approved volunteer request with id {id}", command.VolunteerRequestId);
 
-            return rejectionComment.Value;
+            return Result.Success();
         }
         catch (Exception e)
         {
             transaction.Rollback();
+            
+            _logger.LogError("Fail to approve volunteer request");
 
-            return Error.Failure("fail.reject.request", "Fail to reject request");
+            return Error.Failure("fail.approve.request", "Fail to approve volunteer request");
         }
-
     }
 }

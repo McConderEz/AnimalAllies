@@ -7,6 +7,8 @@ using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using FluentValidation;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -17,6 +19,7 @@ public class BanUserHandler:  ICommandHandler<BanUserCommand>
     private readonly ILogger<BanUserHandler> _logger;
     private readonly IValidator<BanUserCommand> _validator;
     private readonly IBanManager _banManager;
+    private readonly UserManager<User> _userManager;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDateTimeProvider _dateTimeProvider;
 
@@ -26,13 +29,15 @@ public class BanUserHandler:  ICommandHandler<BanUserCommand>
         IValidator<BanUserCommand> validator,
         IBanManager banManager,
         IDateTimeProvider dateTimeProvider, 
-        [FromKeyedServices(Constraints.Context.Accounts)]IUnitOfWork unitOfWork)
+        [FromKeyedServices(Constraints.Context.Accounts)]IUnitOfWork unitOfWork,
+        UserManager<User> userManager)
     {
         _logger = logger;
         _validator = validator;
         _banManager = banManager;
         _dateTimeProvider = dateTimeProvider;
         _unitOfWork = unitOfWork;
+        _userManager = userManager;
     }
 
     public async Task<Result> Handle(
@@ -41,8 +46,11 @@ public class BanUserHandler:  ICommandHandler<BanUserCommand>
         var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
             return validationResult.ToErrorList();
-        
-        //TODO: Добавить проверку существования пользователя
+
+        var isUserExist = await _userManager.Users
+            .FirstOrDefaultAsync(u => u.Id == command.UserId, cancellationToken);
+        if (isUserExist is null)
+            return Errors.General.NotFound(command.UserId);
 
         var bannedUserId = BannedUserId.NewGuid();
         

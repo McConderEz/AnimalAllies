@@ -3,6 +3,7 @@
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Core.DTOs.Accounts;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.ValueObjects;
 
 namespace AnimalAllies.Accounts.Contracts;
 
@@ -13,5 +14,8 @@ public interface IAccountContract
     Task<Result> BanUser(Guid userId, Guid relationId, CancellationToken cancellationToken = default);
     Task<Result<BannedUserDto>> GetBannedUserById(Guid userId, CancellationToken cancellationToken = default);
     Task<Result> DeleteBannedUser(Guid userId, CancellationToken cancellationToken = default);
+
+    Task<Result> CreateVolunteerAccount(Guid userId, VolunteerInfo volunteerInfo,
+        CancellationToken cancellationToken = default);
 
 }
