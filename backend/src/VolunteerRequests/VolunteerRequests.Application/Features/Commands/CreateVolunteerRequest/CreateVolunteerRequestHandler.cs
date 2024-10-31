@@ -1,4 +1,5 @@
-﻿using AnimalAllies.Core.Abstractions;
+﻿using AnimalAllies.Accounts.Contracts;
+using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
@@ -16,10 +17,13 @@ namespace VolunteerRequests.Application.Features.Commands.CreateVolunteerRequest
 
 public class CreateVolunteerRequestHandler: ICommandHandler<CreateVolunteerRequestCommand,VolunteerRequestId>
 {
+    private static readonly int REQUEST_BLOCKING_PERIOD = 7;
+    
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateVolunteerRequestHandler> _logger;
     private readonly IVolunteerRequestsRepository _repository;
     private readonly IValidator<CreateVolunteerRequestCommand> _validator;
+    private readonly IAccountContract _accountContract;
     private readonly IDateTimeProvider _dateTimeProvider;
 
 
@@ -28,13 +32,15 @@ public class CreateVolunteerRequestHandler: ICommandHandler<CreateVolunteerReque
         ILogger<CreateVolunteerRequestHandler> logger,
         IValidator<CreateVolunteerRequestCommand> validator,
         IVolunteerRequestsRepository repository,
-        IDateTimeProvider dateTimeProvider)
+        IDateTimeProvider dateTimeProvider,
+        IAccountContract accountContract)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _validator = validator;
         _repository = repository;
         _dateTimeProvider = dateTimeProvider;
+        _accountContract = accountContract;
     }
 
     public async Task<Result<VolunteerRequestId>> Handle(
@@ -43,45 +49,70 @@ public class CreateVolunteerRequestHandler: ICommandHandler<CreateVolunteerReque
         var resultValidator = await _validator.ValidateAsync(command, cancellationToken);
         if (!resultValidator.IsValid)
             return resultValidator.ToErrorList();
-        
-        //TODO: Ограничить заявки
 
-        var fullName = FullName.Create(
-            command.FullNameDto.FirstName,
-            command.FullNameDto.SecondName,
-            command.FullNameDto.Patronymic).Value;
+        var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
 
-        var email = Email.Create(command.Email).Value;
-        var phoneNumber = PhoneNumber.Create(command.PhoneNumber).Value;
-        var workExperience = WorkExperience.Create(command.WorkExperience).Value;
-        var volunteerDescription = VolunteerDescription.Create(command.VolunteerDescription).Value;
-        var socialNetworks = command
-            .SocialNetworkDtos.Select(s => SocialNetwork.Create(s.Title, s.Url).Value);
+        try
+        {
+            var bannedUser = await _accountContract.GetBannedUserById(command.UserId, cancellationToken);
+            if (bannedUser.IsSuccess && bannedUser.Value.BannedAt/*.AddDays(REQUEST_BLOCKING_PERIOD)*/ > DateTime.Now)
+                return Error.Failure("account.banned",
+                    "The user cannot submit a request within a week");
 
-        var volunteerInfo = new VolunteerInfo(
-            fullName,
-            email, 
-            phoneNumber,
-            workExperience, 
-            volunteerDescription,
-            socialNetworks);
+            if (bannedUser.IsSuccess)
+            {
+                var result = await _accountContract.DeleteBannedUser(bannedUser.Value.UserId, cancellationToken);
+                if (result.IsFailure)
+                    return result.Errors;
+            }
 
-        var createdAt = CreatedAt.Create(_dateTimeProvider.UtcNow).Value;
-        var volunteerRequestId = VolunteerRequestId.NewGuid();
+            var fullName = FullName.Create(
+                command.FullNameDto.FirstName,
+                command.FullNameDto.SecondName,
+                command.FullNameDto.Patronymic).Value;
 
-        var volunteerRequest = VolunteerRequest.Create(
-            volunteerRequestId, createdAt, volunteerInfo, command.UserId);
+            var email = Email.Create(command.Email).Value;
+            var phoneNumber = PhoneNumber.Create(command.PhoneNumber).Value;
+            var workExperience = WorkExperience.Create(command.WorkExperience).Value;
+            var volunteerDescription = VolunteerDescription.Create(command.VolunteerDescription).Value;
+            var socialNetworks = command
+                .SocialNetworkDtos.Select(s => SocialNetwork.Create(s.Title, s.Url).Value);
 
-        if (volunteerRequest.IsFailure)
-            return volunteerRequest.Errors;
+            var volunteerInfo = new VolunteerInfo(
+                fullName,
+                email,
+                phoneNumber,
+                workExperience,
+                volunteerDescription,
+                socialNetworks);
 
-        await _repository.Create(volunteerRequest.Value, cancellationToken);
-        await _unitOfWork.SaveChanges(cancellationToken);
-        
-        _logger.LogInformation("user with id {userId} created volunteer request with id {volunteerRequestId}",
-            command.UserId,
-            volunteerRequestId.Id);
+            var createdAt = CreatedAt.Create(_dateTimeProvider.UtcNow).Value;
+            var volunteerRequestId = VolunteerRequestId.NewGuid();
 
-        return volunteerRequestId;
+            var volunteerRequest = VolunteerRequest.Create(
+                volunteerRequestId, createdAt, volunteerInfo, command.UserId);
+
+            if (volunteerRequest.IsFailure)
+                return volunteerRequest.Errors;
+
+            await _repository.Create(volunteerRequest.Value, cancellationToken);
+            await _unitOfWork.SaveChanges(cancellationToken);
+
+            transaction.Commit();
+            
+            _logger.LogInformation("user with id {userId} created volunteer request with id {volunteerRequestId}",
+                command.UserId,
+                volunteerRequestId.Id);
+
+            return volunteerRequestId;
+        }
+        catch (Exception e)
+        {
+            transaction.Rollback();
+
+            _logger.LogError("Fail to create volunteer request");
+            
+            return Error.Failure("fail.create.request", "Fail to create volunteer request");
+        }
     }
 }

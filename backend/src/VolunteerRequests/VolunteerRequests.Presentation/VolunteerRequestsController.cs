@@ -5,6 +5,7 @@ using AnimalAllies.SharedKernel.Shared;
 using Microsoft.AspNetCore.Mvc;
 using VolunteerRequests.Application.Features.Commands;
 using VolunteerRequests.Application.Features.Commands.CreateVolunteerRequest;
+using VolunteerRequests.Application.Features.Commands.RejectVolunteerRequest;
 using VolunteerRequests.Application.Features.Commands.SendRequestForRevision;
 using VolunteerRequests.Application.Features.Commands.TakeRequestForSubmit;
 using VolunteerRequests.Contracts.Requests;
@@ -39,7 +40,7 @@ public class VolunteerRequestsController: ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         if (result.IsFailure)
-            result.Errors.ToResponse();
+            return result.Errors.ToResponse();
 
         return Ok(result);
     }
@@ -63,7 +64,7 @@ public class VolunteerRequestsController: ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         if (result.IsFailure)
-            result.Errors.ToResponse();
+           return result.Errors.ToResponse();
 
         return Ok(result);
     }
@@ -87,7 +88,31 @@ public class VolunteerRequestsController: ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         if (result.IsFailure)
-            result.Errors.ToResponse();
+            return result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [Permission("volunteerRequests.review")]
+    [HttpPost("rejecting-request")]
+    public async Task<IActionResult> RejectRequest(
+        [FromBody] RejectVolunteerRequest request,
+        [FromServices] RejectVolunteerRequestHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
+        if (userIdString is null)
+            return Error.Null("user.id.null", "user id is null").ToResponse();
+
+        if (!Guid.TryParse(userIdString, out var userId))
+            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
+        
+        var command = new RejectVolunteerRequestCommand(userId, request.VolunteerRequestId, request.RejectComment);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
 
         return Ok(result);
     }
