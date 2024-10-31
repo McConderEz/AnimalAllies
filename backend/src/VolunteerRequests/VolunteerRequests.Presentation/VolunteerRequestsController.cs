@@ -9,6 +9,7 @@ using VolunteerRequests.Application.Features.Commands.CreateVolunteerRequest;
 using VolunteerRequests.Application.Features.Commands.RejectVolunteerRequest;
 using VolunteerRequests.Application.Features.Commands.SendRequestForRevision;
 using VolunteerRequests.Application.Features.Commands.TakeRequestForSubmit;
+using VolunteerRequests.Application.Features.Queries.GetFilteredVolunteerRequestsByAdminIdWithPagination;
 using VolunteerRequests.Application.Features.Queries.GetVolunteerRequestsInWaitingWithPagination;
 using VolunteerRequests.Contracts.Requests;
 
@@ -151,6 +152,36 @@ public class VolunteerRequestsController: ApplicationController
         CancellationToken cancellationToken = default)
     {
         var query = new GetVolunteerRequestsInWaitingWithPaginationQuery(
+            request.SortBy,
+            request.SortDirection,
+            request.Page, 
+            request.PageSize);
+
+        var result = await handler.Handle(query, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [Permission("volunteerRequests.read")]
+    [HttpGet("filtered-volunteer-requests-by-admin-id-with-pagination")]
+    public async Task<ActionResult> GetFilteredVolunteerRequestsByAdminId(
+        [FromQuery] GetFilteredRequestsByAdminIdRequest request,
+        [FromServices] GetFilteredVolunteerRequestsByAdminIdWithPaginationHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
+        if (userIdString is null)
+            return Error.Null("user.id.null", "user id is null").ToResponse();
+
+        if (!Guid.TryParse(userIdString, out var userId))
+            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
+        
+        var query = new GetFilteredVolunteerRequestsByAdminIdWithPaginationQuery(
+            userId,
+            request.RequestStatus,
             request.SortBy,
             request.SortDirection,
             request.Page, 

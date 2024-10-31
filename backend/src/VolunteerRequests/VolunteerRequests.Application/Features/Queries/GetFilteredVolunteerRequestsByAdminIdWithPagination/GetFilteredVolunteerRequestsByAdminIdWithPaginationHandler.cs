@@ -14,27 +14,28 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VolunteerRequests.Domain.ValueObjects;
 
-namespace VolunteerRequests.Application.Features.Queries.GetVolunteerRequestsInWaitingWithPagination;
+namespace VolunteerRequests.Application.Features.Queries.GetFilteredVolunteerRequestsByAdminIdWithPagination;
 
-public class GetVolunteerRequestsInWaitingWithPaginationHandler:
-    IQueryHandler<PagedList<VolunteerRequestDto>, GetVolunteerRequestsInWaitingWithPaginationQuery>
+public class GetFilteredVolunteerRequestsByAdminIdWithPaginationHandler:
+    IQueryHandler<PagedList<VolunteerRequestDto>, GetFilteredVolunteerRequestsByAdminIdWithPaginationQuery>
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
-    private readonly IValidator<GetVolunteerRequestsInWaitingWithPaginationQuery> _validator;
-    private readonly ILogger<GetVolunteerRequestsInWaitingWithPaginationHandler> _logger;
-    
-    public GetVolunteerRequestsInWaitingWithPaginationHandler(
-        IValidator<GetVolunteerRequestsInWaitingWithPaginationQuery> validator,
-        ILogger<GetVolunteerRequestsInWaitingWithPaginationHandler> logger,
-        [FromKeyedServices(Constraints.Context.VolunteerRequests)]ISqlConnectionFactory sqlConnectionFactory)
+    private readonly IValidator<GetFilteredVolunteerRequestsByAdminIdWithPaginationQuery> _validator;
+    private readonly ILogger<GetFilteredVolunteerRequestsByAdminIdWithPaginationHandler> _logger;
+
+    public GetFilteredVolunteerRequestsByAdminIdWithPaginationHandler(
+        [FromKeyedServices(Constraints.Context.VolunteerRequests)]ISqlConnectionFactory sqlConnectionFactory,
+        IValidator<GetFilteredVolunteerRequestsByAdminIdWithPaginationQuery> validator, 
+        ILogger<GetFilteredVolunteerRequestsByAdminIdWithPaginationHandler> logger)
     {
+        _sqlConnectionFactory = sqlConnectionFactory;
         _validator = validator;
         _logger = logger;
-        _sqlConnectionFactory = sqlConnectionFactory;
     }
-    
+
     public async Task<Result<PagedList<VolunteerRequestDto>>> Handle(
-        GetVolunteerRequestsInWaitingWithPaginationQuery query, CancellationToken cancellationToken = default)
+        GetFilteredVolunteerRequestsByAdminIdWithPaginationQuery query,
+        CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(query, cancellationToken);
         if (!validationResult.IsValid)
@@ -43,7 +44,7 @@ public class GetVolunteerRequestsInWaitingWithPaginationHandler:
         var connection = _sqlConnectionFactory.Create();
 
         var parameters = new DynamicParameters();
-        parameters.Add("@RequestStatus", RequestStatus.Waiting.Value);
+        parameters.Add("@AdminId", query.AdminId);
         
         var sql = new StringBuilder("""
                                     select 
@@ -62,9 +63,13 @@ public class GetVolunteerRequestsInWaitingWithPaginationHandler:
                                         rejection_comment,
                                         social_networks
                                         from volunteer_requests.volunteer_requests 
-                                        where request_status = @RequestStatus
+                                        where admin_id = @AdminId
                                     """);
+        bool hasWhereClause = true;
+
+        var stringProperties = new Dictionary<string, string>(){ { "request_status", query.RequestStatus } };
         
+        sql.ApplyFilterByString(ref hasWhereClause, stringProperties);
         
         sql.ApplySorting(query.SortBy,query.SortDirection);
         
