@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Accounts.Application.AccountManagement.Queries.GetBannedUserById;
 
-public class GetBannedUserByIdHandler: IQueryHandler<BannedUserDto,GetBannedUserByIdQuery>
+public class GetBannedUserByIdHandler: IQueryHandler<ProhibitionSendingDto,GetBannedUserByIdQuery>
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
     private readonly ILogger<GetBannedUserByIdHandler> _logger;
@@ -29,7 +29,7 @@ public class GetBannedUserByIdHandler: IQueryHandler<BannedUserDto,GetBannedUser
         _validator = validator;
     }
 
-    public async Task<Result<BannedUserDto>> Handle(
+    public async Task<Result<ProhibitionSendingDto>> Handle(
         GetBannedUserByIdQuery query, CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(query, cancellationToken);
@@ -52,7 +52,7 @@ public class GetBannedUserByIdHandler: IQueryHandler<BannedUserDto,GetBannedUser
                                    """);
 
        var bannedUser = (await connection
-           .QueryAsync<BannedUserDto>(sql.ToString(), parameters)).ToList();
+           .QueryAsync<ProhibitionSendingDto>(sql.ToString(), parameters)).ToList();
 
        var result = bannedUser.SingleOrDefault();
 
@@ -64,7 +64,7 @@ public class GetBannedUserByIdHandler: IQueryHandler<BannedUserDto,GetBannedUser
         return result;
     }
 
-    public async Task<Result<BannedUserDto>> Handle(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<Result<ProhibitionSendingDto>> Handle(Guid userId, CancellationToken cancellationToken = default)
     {
         return await Handle(new GetBannedUserByIdQuery(userId), cancellationToken);
     }

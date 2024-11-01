@@ -5,7 +5,7 @@ using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using VolunteerRequests.Domain.Aggregate;
+using VolunteerRequests.Domain.Aggregates;
 
 namespace VolunteerRequests.Infrastructure.Configurations.Write;
 

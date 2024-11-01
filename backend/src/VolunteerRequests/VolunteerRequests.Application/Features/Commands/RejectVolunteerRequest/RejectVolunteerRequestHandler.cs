@@ -10,6 +10,7 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VolunteerRequests.Application.Repository;
+using VolunteerRequests.Domain.Aggregates;
 using VolunteerRequests.Domain.ValueObjects;
 
 namespace VolunteerRequests.Application.Features.Commands.RejectVolunteerRequest;
@@ -19,8 +20,9 @@ public class RejectVolunteerRequestHandler: ICommandHandler<RejectVolunteerReque
     private readonly ILogger<RejectVolunteerRequestHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IVolunteerRequestsRepository _repository;
-    private readonly IAccountContract _accountContract;
     private readonly IValidator<RejectVolunteerRequestCommand> _validator;
+    private readonly IProhibitionSendingRepository _prohibitionSendingRepository;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
 
     public RejectVolunteerRequestHandler(
@@ -28,13 +30,15 @@ public class RejectVolunteerRequestHandler: ICommandHandler<RejectVolunteerReque
         [FromKeyedServices(Constraints.Context.VolunteerRequests)]IUnitOfWork unitOfWork, 
         IVolunteerRequestsRepository repository, 
         IValidator<RejectVolunteerRequestCommand> validator,
-        IAccountContract accountContract)
+        IProhibitionSendingRepository prohibitionSendingRepository,
+        IDateTimeProvider dateTimeProvider)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _repository = repository;
         _validator = validator;
-        _accountContract = accountContract;
+        _prohibitionSendingRepository = prohibitionSendingRepository;
+        _dateTimeProvider = dateTimeProvider;
     }
     
     public async Task<Result<string>> Handle(
@@ -57,12 +61,20 @@ public class RejectVolunteerRequestHandler: ICommandHandler<RejectVolunteerReque
             if (volunteerRequest.Value.AdminId != command.AdminId)
                 return Error.Failure("access.denied", 
                     "this request is under consideration by another admin");
-            
-            var banUserResult = await _accountContract
-                .BanUser(volunteerRequest.Value.UserId, volunteerRequest.Value.Id.Id, cancellationToken);
 
-            if (banUserResult.IsFailure)
-                return banUserResult.Errors;
+            var prohibitionSendingId = ProhibitionSendingId.NewGuid();
+            var prohibitionSending = ProhibitionSending.Create(
+                prohibitionSendingId,
+                volunteerRequest.Value.UserId,
+                _dateTimeProvider.UtcNow);
+
+            if (prohibitionSending.IsFailure)
+                return prohibitionSending.Errors;
+            
+            var prohibitionSendingResult = await _prohibitionSendingRepository.Create(prohibitionSending.Value, cancellationToken);
+
+            if (prohibitionSendingResult.IsFailure)
+                return prohibitionSendingResult.Errors;
 
             var rejectionComment = RejectionComment.Create(command.RejectionComment).Value;
 

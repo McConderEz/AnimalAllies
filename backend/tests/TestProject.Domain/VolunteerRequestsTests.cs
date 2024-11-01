@@ -2,7 +2,7 @@
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using FluentAssertions;
-using VolunteerRequests.Domain.Aggregate;
+using VolunteerRequests.Domain.Aggregates;
 using VolunteerRequests.Domain.ValueObjects;
 
 namespace TestProject.Domain;

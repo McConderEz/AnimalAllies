@@ -3,7 +3,6 @@ using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using Discussion.Domain.Entities;
 using Discussion.Domain.ValueObjects;
 using FluentAssertions;
-using VolunteerRequests.Domain.Aggregate;
 using VolunteerRequests.Domain.ValueObjects;
 
 namespace TestProject.Domain;

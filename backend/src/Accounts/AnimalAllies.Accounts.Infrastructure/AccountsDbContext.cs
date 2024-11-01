@@ -21,7 +21,6 @@ public class AccountsDbContext(IConfiguration configuration)
     public DbSet<VolunteerAccount> VolunteerAccounts => Set<VolunteerAccount>();
     public DbSet<ParticipantAccount> ParticipantAccounts => Set<ParticipantAccount>();
     public DbSet<RefreshSession> RefreshSessions => Set<RefreshSession>();
-    public DbSet<BannedUser> BannedUsers => Set<BannedUser>();
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -36,18 +35,6 @@ public class AccountsDbContext(IConfiguration configuration)
     {
         //TODO: Отрефакторить конфигураци.
         base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<BannedUser>()
-            .ToTable("banned_users");
-
-        modelBuilder.Entity<BannedUser>()
-            .HasKey(b => b.Id);
-
-        modelBuilder.Entity<BannedUser>()
-            .Property(b => b.Id)
-            .HasConversion(
-                b => b.Id,
-                id => BannedUserId.Create(id));
         
         modelBuilder.Entity<User>()
             .ToTable("users");

@@ -3,7 +3,7 @@ using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using VolunteerRequests.Domain.ValueObjects;
 
-namespace VolunteerRequests.Domain.Aggregate;
+namespace VolunteerRequests.Domain.Aggregates;
 
 public class VolunteerRequest: Entity<VolunteerRequestId>
 {

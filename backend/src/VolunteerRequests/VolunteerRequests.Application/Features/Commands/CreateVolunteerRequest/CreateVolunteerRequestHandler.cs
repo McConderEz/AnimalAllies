@@ -10,7 +10,7 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VolunteerRequests.Application.Repository;
-using VolunteerRequests.Domain.Aggregate;
+using VolunteerRequests.Domain.Aggregates;
 using VolunteerRequests.Domain.ValueObjects;
 
 namespace VolunteerRequests.Application.Features.Commands.CreateVolunteerRequest;
@@ -23,7 +23,7 @@ public class CreateVolunteerRequestHandler: ICommandHandler<CreateVolunteerReque
     private readonly ILogger<CreateVolunteerRequestHandler> _logger;
     private readonly IVolunteerRequestsRepository _repository;
     private readonly IValidator<CreateVolunteerRequestCommand> _validator;
-    private readonly IAccountContract _accountContract;
+    private readonly IProhibitionSendingRepository _prohibitionSendingRepository;
     private readonly IDateTimeProvider _dateTimeProvider;
 
 
@@ -33,14 +33,14 @@ public class CreateVolunteerRequestHandler: ICommandHandler<CreateVolunteerReque
         IValidator<CreateVolunteerRequestCommand> validator,
         IVolunteerRequestsRepository repository,
         IDateTimeProvider dateTimeProvider,
-        IAccountContract accountContract)
+        IProhibitionSendingRepository prohibitionSendingRepository)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _validator = validator;
         _repository = repository;
         _dateTimeProvider = dateTimeProvider;
-        _accountContract = accountContract;
+        _prohibitionSendingRepository = prohibitionSendingRepository;
     }
 
     public async Task<Result<VolunteerRequestId>> Handle(
@@ -54,14 +54,14 @@ public class CreateVolunteerRequestHandler: ICommandHandler<CreateVolunteerReque
 
         try
         {
-            var bannedUser = await _accountContract.GetBannedUserById(command.UserId, cancellationToken);
-            if (bannedUser.IsSuccess && bannedUser.Value.BannedAt/*.AddDays(REQUEST_BLOCKING_PERIOD)*/ > DateTime.Now)
+            var prohibitionSending = await _prohibitionSendingRepository.GetByUserId(command.UserId, cancellationToken);
+            if (prohibitionSending.IsSuccess && prohibitionSending.Value.BannedAt.AddDays(REQUEST_BLOCKING_PERIOD) > DateTime.Now)
                 return Error.Failure("account.banned",
                     "The user cannot submit a request within a week");
 
-            if (bannedUser.IsSuccess)
+            if (prohibitionSending.IsSuccess)
             {
-                var result = await _accountContract.DeleteBannedUser(bannedUser.Value.UserId, cancellationToken);
+                var result = _prohibitionSendingRepository.Delete(prohibitionSending.Value);
                 if (result.IsFailure)
                     return result.Errors;
             }

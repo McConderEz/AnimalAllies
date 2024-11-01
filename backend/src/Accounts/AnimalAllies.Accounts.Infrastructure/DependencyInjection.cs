@@ -56,7 +56,6 @@ public static class DependencyInjection
         services.AddScoped<RolePermissionManager>();
         services.AddScoped<AccountManager>();
         services.AddScoped<IAccountManager,AccountManager>();
-        services.AddScoped<IBanManager,BanManager>();
         services.AddScoped<IRefreshSessionManager, RefreshSessionManager>();
 
         services.Configure<AdminOptions>(configuration.GetSection(AdminOptions.ADMIN));

@@ -1,6 +1,6 @@
 ﻿using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
-using VolunteerRequests.Domain.Aggregate;
+using VolunteerRequests.Domain.Aggregates;
 
 namespace VolunteerRequests.Application.Repository;
 

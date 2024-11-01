@@ -2,7 +2,7 @@
 using AnimalAllies.SharedKernel.Shared.Ids;
 using Microsoft.EntityFrameworkCore;
 using VolunteerRequests.Application.Repository;
-using VolunteerRequests.Domain.Aggregate;
+using VolunteerRequests.Domain.Aggregates;
 using VolunteerRequests.Infrastructure.DbContexts;
 
 namespace VolunteerRequests.Infrastructure.Repository;
