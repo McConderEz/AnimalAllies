@@ -42,7 +42,17 @@ public class VolunteerRequest: Entity<VolunteerRequestId>
     public Guid UserId { get; private set; }
     public Guid DiscussionId { get; private set; }
     public RejectionComment RejectionComment { get; private set; }
-    
+
+
+    public Result UpdateVolunteerRequest(VolunteerInfo volunteerInfo)
+    {
+        if (RequestStatus != RequestStatus.RevisionRequired)
+            return Error.Failure("update.error",
+                "Cannot update request that is not in revision required status");
+        
+        VolunteerInfo = volunteerInfo;
+        return Result.Success();
+    }
 
     public Result TakeRequestForSubmit(Guid adminId, Guid discussionId)
     {

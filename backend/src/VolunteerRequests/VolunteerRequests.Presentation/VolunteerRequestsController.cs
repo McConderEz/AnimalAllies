@@ -7,8 +7,10 @@ using VolunteerRequests.Application.Features.Commands;
 using VolunteerRequests.Application.Features.Commands.ApproveVolunteerRequest;
 using VolunteerRequests.Application.Features.Commands.CreateVolunteerRequest;
 using VolunteerRequests.Application.Features.Commands.RejectVolunteerRequest;
+using VolunteerRequests.Application.Features.Commands.ResendVolunteerRequest;
 using VolunteerRequests.Application.Features.Commands.SendRequestForRevision;
 using VolunteerRequests.Application.Features.Commands.TakeRequestForSubmit;
+using VolunteerRequests.Application.Features.Commands.UpdateVolunteerRequest;
 using VolunteerRequests.Application.Features.Queries.GetFilteredVolunteerRequestsByAdminIdWithPagination;
 using VolunteerRequests.Application.Features.Queries.GetFilteredVolunteerRequestsByUserIdWithPagination;
 using VolunteerRequests.Application.Features.Queries.GetVolunteerRequestsInWaitingWithPagination;
@@ -217,6 +219,62 @@ public class VolunteerRequestsController: ApplicationController
             request.SortDirection,
             request.Page, 
             request.PageSize);
+
+        var result = await handler.Handle(query, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [Permission("volunteerRequests.update")]
+    [HttpPut("update-volunteer-request")]
+    public async Task<ActionResult> UpdateVolunteerRequest(
+        [FromBody] UpdateRequest request,
+        [FromServices] UpdateVolunteerRequestHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
+        if (userIdString is null)
+            return Error.Null("user.id.null", "user id is null").ToResponse();
+
+        if (!Guid.TryParse(userIdString, out var userId))
+            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
+        
+        var command = new UpdateVolunteerRequestCommand(
+            userId,
+            request.VolunteerRequestId,
+            request.FullNameDto,
+            request.Email,
+            request.PhoneNumber,
+            request.WorkExperience,
+            request.VolunteerDescription,
+            request.SocialNetworkDtos);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [Permission("volunteerRequests.update")]
+    [HttpPut("{volunteerRequestId:guid}/resending-volunteer-request")]
+    public async Task<ActionResult> ResendVolunteerRequest(
+        [FromRoute] Guid volunteerRequestId,
+        [FromServices] ResendVolunteerRequestHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
+        if (userIdString is null)
+            return Error.Null("user.id.null", "user id is null").ToResponse();
+
+        if (!Guid.TryParse(userIdString, out var userId))
+            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
+        
+        var query = new ResendVolunteerRequestCommand(userId, volunteerRequestId);
 
         var result = await handler.Handle(query, cancellationToken);
 
