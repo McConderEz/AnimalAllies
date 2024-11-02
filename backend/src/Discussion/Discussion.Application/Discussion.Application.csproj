@@ -13,4 +13,10 @@
       <ProjectReference Include="..\Discussion.Domain\Discussion.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Features\CloseDiscussion\" />
+      <Folder Include="Features\DeleteMessage\" />
+      <Folder Include="Features\UpdateMessage\" />
+    </ItemGroup>
+
 </Project>
