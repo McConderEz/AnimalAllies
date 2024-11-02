@@ -16,6 +16,15 @@ public class ProhibitionSending: Entity<ProhibitionSendingId>
     public Guid UserId { get; private set; }
     public DateTime BannedAt { get; private set; }
 
+    public Result CheckExpirationOfProhibtion(int requestBlockingPeriod)
+    {
+        if(BannedAt.AddDays(requestBlockingPeriod) > DateTime.Now)
+           return Error.Failure("account.banned",
+               "The user cannot submit a request within a week");
+        
+        return Result.Success();
+    }
+
     public static Result<ProhibitionSending> Create(ProhibitionSendingId prohibitionSendingId, Guid userId, DateTime bannedAt)
     {
         if (prohibitionSendingId.Id == Guid.Empty)

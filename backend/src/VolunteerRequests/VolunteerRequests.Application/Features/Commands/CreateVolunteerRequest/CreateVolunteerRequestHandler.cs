@@ -55,12 +55,13 @@ public class CreateVolunteerRequestHandler: ICommandHandler<CreateVolunteerReque
         try
         {
             var prohibitionSending = await _prohibitionSendingRepository.GetByUserId(command.UserId, cancellationToken);
-            if (prohibitionSending.IsSuccess && prohibitionSending.Value.BannedAt.AddDays(REQUEST_BLOCKING_PERIOD) > DateTime.Now)
-                return Error.Failure("account.banned",
-                    "The user cannot submit a request within a week");
-
             if (prohibitionSending.IsSuccess)
             {
+                var checkResult = prohibitionSending.Value.CheckExpirationOfProhibtion(REQUEST_BLOCKING_PERIOD);
+
+                if (checkResult.IsFailure)
+                    return checkResult.Errors;
+                
                 var result = _prohibitionSendingRepository.Delete(prohibitionSending.Value);
                 if (result.IsFailure)
                     return result.Errors;
