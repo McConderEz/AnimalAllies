@@ -15,7 +15,6 @@
 
     <ItemGroup>
       <Folder Include="Features\CloseDiscussion\" />
-      <Folder Include="Features\UpdateMessage\" />
     </ItemGroup>
 
 </Project>

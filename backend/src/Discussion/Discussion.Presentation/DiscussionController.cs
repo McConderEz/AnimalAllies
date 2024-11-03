@@ -4,6 +4,7 @@ using AnimalAllies.Framework.Authorization;
 using AnimalAllies.SharedKernel.Shared;
 using Discussion.Application.Features.DeleteMessage;
 using Discussion.Application.Features.PostMessage;
+using Discussion.Application.Features.UpdateMessage;
 using Discussion.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,9 +26,9 @@ public class DiscussionController: ApplicationController
         if (!Guid.TryParse(userIdString, out var userId))
             return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
         
-        var query = new PostMessageCommand(request.DiscussionId, userId, request.Text);
+        var command = new PostMessageCommand(request.DiscussionId, userId, request.Text);
 
-        var result = await handler.Handle(query, cancellationToken);
+        var result = await handler.Handle(command, cancellationToken);
 
         if (result.IsFailure)
             result.Errors.ToResponse();
@@ -49,9 +50,33 @@ public class DiscussionController: ApplicationController
         if (!Guid.TryParse(userIdString, out var userId))
             return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
         
-        var query = new DeleteMessageCommand(request.DiscussionId, userId, request.MessageId);
+        var command = new DeleteMessageCommand(request.DiscussionId, userId, request.MessageId);
 
-        var result = await handler.Handle(query, cancellationToken);
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [Permission("discussion.update")]
+    [HttpPut("editing-message")]
+    public async Task<IActionResult> UpdateMessage(
+        [FromBody] UpdateMessageRequest request,
+        [FromServices] UpdateMessageHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
+        if (userIdString is null)
+            return Error.Null("user.id.null", "user id is null").ToResponse();
+
+        if (!Guid.TryParse(userIdString, out var userId))
+            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
+        
+        var command = new UpdateMessageCommand(request.DiscussionId, userId, request.MessageId, request.Text);
+
+        var result = await handler.Handle(command, cancellationToken);
 
         if (result.IsFailure)
             result.Errors.ToResponse();
