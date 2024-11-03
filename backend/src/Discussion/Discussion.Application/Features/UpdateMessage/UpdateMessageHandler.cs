@@ -55,7 +55,7 @@ public class UpdateMessageHandler: ICommandHandler<UpdateMessageCommand, Message
         
         _logger.LogInformation("user with id {userId} edit message with id {messageId}" +
                                " from discussion with id {discussionId}",
-            command.UserId, command.MessageId, command.MessageId);
+            command.UserId, command.MessageId, command.DiscussionId);
 
         return messageId;
     }
