@@ -12,7 +12,7 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Discussion.Application.Features.PostMessage;
+namespace Discussion.Application.Features.Commands.PostMessage;
 
 public class PostMessageHandler: ICommandHandler<PostMessageCommand, MessageId>
 {

@@ -2,10 +2,11 @@
 using AnimalAllies.Framework;
 using AnimalAllies.Framework.Authorization;
 using AnimalAllies.SharedKernel.Shared;
-using Discussion.Application.Features.CloseDiscussion;
-using Discussion.Application.Features.DeleteMessage;
-using Discussion.Application.Features.PostMessage;
-using Discussion.Application.Features.UpdateMessage;
+using Discussion.Application.Features.Commands.CloseDiscussion;
+using Discussion.Application.Features.Commands.DeleteMessage;
+using Discussion.Application.Features.Commands.PostMessage;
+using Discussion.Application.Features.Commands.UpdateMessage;
+using Discussion.Application.Features.Queries;
 using Discussion.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -102,6 +103,24 @@ public class DiscussionController: ApplicationController
         var command = new CloseDiscussionCommand(discussionId, userId);
 
         var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            result.Errors.ToResponse();
+
+        return Ok(result);
+    }
+    
+    [Permission("discussion.read")]
+    [HttpGet("messages-by-relation-id")]
+    public async Task<IActionResult> GetMessagesByRelationId(
+        [FromQuery] GetMessagesByRelationIdRequest request,
+        [FromServices] GetDiscussionByRelationIdHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        
+        var query = new GetDiscussionByRelationIdQuery(request.RelationId, request.PageSize);
+
+        var result = await handler.Handle(query, cancellationToken);
 
         if (result.IsFailure)
             result.Errors.ToResponse();

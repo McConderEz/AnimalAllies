@@ -3,7 +3,7 @@ using AnimalAllies.SharedKernel.Shared;
 using Discussion.Domain.ValueObjects;
 using FluentValidation;
 
-namespace Discussion.Application.Features.PostMessage;
+namespace Discussion.Application.Features.Commands.PostMessage;
 
 public class PostMessageCommandValidator: AbstractValidator<PostMessageCommand>
 {

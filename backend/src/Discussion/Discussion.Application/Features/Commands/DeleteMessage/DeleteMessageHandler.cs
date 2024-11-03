@@ -5,24 +5,23 @@ using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using Discussion.Application.Repository;
-using Discussion.Domain.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Discussion.Application.Features.UpdateMessage;
+namespace Discussion.Application.Features.Commands.DeleteMessage;
 
-public class UpdateMessageHandler: ICommandHandler<UpdateMessageCommand, MessageId>
+public class DeleteMessageHandler: ICommandHandler<DeleteMessageCommand>
 {
-    private readonly ILogger<UpdateMessageHandler> _logger;
+    private readonly ILogger<DeleteMessageHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IValidator<UpdateMessageCommand> _validator;
+    private readonly IValidator<DeleteMessageCommand> _validator;
     private readonly IDiscussionRepository _repository;
 
-    public UpdateMessageHandler(
-        ILogger<UpdateMessageHandler> logger, 
-        [FromKeyedServices(Constraints.Context.Discussion)]IUnitOfWork unitOfWork, 
-        IValidator<UpdateMessageCommand> validator,
+    public DeleteMessageHandler(
+        ILogger<DeleteMessageHandler> logger,
+        [FromKeyedServices(Constraints.Context.Discussion)]IUnitOfWork unitOfWork,
+        IValidator<DeleteMessageCommand> validator,
         IDiscussionRepository repository)
     {
         _logger = logger;
@@ -31,8 +30,7 @@ public class UpdateMessageHandler: ICommandHandler<UpdateMessageCommand, Message
         _repository = repository;
     }
 
-    public async Task<Result<MessageId>> Handle(
-        UpdateMessageCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result> Handle(DeleteMessageCommand command, CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
@@ -45,18 +43,17 @@ public class UpdateMessageHandler: ICommandHandler<UpdateMessageCommand, Message
             return discussion.Errors;
 
         var messageId = MessageId.Create(command.MessageId);
-        var text = Text.Create(command.Text).Value;
 
-        var result = discussion.Value.EditComment(command.UserId, messageId, text);
+        var result = discussion.Value.DeleteComment(command.UserId, messageId);
         if (result.IsFailure)
             return result.Errors;
 
         await _unitOfWork.SaveChanges(cancellationToken);
         
-        _logger.LogInformation("user with id {userId} edit message with id {messageId}" +
+        _logger.LogInformation("user with id {userId} delete message with id {messageId}" +
                                " from discussion with id {discussionId}",
             command.UserId, command.MessageId, command.DiscussionId);
 
-        return messageId;
+        return Result.Success();
     }
 }

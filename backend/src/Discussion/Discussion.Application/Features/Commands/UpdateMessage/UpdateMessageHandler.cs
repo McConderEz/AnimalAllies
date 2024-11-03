@@ -5,23 +5,24 @@ using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using Discussion.Application.Repository;
+using Discussion.Domain.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Discussion.Application.Features.CloseDiscussion;
+namespace Discussion.Application.Features.Commands.UpdateMessage;
 
-public class CloseDiscussionHandler: ICommandHandler<CloseDiscussionCommand, DiscussionId>
+public class UpdateMessageHandler: ICommandHandler<UpdateMessageCommand, MessageId>
 {
-    private readonly ILogger<CloseDiscussionHandler> _logger;
+    private readonly ILogger<UpdateMessageHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IValidator<CloseDiscussionCommand> _validator;
+    private readonly IValidator<UpdateMessageCommand> _validator;
     private readonly IDiscussionRepository _repository;
 
-    public CloseDiscussionHandler(
-        ILogger<CloseDiscussionHandler> logger, 
+    public UpdateMessageHandler(
+        ILogger<UpdateMessageHandler> logger, 
         [FromKeyedServices(Constraints.Context.Discussion)]IUnitOfWork unitOfWork, 
-        IValidator<CloseDiscussionCommand> validator,
+        IValidator<UpdateMessageCommand> validator,
         IDiscussionRepository repository)
     {
         _logger = logger;
@@ -30,8 +31,8 @@ public class CloseDiscussionHandler: ICommandHandler<CloseDiscussionCommand, Dis
         _repository = repository;
     }
 
-    public async Task<Result<DiscussionId>> Handle(
-        CloseDiscussionCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result<MessageId>> Handle(
+        UpdateMessageCommand command, CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
@@ -43,13 +44,19 @@ public class CloseDiscussionHandler: ICommandHandler<CloseDiscussionCommand, Dis
         if (discussion.IsFailure)
             return discussion.Errors;
 
-        var result = discussion.Value.CloseDiscussion(command.UserId);
+        var messageId = MessageId.Create(command.MessageId);
+        var text = Text.Create(command.Text).Value;
+
+        var result = discussion.Value.EditComment(command.UserId, messageId, text);
+        if (result.IsFailure)
+            return result.Errors;
 
         await _unitOfWork.SaveChanges(cancellationToken);
         
-        _logger.LogInformation("user with id {userId} closed discussion with id {discussionId}",
-            command.UserId, command.DiscussionId);
+        _logger.LogInformation("user with id {userId} edit message with id {messageId}" +
+                               " from discussion with id {discussionId}",
+            command.UserId, command.MessageId, command.DiscussionId);
 
-        return discussionId;
+        return messageId;
     }
 }

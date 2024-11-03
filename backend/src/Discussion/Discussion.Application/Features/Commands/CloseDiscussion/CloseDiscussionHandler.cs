@@ -9,19 +9,19 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Discussion.Application.Features.DeleteMessage;
+namespace Discussion.Application.Features.Commands.CloseDiscussion;
 
-public class DeleteMessageHandler: ICommandHandler<DeleteMessageCommand>
+public class CloseDiscussionHandler: ICommandHandler<CloseDiscussionCommand, DiscussionId>
 {
-    private readonly ILogger<DeleteMessageHandler> _logger;
+    private readonly ILogger<CloseDiscussionHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IValidator<DeleteMessageCommand> _validator;
+    private readonly IValidator<CloseDiscussionCommand> _validator;
     private readonly IDiscussionRepository _repository;
 
-    public DeleteMessageHandler(
-        ILogger<DeleteMessageHandler> logger,
-        [FromKeyedServices(Constraints.Context.Discussion)]IUnitOfWork unitOfWork,
-        IValidator<DeleteMessageCommand> validator,
+    public CloseDiscussionHandler(
+        ILogger<CloseDiscussionHandler> logger, 
+        [FromKeyedServices(Constraints.Context.Discussion)]IUnitOfWork unitOfWork, 
+        IValidator<CloseDiscussionCommand> validator,
         IDiscussionRepository repository)
     {
         _logger = logger;
@@ -30,7 +30,8 @@ public class DeleteMessageHandler: ICommandHandler<DeleteMessageCommand>
         _repository = repository;
     }
 
-    public async Task<Result> Handle(DeleteMessageCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result<DiscussionId>> Handle(
+        CloseDiscussionCommand command, CancellationToken cancellationToken = default)
     {
         var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
@@ -42,18 +43,13 @@ public class DeleteMessageHandler: ICommandHandler<DeleteMessageCommand>
         if (discussion.IsFailure)
             return discussion.Errors;
 
-        var messageId = MessageId.Create(command.MessageId);
-
-        var result = discussion.Value.DeleteComment(command.UserId, messageId);
-        if (result.IsFailure)
-            return result.Errors;
+        var result = discussion.Value.CloseDiscussion(command.UserId);
 
         await _unitOfWork.SaveChanges(cancellationToken);
         
-        _logger.LogInformation("user with id {userId} delete message with id {messageId}" +
-                               " from discussion with id {discussionId}",
-            command.UserId, command.MessageId, command.DiscussionId);
+        _logger.LogInformation("user with id {userId} closed discussion with id {discussionId}",
+            command.UserId, command.DiscussionId);
 
-        return Result.Success();
+        return discussionId;
     }
 }

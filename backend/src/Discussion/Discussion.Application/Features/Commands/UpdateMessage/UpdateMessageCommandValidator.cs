@@ -3,7 +3,7 @@ using AnimalAllies.SharedKernel.Shared;
 using Discussion.Domain.ValueObjects;
 using FluentValidation;
 
-namespace Discussion.Application.Features.UpdateMessage;
+namespace Discussion.Application.Features.Commands.UpdateMessage;
 
 public class UpdateMessageCommandValidator: AbstractValidator<UpdateMessageCommand>
 {

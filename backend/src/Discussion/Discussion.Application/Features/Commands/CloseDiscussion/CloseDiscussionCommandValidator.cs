@@ -2,7 +2,7 @@
 using AnimalAllies.SharedKernel.Shared;
 using FluentValidation;
 
-namespace Discussion.Application.Features.CloseDiscussion;
+namespace Discussion.Application.Features.Commands.CloseDiscussion;
 
 public class CloseDiscussionCommandValidator: AbstractValidator<CloseDiscussionCommand>
 {

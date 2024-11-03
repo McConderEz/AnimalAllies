@@ -1,9 +1,8 @@
-﻿using AnimalAllies.Core.Abstractions;
-using AnimalAllies.Core.Validators;
+﻿using AnimalAllies.Core.Validators;
 using AnimalAllies.SharedKernel.Shared;
 using FluentValidation;
 
-namespace Discussion.Application.Features.DeleteMessage;
+namespace Discussion.Application.Features.Commands.DeleteMessage;
 
 public class DeleteMessageCommandValidator : AbstractValidator<DeleteMessageCommand>
 {
