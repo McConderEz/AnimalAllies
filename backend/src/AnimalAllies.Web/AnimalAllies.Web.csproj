@@ -37,10 +37,12 @@
       <ProjectReference Include="..\BreedManagement\AnimalAllies.Species.Infrastructure\AnimalAllies.Species.Infrastructure.csproj" />
       <ProjectReference Include="..\Discussion\Discussion.Application\Discussion.Application.csproj" />
       <ProjectReference Include="..\Discussion\Discussion.Infrastructure\Discussion.Infrastructure.csproj" />
+      <ProjectReference Include="..\Discussion\Discussion.Presentation\Discussion.Presentation.csproj" />
       <ProjectReference Include="..\PetManagement\AnimalAllies.Volunteer.Controllers\AnimalAllies.Volunteer.Presentation.csproj" />
       <ProjectReference Include="..\PetManagement\AnimalAllies.Volunteer.Infrastructure\AnimalAllies.Volunteer.Infrastructure.csproj" />
       <ProjectReference Include="..\VolunteerRequests\VolunteerRequests.Application\VolunteerRequests.Application.csproj" />
       <ProjectReference Include="..\VolunteerRequests\VolunteerRequests.Infrastructure\VolunteerRequests.Infrastructure.csproj" />
+      <ProjectReference Include="..\VolunteerRequests\VolunteerRequests.Presentation\VolunteerRequests.Presentation.csproj" />
     </ItemGroup>
 
 </Project>

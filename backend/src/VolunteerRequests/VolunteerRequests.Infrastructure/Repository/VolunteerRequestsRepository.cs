@@ -2,7 +2,7 @@
 using AnimalAllies.SharedKernel.Shared.Ids;
 using Microsoft.EntityFrameworkCore;
 using VolunteerRequests.Application.Repository;
-using VolunteerRequests.Domain.Aggregate;
+using VolunteerRequests.Domain.Aggregates;
 using VolunteerRequests.Infrastructure.DbContexts;
 
 namespace VolunteerRequests.Infrastructure.Repository;
@@ -33,6 +33,12 @@ public class VolunteerRequestsRepository : IVolunteerRequestsRepository
             return Errors.General.NotFound();
 
         return volunteerRequest;
+    }
+
+    public async Task<Result<IReadOnlyList<VolunteerRequest>>> GetByUserId(Guid userId, CancellationToken cancellationToken = default)
+    {
+        return await _context.VolunteerRequests
+            .Where(v => v.UserId == userId).ToListAsync(cancellationToken);
     }
 
     public Result<VolunteerRequestId> Delete(VolunteerRequest entity)

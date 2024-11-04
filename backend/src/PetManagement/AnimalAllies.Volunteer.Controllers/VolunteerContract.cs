@@ -1,9 +1,6 @@
-﻿using AnimalAllies.Core.DTOs;
-using AnimalAllies.SharedKernel.Shared;
+﻿using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CheckIfPetByBreedIdExist;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.CheckIfPetBySpeciesIdExist;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetPetsByBreedId;
-using AnimalAllies.Volunteer.Application.VolunteerManagement.Queries.GetPetsBySpeciesId;
 using AnimalAllies.Volunteer.Contracts;
 
 namespace AnimalAllies.Volunteer.Presentation;

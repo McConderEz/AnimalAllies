@@ -16,7 +16,7 @@ public class RejectionComment : ValueObject
 
     public static Result<RejectionComment> Create(string value)
     {
-        if (string.IsNullOrWhiteSpace(value) && value.Length > Constraints.MAX_DESCRIPTION_LENGTH)
+        if (string.IsNullOrEmpty(value) && value.Length > Constraints.MAX_DESCRIPTION_LENGTH)
             return Errors.General.ValueIsRequired("rejection comment");
 
         return new RejectionComment(value);

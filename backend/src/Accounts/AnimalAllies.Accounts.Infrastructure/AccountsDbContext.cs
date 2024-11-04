@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.SharedKernel.Constraints;
+using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -32,8 +33,9 @@ public class AccountsDbContext(IConfiguration configuration)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        //TODO: Отрефакторить конфигураци.
         base.OnModelCreating(modelBuilder);
-
+        
         modelBuilder.Entity<User>()
             .ToTable("users");
         
@@ -206,6 +208,7 @@ public class AccountsDbContext(IConfiguration configuration)
         
         modelBuilder.Entity<IdentityUserRole<Guid>>()
             .ToTable("user_roles");
+        
         
         modelBuilder.HasDefaultSchema("accounts");
     }

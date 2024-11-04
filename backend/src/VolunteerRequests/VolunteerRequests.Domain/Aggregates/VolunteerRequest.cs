@@ -3,7 +3,7 @@ using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using VolunteerRequests.Domain.ValueObjects;
 
-namespace VolunteerRequests.Domain.Aggregate;
+namespace VolunteerRequests.Domain.Aggregates;
 
 public class VolunteerRequest: Entity<VolunteerRequestId>
 {
@@ -20,6 +20,7 @@ public class VolunteerRequest: Entity<VolunteerRequestId>
         VolunteerInfo = volunteerInfo;
         UserId = userId;
         RequestStatus = RequestStatus.Waiting;
+        RejectionComment = RejectionComment.Create(" ").Value;
     }
 
     public static Result<VolunteerRequest> Create(
@@ -41,7 +42,17 @@ public class VolunteerRequest: Entity<VolunteerRequestId>
     public Guid UserId { get; private set; }
     public Guid DiscussionId { get; private set; }
     public RejectionComment RejectionComment { get; private set; }
-    
+
+
+    public Result UpdateVolunteerRequest(VolunteerInfo volunteerInfo)
+    {
+        if (RequestStatus != RequestStatus.RevisionRequired)
+            return Error.Failure("update.error",
+                "Cannot update request that is not in revision required status");
+        
+        VolunteerInfo = volunteerInfo;
+        return Result.Success();
+    }
 
     public Result TakeRequestForSubmit(Guid adminId, Guid discussionId)
     {

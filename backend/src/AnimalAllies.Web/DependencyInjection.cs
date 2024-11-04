@@ -9,6 +9,7 @@ using AnimalAllies.Volunteer.Infrastructure;
 using AnimalAllies.Volunteer.Presentation;
 using Discussion.Application;
 using Discussion.Infrastructure;
+using Discussion.Presentation;
 using VolunteerRequests.Application;
 using VolunteerRequests.Infrastructure;
 
@@ -47,7 +48,8 @@ public static class DependencyInjection
     {
         services
             .AddDiscussionInfrastructure(configuration)
-            .AddDiscussionApplication();
+            .AddDiscussionApplication()
+            .AddDiscussionPresentation();
         
         return services;
     }
