@@ -13,4 +13,8 @@
       <ProjectReference Include="..\Discussion.Domain\Discussion.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Features\Commands\" />
+    </ItemGroup>
+
 </Project>

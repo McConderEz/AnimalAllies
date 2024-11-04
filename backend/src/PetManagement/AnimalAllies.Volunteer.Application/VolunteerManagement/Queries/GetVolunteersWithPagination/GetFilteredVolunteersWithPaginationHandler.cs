@@ -137,7 +137,7 @@ public class GetFilteredVolunteersWithPaginationHandlerDapper :
                                         work_experience,
                                         requisites,
                                         social_networks
-                                        from volunteers.volunteers 
+                                        from volunteers.volunteers
                                             where is_deleted = false
                                     """);
 
