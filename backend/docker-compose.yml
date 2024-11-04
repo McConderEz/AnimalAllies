@@ -1,4 +1,17 @@
 ﻿services:
+  web:
+    image: web
+    build:
+      context: .
+      dockerfile: src/AnimalAllies.Web/Dockerfile
+    depends_on:
+      - postgres
+      - minio
+      - seq
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    
   postgres:
     container_name: postgres
     image: postgres:latest
@@ -31,8 +44,18 @@
       - minio-data:/data
     command: server --console-address ":9001" /data
     restart: always
-      
+  
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - web
+    restart: always
 
 volumes:
   postgres-data:
   minio-data:
+ 
