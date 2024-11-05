@@ -8,6 +8,7 @@ namespace FileService.Infrastructure;
 
 public class MinioProvider
 {
+    private const int MAX_DEGREE_OF_PARALLELISM = 10;
     private readonly IMinioClient _minioClient;
     private readonly ILogger<MinioProvider> _logger;
 
@@ -18,7 +19,7 @@ public class MinioProvider
     }
     
     public async Task<Result<IReadOnlyList<string>>> UploadFiles(
-        IEnumerable<FileMetadata> filesData,
+        IEnumerable<FileData> filesData,
         CancellationToken cancellationToken = default)
     {
         var semaphoreSlim = new SemaphoreSlim(MAX_DEGREE_OF_PARALLELISM);
@@ -26,7 +27,7 @@ public class MinioProvider
 
         try
         {
-            await IsBucketExist(filesList.Select(f => f.FileInfo.BucketName), cancellationToken);
+            await IsBucketExist(filesList.Select(f => f.FileMetadata.BucketName), cancellationToken);
 
             var tasks = filesList.Select(async file =>
                 await PutObject(file, semaphoreSlim, cancellationToken));
@@ -82,27 +83,27 @@ public class MinioProvider
     }
 
     public async Task<Result> RemoveFile(
-        FileMetadata fileInfo,
+        FileMetadata fileMetadata,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            await IsBucketExist([fileInfo.BucketName], cancellationToken);
+            await IsBucketExist([fileMetadata.BucketName], cancellationToken);
 
             var statArgs = new StatObjectArgs()
-                .WithBucket(fileInfo.BucketName)
-                .WithObject(fileInfo.FilePath.Path);
+                .WithBucket(fileMetadata.BucketName)
+                .WithObject(fileMetadata.Name); //Поменять
             
             var arg = new RemoveObjectArgs()
-                .WithBucket(fileInfo.BucketName)
-                .WithObject(fileInfo.FilePath.Path);
+                .WithBucket(fileMetadata.BucketName)
+                .WithObject(fileMetadata.Name); //Поменять
 
             await _minioClient.RemoveObjectAsync(arg, cancellationToken);
         }
         catch(Exception e)
         {
             _logger.LogError(e,"Fail to remove file in minio with path {path} in bucket {bucket}",
-                fileInfo.FilePath.Path, fileInfo.BucketName);
+                fileMetadata.Name, fileMetadata.BucketName); // Поменять
             return Error.Failure("file.delete", "Fail to delete file in minio");
         }
 
@@ -151,32 +152,32 @@ public class MinioProvider
         }
     }
 
-    private async Task<Result> PutObject(
-        FileMetadata fileMetadata,
+    private async Task<Result<string>> PutObject(
+        FileData fileData,
         SemaphoreSlim semaphoreSlim,
         CancellationToken cancellationToken)
     {
         await semaphoreSlim.WaitAsync(cancellationToken);
 
         var putObjectArgs = new PutObjectArgs()
-            .WithBucket(fileMetadata.BucketName)
-            .WithStreamData(fileMetadata.Stream)
-            .WithObjectSize(fileMetadata.Size)
-            .WithObject(fileMetadata.FileInfo.FilePath.Path);
+            .WithBucket(fileData.FileMetadata.BucketName)
+            .WithStreamData(fileData.Stream)
+            .WithObjectSize(fileData.FileMetadata.Size)
+            .WithObject(fileData.FileMetadata.Name); //Поменять на полный путь
 
         try
         {
             await _minioClient
                 .PutObjectAsync(putObjectArgs, cancellationToken);
 
-            return fileMetadata.FileInfo.FilePath;
+            return fileData.FileMetadata.Name; //Поменять на полный путь
         }
         catch (Exception ex)
         {
             _logger.LogError(ex,
                 "Fail to upload file in minio with path {path} in bucket {bucket}",
-                fileMetadata.FileInfo.FilePath.Path,
-                fileMetadata.FileInfo.BucketName);
+                fileData.FileMetadata.Name, // Поменять
+                fileData.FileMetadata.BucketName);
 
             return Error.Failure("file.upload", "Fail to upload file in minio");
         }
