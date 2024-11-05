@@ -114,10 +114,10 @@ public class MinioProvider: IFileProvider
         return Result.Success();
     }
 
-    public Result<IReadOnlyCollection<string>> GetFiles()
+    public Result<IReadOnlyCollection<string>> GetFiles(string bucketName)
     {
         var listObjectsArgs = new ListObjectsArgs()
-            .WithBucket("photos")
+            .WithBucket(bucketName)
             .WithRecursive(false);
 
         var objects = _minioClient.ListObjectsAsync(listObjectsArgs);
