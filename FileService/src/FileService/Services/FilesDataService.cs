@@ -1,15 +1,18 @@
 ﻿using FileService.Infrastructure;
+using FileService.Infrastructure.Repositories;
 
 namespace FileService.Services;
 
 public class FilesDataService
 {
-    private readonly FilesDataService _filesDataService;
+    private readonly FilesDataRepository _filesDataRepository;
     private readonly MinioProvider _minioProvider;
 
-    public FilesDataService(FilesDataService filesDataService, MinioProvider minioProvider)
+    public FilesDataService(FilesDataRepository filesDataRepository, MinioProvider minioProvider)
     {
-        _filesDataService = filesDataService;
+        _filesDataRepository = filesDataRepository;
         _minioProvider = minioProvider;
     }
+    
+    //TODO: Реализовать 
 }
