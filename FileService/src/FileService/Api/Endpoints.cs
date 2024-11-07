@@ -1,4 +1,4 @@
-﻿namespace FileService;
+﻿namespace FileService.Api;
 
 public static class Endpoints
 {

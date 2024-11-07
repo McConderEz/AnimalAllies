@@ -1,7 +1,7 @@
-﻿using FileService.Models;
+﻿using FileService.Data.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using MongoDatabaseSettings = FileService.Options.MongoDatabaseSettings;
+using MongoDatabaseSettings = FileService.Data.Options.MongoDatabaseSettings;
 
 namespace FileService.Infrastructure;
 

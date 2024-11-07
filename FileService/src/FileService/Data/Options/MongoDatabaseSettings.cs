@@ -1,4 +1,4 @@
-﻿namespace FileService.Options;
+﻿namespace FileService.Data.Options;
 
 public class MongoDatabaseSettings
 {

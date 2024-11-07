@@ -39,7 +39,7 @@ services:
     container_name: minio-file-service
     image: minio/minio
     ports:
-      - "9007:9007"
+      - "9011:9011"
       - "9009:9009"
     volumes:
       - minio-data:/data

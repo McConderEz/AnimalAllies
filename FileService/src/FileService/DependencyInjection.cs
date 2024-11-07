@@ -1,7 +1,7 @@
-﻿using FileService.Infrastructure;
+﻿using FileService.Data.Options;
+using FileService.Infrastructure;
+using FileService.Infrastructure.Providers;
 using FileService.Infrastructure.Repositories;
-using FileService.Options;
-using FileService.Services;
 using Minio;
 
 namespace FileService;
@@ -14,16 +14,8 @@ public static class DependencyInjection
         services
             .AddMinio(configuration)
             .AddMongoDb(configuration)
-            .AddRepositories()
-            .AddServices();
+            .AddRepositories();
         
-        return services;
-    }
-
-    private static IServiceCollection AddServices(this IServiceCollection services)
-    {
-        services.AddScoped<FilesDataService>();
-
         return services;
     }
 

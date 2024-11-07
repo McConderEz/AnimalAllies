@@ -1,4 +1,4 @@
-﻿namespace FileService.Shared;
+﻿namespace FileService.Data.Shared;
 
 public class Result
 {

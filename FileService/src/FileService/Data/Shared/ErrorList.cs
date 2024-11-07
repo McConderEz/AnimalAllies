@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace FileService.Shared;
+namespace FileService.Data.Shared;
 
 public class ErrorList : IEnumerable<Error>
 {

@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AWSSDK.S3" Version="3.7.405.9" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
         <PackageReference Include="Minio" Version="6.0.3" />
@@ -30,6 +31,11 @@
       <Content Include="..\..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Application\Abstractions\" />
+      <Folder Include="Data\" />
     </ItemGroup>
 
 </Project>

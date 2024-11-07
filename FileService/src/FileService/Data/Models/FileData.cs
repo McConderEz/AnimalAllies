@@ -1,4 +1,4 @@
-﻿namespace FileService.Models;
+﻿namespace FileService.Data.Models;
 
 public class FileData
 {

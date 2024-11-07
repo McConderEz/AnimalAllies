@@ -1,10 +1,11 @@
-﻿using FileService.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using FileService.Application.Repositories;
+using FileService.Data.Models;
 using MongoDB.Driver;
 
 namespace FileService.Infrastructure.Repositories;
 
-public class FilesDataRepository
+public class FilesDataRepository: IFilesDataRepository
 {
     private readonly ApplicationDbContext _context;
 

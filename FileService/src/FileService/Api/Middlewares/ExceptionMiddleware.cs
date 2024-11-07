@@ -1,6 +1,6 @@
-﻿using FileService.Shared;
+﻿using FileService.Data.Shared;
 
-namespace FileService.Middlewares;
+namespace FileService.Api.Middlewares;
 
 public class ExceptionMiddleware
 {

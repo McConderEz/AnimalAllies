@@ -1,4 +1,4 @@
-﻿namespace FileService.Shared;
+﻿namespace FileService.Data.Shared;
 
 public record ResponseError(string? ErrorCode, string? ErrorMessage, string? InvalidField);
 

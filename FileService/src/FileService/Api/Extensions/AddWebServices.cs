@@ -1,7 +1,7 @@
 ﻿using Serilog;
 using Serilog.Events;
 
-namespace FileService.Extensions;
+namespace FileService.Api.Extensions;
 
 public static class AddWebServices
 {

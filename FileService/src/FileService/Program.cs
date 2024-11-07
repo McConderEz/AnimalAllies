@@ -1,6 +1,8 @@
+using Amazon.S3;
 using FileService;
-using FileService.Extensions;
-using FileService.Middlewares;
+using FileService.Api;
+using FileService.Api.Extensions;
+using FileService.Api.Middlewares;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +20,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddFileServiceInfrastructure(builder.Configuration);
 
+//TODO: достать из конфигурации minioOptions 
+builder.Services.AddSingleton<IAmazonS3>(_ =>
+{
+    var config = new AmazonS3Config
+    {
+        ServiceURL = "http://localhost:9009",
+        ForcePathStyle = true,
+        UseHttp = true
+    };
+
+    return new AmazonS3Client("minioadmin", "minioadmin", config);
+});
+
 var app = builder.Build();
 
 app.UseExceptionMiddleware();
@@ -32,31 +47,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
-
 app.RegisterEndpoints();
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+namespace FileService
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+    {
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
 }
