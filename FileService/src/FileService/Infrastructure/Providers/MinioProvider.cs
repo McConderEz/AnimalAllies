@@ -146,18 +146,24 @@ public class MinioProvider : IFileProvider
             BucketName = bucketName,
             Key = key
         };
-        
-        var metaDataResponse = await _client.GetObjectMetadataAsync(metaDataRequest, cancellationToken);
-
-        var metaData = new FileMetadata
+        try
         {
-            Id = Guid.NewGuid(),
-            Key = key,
-            Size = metaDataResponse.Headers.ContentLength,
-            ContentType = metaDataResponse.Headers.ContentType
-        };
+            var metaDataResponse = await _client.GetObjectMetadataAsync(metaDataRequest, cancellationToken);
 
-        return metaData;
+            var metaData = new FileMetadata
+            {
+                Id = Guid.NewGuid(),
+                Key = key,
+                Size = metaDataResponse.Headers.ContentLength,
+                ContentType = metaDataResponse.Headers.ContentType
+            };
+
+            return metaData;
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
     }
 
     public async Task<Result<string>> GetPresignedUrlForDelete(
