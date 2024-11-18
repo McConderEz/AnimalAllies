@@ -1,31 +1,38 @@
-﻿using FileService.Api.Endpoints;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+using FileService.Api.Endpoints;
 using FileService.Application.Providers;
+using FileService.Application.Repositories;
 using FileService.Data.Models;
+using FileService.Data.Shared;
 
 namespace FileService.Features;
 
-public static class StartMultipartUpload
+public static class UploadPresignedUrl
 {
-    private record StartMultipartUploadRequest(
+    private record UploadPresignedUrlRequest(
         string BucketName,
         string FileName, 
         string ContentType,
         string Prefix,
+        string Extension,
         long Size);
     
-    public sealed class Endpoint : IEndpoint
+    public sealed class Endpoint: IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapPost("files/multi-part-uploading", Handler);
+            app.MapPost("files/presigned-for-uploading", Handler);
         }
     }
 
-    private static async Task<IResult> Handler(
-        StartMultipartUploadRequest request,
-        IFileProvider fileProvider,
+    private static async Task<IResult> Handler( 
+        UploadPresignedUrlRequest request,
+        IFilesDataRepository filesDataRepository,
+        IFileProvider provider,
         CancellationToken cancellationToken = default)
     {
+
         var key = Guid.NewGuid();
         
         var fileMetadata = new FileMetadata
@@ -34,15 +41,14 @@ public static class StartMultipartUpload
             ContentType = request.ContentType,
             Name = request.FileName,
             Prefix = request.Prefix,
-            Key = $"{request.Prefix}/{key}"
+            Key = $"{key}.{request.Extension}"
         };
-
-        var response = await fileProvider.InitialMultipartUpload(fileMetadata, cancellationToken);
         
+        var result = await provider.GetPresignedUrlForUpload(fileMetadata, cancellationToken); 
         return Results.Ok(new
         {
             key,
-            uploadId = response.UploadId
+            url = result.Value
         });
     }
 }

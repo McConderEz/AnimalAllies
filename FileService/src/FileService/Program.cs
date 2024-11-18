@@ -3,6 +3,8 @@ using FileService;
 using FileService.Api;
 using FileService.Api.Extensions;
 using FileService.Api.Middlewares;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,12 +22,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddFileServiceInfrastructure(builder.Configuration);
 
-//TODO: достать из конфигурации minioOptions 
+builder.Services.AddEndpoints();
+
+builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UsePostgreSqlStorage(c =>
+        c.UseNpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection"))));
+
 builder.Services.AddSingleton<IAmazonS3>(_ =>
 {
     var config = new AmazonS3Config
     {
-        ServiceURL = "http://localhost:9009",
+        ServiceURL = "http://localhost:9000",
         ForcePathStyle = true,
         UseHttp = true
     };
@@ -45,16 +55,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseHangfireServer();
+app.UseHangfireDashboard();
 
-app.RegisterEndpoints();
+app.MapEndpoints();
 
 app.Run();
-
-namespace FileService
-{
-    record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-    {
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    }
-}

@@ -19,20 +19,229 @@ public class MinioProvider : IFileProvider
         _client = client;
         _logger = logger;
     }
+
+    public async Task DeleteFile(FileMetadata fileMetadata, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var request = new DeleteObjectRequest
+            {
+                BucketName = fileMetadata.BucketName,
+                Key = fileMetadata.Key
+            };
+            
+            await _client.DeleteObjectAsync(request, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e,"Fail to delete file in minio");
+        }
+    }
+
+    public async Task<InitiateMultipartUploadResponse> InitialMultipartUpload(
+        FileMetadata fileMetadata, CancellationToken cancellationToken = default)
+    {
+        var presignedRequest = new InitiateMultipartUploadRequest
+        {
+            BucketName = fileMetadata.BucketName,
+            Key = fileMetadata.Key,
+            ContentType = fileMetadata.ContentType,
+            Metadata =
+            {
+                ["file-name"] = fileMetadata.Name
+            }
+        };
+
+        var response = await _client
+            .InitiateMultipartUploadAsync(presignedRequest, cancellationToken);
+
+        return response;
+    }
     
-    public async Task<Result<IReadOnlyList<string>>> UploadFiles(
-        IEnumerable<FileData> filesData,
+    public async Task<Result<string>> GetPresignedUrlPartForUpload(
+        FileMetadata fileMetadata,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var presignedRequest = new GetPreSignedUrlRequest
+            {
+                BucketName = fileMetadata.BucketName,
+                Key = fileMetadata.Key,
+                Verb = HttpVerb.PUT,
+                Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
+                Protocol = Protocol.HTTP,
+                UploadId = fileMetadata.UploadId,
+                PartNumber = fileMetadata.PartNumber,
+            };
+            
+            var result = await _client.GetPreSignedURLAsync(presignedRequest);
+    
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Fail to upload file in minio with path {path} in bucket {bucket}",
+                fileMetadata.FullPath,
+                fileMetadata.BucketName);
+
+            return Error.Failure("file.upload", "Fail to upload file in minio");
+        }
+    }
+
+    public async Task<CompleteMultipartUploadResponse> CompleteMultipartUpload(
+        FileMetadata fileMetadata, CancellationToken cancellationToken = default)
+    {
+        var presignedRequest = new CompleteMultipartUploadRequest()
+        {
+            BucketName = fileMetadata.BucketName,
+            Key = fileMetadata.Key,
+            UploadId = fileMetadata.UploadId,
+            PartETags = fileMetadata.ETags!.Select(e => new PartETag(e.PartNumber, e.ETag)).ToList()
+        };
+
+        var response = await _client
+            .CompleteMultipartUploadAsync(presignedRequest, cancellationToken);
+
+        return response;
+    }
+
+
+    public async Task<Result<string>> GetPresignedUrlForDownload(
+        FileMetadata fileMetadata, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var presignedRequest = new GetPreSignedUrlRequest
+            {
+                BucketName = fileMetadata.BucketName,
+                Key = fileMetadata.Key,
+                Verb = HttpVerb.GET,
+                Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
+                Protocol = Protocol.HTTP,
+            };
+
+            var url = await _client.GetPreSignedURLAsync(presignedRequest);
+
+            if (url is null)
+                return Error.NotFound("object.not.found", "File doesn`t exist in minio");
+
+            return url;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Fail to get file in minio");
+            return Error.Failure("file.get", "Fail to get file in minio");
+        }
+    }
+
+    public async Task<FileMetadata> GetObjectMetadata(
+        string bucketName,
+        string key,
         CancellationToken cancellationToken = default)
     {
-        var semaphoreSlim = new SemaphoreSlim(MAX_DEGREE_OF_PARALLELISM);
-        var filesList = filesData.ToList();
+        var metaDataRequest = new GetObjectMetadataRequest
+        {
+            BucketName = bucketName,
+            Key = key
+        };
+        
+        var metaDataResponse = await _client.GetObjectMetadataAsync(metaDataRequest, cancellationToken);
+
+        var metaData = new FileMetadata
+        {
+            Id = Guid.NewGuid(),
+            Key = key,
+            Size = metaDataResponse.Headers.ContentLength,
+            ContentType = metaDataResponse.Headers.ContentType
+        };
+
+        return metaData;
+    }
+
+    public async Task<Result<string>> GetPresignedUrlForDelete(
+        FileMetadata fileMetadata,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await IsBucketExist([fileMetadata.BucketName], cancellationToken);
+            
+            var deleteRequest = new GetPreSignedUrlRequest
+            {
+                BucketName = fileMetadata.BucketName,
+                Key = fileMetadata.Key,
+                Verb = HttpVerb.DELETE,
+                Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
+                Protocol = Protocol.HTTP
+            };
+            
+            var url = await _client.GetPreSignedURLAsync(deleteRequest);
+            
+            if (url is null)
+                return Error.NotFound("object.not.found", "File doesn`t exist in minio");
+            
+            return url;
+        }
+        catch(Exception e)
+        {
+            _logger.LogError(e,"Fail to remove file in minio with path {path} in bucket {bucket}",
+                fileMetadata.FullPath, fileMetadata.BucketName);
+            return Error.Failure("file.delete", "Fail to delete file in minio");
+        }
+    }
+    
+
+    public async Task<Result<string>> GetPresignedUrlForDownload(
+        FileMetadata fileMetadata,
+        SemaphoreSlim semaphoreSlim,
+        CancellationToken cancellationToken)
+    {
+        await semaphoreSlim.WaitAsync(cancellationToken);
 
         try
         {
-            await IsBucketExist(filesList.Select(f => f.FileMetadata.BucketName), cancellationToken);
+            var presignedRequest = new GetPreSignedUrlRequest
+            {
+                BucketName = fileMetadata.BucketName,
+                Key = fileMetadata.Key,
+                Verb = HttpVerb.GET,
+                Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
+                Protocol = Protocol.HTTP,
+            };
+
+            var url = await _client.GetPreSignedURLAsync(presignedRequest);
+
+            if (url is null)
+                return Error.NotFound("object.not.found", "File doesn`t exist in minio");
+
+            return url;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Fail to get file in minio");
+            return Error.Failure("file.get", "Fail to get file in minio");
+        }
+        finally
+        {
+            semaphoreSlim.Release();
+        }
+    }
+    
+    public async Task<Result<IReadOnlyList<string>>> DownloadFiles(
+        IEnumerable<FileMetadata> filesMetadata,
+        CancellationToken cancellationToken = default)
+    {
+        var semaphoreSlim = new SemaphoreSlim(MAX_DEGREE_OF_PARALLELISM);
+        var filesList = filesMetadata.ToList();
+
+        try
+        {
+            await IsBucketExist(filesList.Select(f => f.BucketName), cancellationToken);
 
             var tasks = filesList.Select(async file =>
-                await PutObject(file, semaphoreSlim, cancellationToken));
+                await GetPresignedUrlForDownload(file, semaphoreSlim, cancellationToken));
 
             var pathsResult = await Task.WhenAll(tasks);
 
@@ -46,102 +255,45 @@ public class MinioProvider : IFileProvider
         catch (Exception ex)
         {
             _logger.LogError(ex,
-                "Fail to upload files in minio, files amount: {amount}", filesList.Count);
+                "Fail to download files, files amount: {amount}", filesList.Count);
 
-            return Error.Failure("file.upload", "Fail to upload files in minio");
+            return Error.Failure("file.download", "Fail to download files");
         }
     }
-    
 
-    public async Task<Result> RemoveFile(
+    public async Task<Result<string>> GetPresignedUrlForUpload(
         FileMetadata fileMetadata,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await IsBucketExist([fileMetadata.BucketName], cancellationToken);
-
-            var key = fileMetadata.Name + "." + fileMetadata.Extension;
-
-            var deleteRequest = new DeleteObjectRequest()
-            {
-                BucketName = fileMetadata.BucketName,
-                Key = key
-            };
-            
-            await _client.DeleteObjectAsync(deleteRequest, cancellationToken);
-        }
-        catch(Exception e)
-        {
-            _logger.LogError(e,"Fail to remove file in minio with path {path} in bucket {bucket}",
-                fileMetadata.FullPath, fileMetadata.BucketName);
-            return Error.Failure("file.delete", "Fail to delete file in minio");
-        }
-
-        return Result.Success();
-    }
-    
-    public async Task<Result<string>> GetFile(FileMetadata fileMetadata, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var key = fileMetadata.Name + "." + fileMetadata.Extension;
-
-            var request = new GetPreSignedUrlRequest
-            {
-                BucketName = fileMetadata.BucketName,
-                Key = key,
-                Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL)
-            };
-
-            var url = await _client.GetPreSignedURLAsync(request);
-            
-            if (url is null)
-                return Error.NotFound("object.not.found", "File doesn`t exist in minio");
-            
-            return url;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e,"Fail to get file in minio");
-            return Error.Failure("file.get", "Fail to get file in minio");
-        }
-    }
-
-    private async Task<Result<string>> PutObject(
-        FileData fileData,
-        SemaphoreSlim semaphoreSlim,
         CancellationToken cancellationToken)
     {
-        await semaphoreSlim.WaitAsync(cancellationToken);
-
-        var key = fileData.FileMetadata.Name + "." + fileData.FileMetadata.Extension;
-        
-        var putObjectRequest = new PutObjectRequest
-        {
-            BucketName = fileData.FileMetadata.BucketName,
-            Key = key,
-            InputStream = fileData.Stream
-        };
-
         try
         {
-            await _client.PutObjectAsync(putObjectRequest, cancellationToken);
-
-            return key;
+            
+            var presignedRequest = new GetPreSignedUrlRequest
+            {
+                BucketName = fileMetadata.BucketName,
+                Key = fileMetadata.Key,
+                Verb = HttpVerb.PUT,
+                Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
+                ContentType = fileMetadata.ContentType,
+                Protocol = Protocol.HTTP,
+                Metadata =
+                {
+                    ["file-name"] = fileMetadata.Name
+                }
+            };
+            
+            var result = await _client.GetPreSignedURLAsync(presignedRequest);
+    
+            return result;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex,
                 "Fail to upload file in minio with path {path} in bucket {bucket}",
-                fileData.FileMetadata.FullPath,
-                fileData.FileMetadata.BucketName);
+                fileMetadata.FullPath,
+                fileMetadata.BucketName);
 
             return Error.Failure("file.upload", "Fail to upload file in minio");
-        }
-        finally
-        {
-            semaphoreSlim.Release();
         }
     }
     

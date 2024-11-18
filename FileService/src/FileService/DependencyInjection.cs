@@ -1,4 +1,6 @@
-﻿using FileService.Data.Options;
+﻿using FileService.Application.Providers;
+using FileService.Application.Repositories;
+using FileService.Data.Options;
 using FileService.Infrastructure;
 using FileService.Infrastructure.Providers;
 using FileService.Infrastructure.Repositories;
@@ -21,7 +23,7 @@ public static class DependencyInjection
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped<FilesDataRepository>();
+        services.AddScoped<IFilesDataRepository,FilesDataRepository>();
 
         return services;
     }
@@ -53,7 +55,7 @@ public static class DependencyInjection
             
         });
 
-        services.AddScoped<MinioProvider>();
+        services.AddScoped<IFileProvider, MinioProvider>();
 
         return services;
     }
