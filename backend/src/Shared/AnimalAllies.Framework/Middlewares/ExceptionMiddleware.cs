@@ -1,7 +1,10 @@
 using AnimalAllies.Core.Models;
 using AnimalAllies.SharedKernel.Shared;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
-namespace AnimalAllies.Web.Middlewares;
+namespace AnimalAllies.Framework.Middlewares;
 
 public class ExceptionMiddleware
 {

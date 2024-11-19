@@ -1,6 +1,7 @@
 ﻿using AnimalAllies.Core.Models;
 using AnimalAllies.Framework;
 using AnimalAllies.Framework.Authorization;
+using AnimalAllies.Framework.Models;
 using AnimalAllies.SharedKernel.Shared;
 using Microsoft.AspNetCore.Mvc;
 using VolunteerRequests.Application.Features.Commands;
@@ -24,18 +25,12 @@ public class VolunteerRequestsController: ApplicationController
     [HttpPost("creation-volunteer-request")]
     public async Task<IActionResult> CreateVolunteerRequest(
         [FromBody] CreateVolunteerRequestRequest request,
+        [FromServices] UserScopedData userScopedData,
         [FromServices] CreateVolunteerRequestHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
-        if (userIdString is null)
-            return Error.Null("user.id.null", "user id is null").ToResponse();
-
-        if (!Guid.TryParse(userIdString, out var userId))
-            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
-        
         var command = new CreateVolunteerRequestCommand(
-            userId,
+            userScopedData.UserId,
             request.FullNameDto, 
             request.Email,
             request.PhoneNumber,
@@ -55,17 +50,11 @@ public class VolunteerRequestsController: ApplicationController
     [HttpPost("{volunteerRequestId:guid}/taking-request-for-submitting")]
     public async Task<IActionResult> TakeRequestForSubmit(
         [FromRoute] Guid volunteerRequestId,
+        [FromServices] UserScopedData userScopedData,
         [FromServices] TakeRequestForSubmitHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
-        if (userIdString is null)
-            return Error.Null("user.id.null", "user id is null").ToResponse();
-
-        if (!Guid.TryParse(userIdString, out var userId))
-            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
-        
-        var command = new TakeRequestForSubmitCommand(userId, volunteerRequestId);
+        var command = new TakeRequestForSubmitCommand(userScopedData.UserId, volunteerRequestId);
 
         var result = await handler.Handle(command, cancellationToken);
 
@@ -79,17 +68,12 @@ public class VolunteerRequestsController: ApplicationController
     [HttpPost("sending-for-revision")]
     public async Task<IActionResult> SendRequestForRevision(
         [FromBody] SendRequestForRevisionRequest request,
+        [FromServices] UserScopedData userScopedData,
         [FromServices] SendRequestForRevisionHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
-        if (userIdString is null)
-            return Error.Null("user.id.null", "user id is null").ToResponse();
-
-        if (!Guid.TryParse(userIdString, out var userId))
-            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
-        
-        var command = new SendRequestForRevisionCommand(userId, request.VolunteerRequestId, request.RejectComment);
+        var command = new SendRequestForRevisionCommand(
+            userScopedData.UserId, request.VolunteerRequestId, request.RejectComment);
 
         var result = await handler.Handle(command, cancellationToken);
 
@@ -103,17 +87,12 @@ public class VolunteerRequestsController: ApplicationController
     [HttpPost("rejecting-request")]
     public async Task<IActionResult> RejectRequest(
         [FromBody] RejectVolunteerRequest request,
+        [FromServices] UserScopedData userScopedData,
         [FromServices] RejectVolunteerRequestHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
-        if (userIdString is null)
-            return Error.Null("user.id.null", "user id is null").ToResponse();
-
-        if (!Guid.TryParse(userIdString, out var userId))
-            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
-        
-        var command = new RejectVolunteerRequestCommand(userId, request.VolunteerRequestId, request.RejectComment);
+        var command = new RejectVolunteerRequestCommand(
+            userScopedData.UserId, request.VolunteerRequestId, request.RejectComment);
 
         var result = await handler.Handle(command, cancellationToken);
 
@@ -127,17 +106,11 @@ public class VolunteerRequestsController: ApplicationController
     [HttpPost("{volunteerRequestId:guid}approving-request")]
     public async Task<IActionResult> ApproveRequest(
         [FromRoute] Guid volunteerRequestId,
+        [FromServices] UserScopedData userScopedData,
         [FromServices] ApproveVolunteerRequestHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
-        if (userIdString is null)
-            return Error.Null("user.id.null", "user id is null").ToResponse();
-
-        if (!Guid.TryParse(userIdString, out var userId))
-            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
-        
-        var command = new ApproveVolunteerRequestCommand(userId, volunteerRequestId);
+        var command = new ApproveVolunteerRequestCommand(userScopedData.UserId, volunteerRequestId);
 
         var result = await handler.Handle(command, cancellationToken);
 
@@ -172,18 +145,12 @@ public class VolunteerRequestsController: ApplicationController
     [HttpGet("filtered-volunteer-requests-by-admin-id-with-pagination")]
     public async Task<ActionResult> GetFilteredVolunteerRequestsByAdminId(
         [FromQuery] GetFilteredRequestsByAdminIdRequest request,
+        [FromServices] UserScopedData userScopedData,
         [FromServices] GetFilteredVolunteerRequestsByAdminIdWithPaginationHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
-        if (userIdString is null)
-            return Error.Null("user.id.null", "user id is null").ToResponse();
-
-        if (!Guid.TryParse(userIdString, out var userId))
-            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
-        
         var query = new GetFilteredVolunteerRequestsByAdminIdWithPaginationQuery(
-            userId,
+            userScopedData.UserId,
             request.RequestStatus,
             request.SortBy,
             request.SortDirection,
@@ -202,18 +169,12 @@ public class VolunteerRequestsController: ApplicationController
     [HttpGet("filtered-volunteer-requests-by-user-id-with-pagination")]
     public async Task<ActionResult> GetFilteredVolunteerRequestsByUserId(
         [FromQuery] GetFilteredRequestsByUserIdRequest request,
+        [FromServices] UserScopedData userScopedData,
         [FromServices] GetFilteredVolunteerRequestsByUserIdWithPaginationHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
-        if (userIdString is null)
-            return Error.Null("user.id.null", "user id is null").ToResponse();
-
-        if (!Guid.TryParse(userIdString, out var userId))
-            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
-        
         var query = new GetFilteredVolunteerRequestsByUserIdWithPaginationQuery(
-            userId,
+            userScopedData.UserId,
             request.RequestStatus,
             request.SortBy,
             request.SortDirection,
@@ -232,18 +193,12 @@ public class VolunteerRequestsController: ApplicationController
     [HttpPut("update-volunteer-request")]
     public async Task<ActionResult> UpdateVolunteerRequest(
         [FromBody] UpdateRequest request,
+        [FromServices] UserScopedData userScopedData,
         [FromServices] UpdateVolunteerRequestHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
-        if (userIdString is null)
-            return Error.Null("user.id.null", "user id is null").ToResponse();
-
-        if (!Guid.TryParse(userIdString, out var userId))
-            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
-        
         var command = new UpdateVolunteerRequestCommand(
-            userId,
+            userScopedData.UserId,
             request.VolunteerRequestId,
             request.FullNameDto,
             request.Email,
@@ -264,17 +219,11 @@ public class VolunteerRequestsController: ApplicationController
     [HttpPut("{volunteerRequestId:guid}/resending-volunteer-request")]
     public async Task<ActionResult> ResendVolunteerRequest(
         [FromRoute] Guid volunteerRequestId,
+        [FromServices] UserScopedData userScopedData,
         [FromServices] ResendVolunteerRequestHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
-        if (userIdString is null)
-            return Error.Null("user.id.null", "user id is null").ToResponse();
-
-        if (!Guid.TryParse(userIdString, out var userId))
-            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
-        
-        var query = new ResendVolunteerRequestCommand(userId, volunteerRequestId);
+        var query = new ResendVolunteerRequestCommand(userScopedData.UserId, volunteerRequestId);
 
         var result = await handler.Handle(query, cancellationToken);
 

@@ -2,8 +2,8 @@ using AnimalAllies.Accounts.Application;
 using AnimalAllies.Accounts.Infrastructure;
 using AnimalAllies.Accounts.Infrastructure.Seeding;
 using AnimalAllies.Accounts.Presentation;
+using AnimalAllies.Framework.Middlewares;
 using AnimalAllies.Web.Extensions;
-using AnimalAllies.Web.Middlewares;
 using AnimalAllies.Species.Application;
 using AnimalAllies.Volunteer.Application;
 using AnimalAllies.Volunteer.Infrastructure;
@@ -55,6 +55,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+app.UseScopeDataMiddleware();
 app.UseAuthorization();
 
 app.MapControllers();

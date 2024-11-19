@@ -72,8 +72,8 @@ public class RefreshTokensHandler: ICommandHandler<RefreshTokensCommand, LoginRe
         _refreshSessionManager.Delete(refreshSession.Value);
         await _unitOfWork.SaveChanges(cancellationToken);
 
-        var accessToken = _tokenProvider
-            .GenerateAccessToken(refreshSession.Value.User);
+        var accessToken = await _tokenProvider
+            .GenerateAccessToken(refreshSession.Value.User,cancellationToken);
         var refreshToken = await _tokenProvider
             .GenerateRefreshToken(refreshSession.Value.User,accessToken.Jti, cancellationToken);
 

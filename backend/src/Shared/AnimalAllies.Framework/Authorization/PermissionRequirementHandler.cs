@@ -1,39 +1,35 @@
 ﻿using AnimalAllies.Accounts.Contracts;
 using AnimalAllies.Core.Models;
+using AnimalAllies.Framework.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AnimalAllies.Framework.Authorization;
 
-public class PermissionRequirementHandler(
-    IServiceScopeFactory serviceScopeFactory)
+public class PermissionRequirementHandler(IHttpContextAccessor httpContextAccessor) 
     : AuthorizationHandler<PermissionAttribute>
 {
+
     protected override async Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
         PermissionAttribute permission)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-
-        var accountContract = scope.ServiceProvider.GetRequiredService<IAccountContract>();
-        var userIdString = context.User.Claims
-             .FirstOrDefault(claim => claim.Type == CustomClaims.Id)?.Value;
-        if (!Guid.TryParse(userIdString, out var userId))
+        if (context.User.Identity is null || !context.User.Identity.IsAuthenticated 
+                                          || httpContextAccessor.HttpContext is null)
         {
             context.Fail();
             return;
         }
 
-        var permissions = await accountContract.GetPermissionsByUserId(userId);
-        if (permissions.IsFailure)
-            context.Fail();
+        var userScopedData = httpContextAccessor.HttpContext.RequestServices.GetRequiredService<UserScopedData>();
 
-        if (permissions.Value.Contains(permission.Code))
+        if (userScopedData.Permissions.Contains(permission.Code))
         {
             context.Succeed(permission);
             return;
         }
-        
+
         context.Fail();
     }
 }

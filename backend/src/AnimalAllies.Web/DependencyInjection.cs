@@ -1,6 +1,7 @@
 ﻿using AnimalAllies.Accounts.Application;
 using AnimalAllies.Accounts.Infrastructure;
 using AnimalAllies.Accounts.Presentation;
+using AnimalAllies.Framework.Models;
 using AnimalAllies.Species.Application;
 using AnimalAllies.Species.Infrastructure;
 using AnimalAllies.Species.Presentation;
@@ -26,7 +27,16 @@ public static class DependencyInjection
             .AddPetsManagementModule(configuration)
             .AddBreedsManagementModule(configuration)
             .AddVolunteerRequestsManagementModule(configuration)
-            .AddDiscussionManagementModule(configuration);
+            .AddDiscussionManagementModule(configuration)
+            .AddFramework();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddFramework(this IServiceCollection services)
+    {
+        services.AddHttpContextAccessor();
+        services.AddScoped<UserScopedData>();
 
         return services;
     }

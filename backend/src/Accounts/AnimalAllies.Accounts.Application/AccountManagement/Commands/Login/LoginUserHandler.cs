@@ -5,6 +5,7 @@ using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Shared;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Accounts.Application.AccountManagement.Commands.Login;
@@ -36,7 +37,10 @@ public class LoginUserHandler : ICommandHandler<LoginUserCommand,LoginResponse>
         if (!validatorResult.IsValid)
             return validatorResult.ToErrorList();
         
-        var user = await _userManager.FindByEmailAsync(command.Email);
+        var user = await _userManager.Users
+            .Include(u => u.Roles)
+            .FirstOrDefaultAsync(u => u.Email == command.Email, cancellationToken);
+        
         if (user is null)
             return Errors.General.NotFound();
 
@@ -46,7 +50,7 @@ public class LoginUserHandler : ICommandHandler<LoginUserCommand,LoginResponse>
             return Errors.User.InvalidCredentials();
         }
 
-        var accessToken = _tokenProvider.GenerateAccessToken(user);
+        var accessToken = await _tokenProvider.GenerateAccessToken(user, cancellationToken);
         var refreshToken = await _tokenProvider.GenerateRefreshToken(user, accessToken.Jti,cancellationToken);
 
         _logger.LogInformation("Successfully logged in");
