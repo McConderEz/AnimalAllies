@@ -7,6 +7,7 @@ using AnimalAllies.Accounts.Application.AccountManagement.Queries.GetUserById;
 using AnimalAllies.Accounts.Contracts.Requests;
 using AnimalAllies.Core.Models;
 using AnimalAllies.Framework;
+using AnimalAllies.Framework.Models;
 using AnimalAllies.SharedKernel.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -69,17 +70,11 @@ public class AccountController: ApplicationController
     [HttpPost("social-networks-to-user")]
     public async Task<IActionResult> AddSocialNetworksToUser(
         [FromBody] AddSocialNetworksRequest request,
+        [FromServices] UserScopedData userScopedData,
         [FromServices] AddSocialNetworkHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
-        if (userIdString is null)
-            return Error.Null("user.id.null", "user id is null").ToResponse();
-
-        if (!Guid.TryParse(userIdString, out var userId))
-            return Error.Failure("parse.error", "cannot convert user id to guid").ToResponse();
-        
-        var command = new AddSocialNetworkCommand(userId, request.SocialNetworkDtos);
+        var command = new AddSocialNetworkCommand(userScopedData.UserId, request.SocialNetworkDtos);
 
         var result = await handler.Handle(command, cancellationToken);
         if (result.IsFailure)
