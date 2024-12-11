@@ -210,18 +210,11 @@ namespace AnimalAllies.Accounts.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("permission_id");
 
-                    b.Property<Guid?>("PermissionId1")
-                        .HasColumnType("uuid")
-                        .HasColumnName("permission_id1");
-
                     b.HasKey("RoleId", "PermissionId")
                         .HasName("pk_role_permissions");
 
                     b.HasIndex("PermissionId")
                         .HasDatabaseName("ix_role_permissions_permission_id");
-
-                    b.HasIndex("PermissionId1")
-                        .HasDatabaseName("ix_role_permissions_permission_id1");
 
                     b.ToTable("role_permissions", "accounts");
                 });
@@ -295,7 +288,7 @@ namespace AnimalAllies.Accounts.Infrastructure.Migrations
 
                     b.Property<string>("SocialNetworks")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("jsonb")
                         .HasColumnName("social_networks");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -333,7 +326,7 @@ namespace AnimalAllies.Accounts.Infrastructure.Migrations
 
                     b.Property<string>("Certificates")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("jsonb")
                         .HasColumnName("certificates");
 
                     b.Property<int>("Experience")
@@ -342,7 +335,7 @@ namespace AnimalAllies.Accounts.Infrastructure.Migrations
 
                     b.Property<string>("Requisites")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("jsonb")
                         .HasColumnName("requisites");
 
                     b.Property<Guid>("UserId")
@@ -549,7 +542,7 @@ namespace AnimalAllies.Accounts.Infrastructure.Migrations
                         .HasForeignKey("AnimalAllies.Accounts.Domain.ParticipantAccount", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_participant_accounts_users_user_id");
+                        .HasConstraintName("fk_participant_accounts_asp_net_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -569,16 +562,11 @@ namespace AnimalAllies.Accounts.Infrastructure.Migrations
             modelBuilder.Entity("AnimalAllies.Accounts.Domain.RolePermission", b =>
                 {
                     b.HasOne("AnimalAllies.Accounts.Domain.Permission", "Permission")
-                        .WithMany()
+                        .WithMany("RolePermissions")
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_role_permissions_permissions_permission_id");
-
-                    b.HasOne("AnimalAllies.Accounts.Domain.Permission", null)
-                        .WithMany("RolePermissions")
-                        .HasForeignKey("PermissionId1")
-                        .HasConstraintName("fk_role_permissions_permissions_permission_id1");
 
                     b.HasOne("AnimalAllies.Accounts.Domain.Role", "Role")
                         .WithMany("RolePermissions")

@@ -24,6 +24,7 @@ builder.Services.AddHttpLogging(o =>
     o.CombineLogs = true;
 });
 
+
 builder.Services.AddSerilog();
 
 builder.Services.AddModules(builder.Configuration);

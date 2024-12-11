@@ -170,14 +170,12 @@ public class GetFilteredVolunteersWithPaginationHandlerDapper :
         sql.ApplyPagination(query.Page,query.PageSize);
         
         var volunteers = 
-            await connection.QueryAsync<VolunteerDto, string, string, VolunteerDto>(
+            await connection.QueryAsync<VolunteerDto, RequisiteDto[], SocialNetworkDto[], VolunteerDto>(
                 sql.ToString(),
-                (volunteer, jsonRequisites, jsonSocialNetworks) =>
+                (volunteer, requisites, socialNetworks) =>
                 {
-                    var requisites = JsonSerializer.Deserialize<RequisiteDto[]>(jsonRequisites) ?? [];
                     volunteer.Requisites = requisites;
-
-                    var socialNetworks = JsonSerializer.Deserialize<SocialNetworkDto[]>(jsonSocialNetworks) ?? [];
+                    
                     volunteer.SocialNetworks = socialNetworks;
                     
                     return volunteer;

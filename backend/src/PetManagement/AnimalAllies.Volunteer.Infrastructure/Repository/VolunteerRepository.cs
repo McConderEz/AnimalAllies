@@ -54,7 +54,7 @@ public class VolunteerRepository: IVolunteerRepository
         var volunteer = await _context.Volunteers
             .Include(x => x.Pets)
             .FirstOrDefaultAsync(x => x.Id == id,cancellationToken);
-
+        
         if (volunteer == null)
             return Result<Domain.VolunteerManagement.Aggregate.Volunteer>.Failure(Errors.General.NotFound(id.Id));
 

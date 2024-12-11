@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using FileService.Api.Endpoints;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using MongoDB.Driver.Linq;
 
 namespace FileService.Api.Extensions;
 

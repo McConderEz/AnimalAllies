@@ -96,14 +96,12 @@ public class GetFilteredPetsWithPaginationHandler : IQueryHandler<PagedList<PetD
         sql.ApplyPagination(query.Page,query.PageSize);
         
         var pets = 
-            await connection.QueryAsync<PetDto, string, string, PetDto>(
+            await connection.QueryAsync<PetDto, RequisiteDto[], PetPhotoDto[], PetDto>(
                 sql.ToString(),
-                (pet, jsonRequisites, jsonPetPhotos) =>
+                (pet, requisites, petPhotoDtos) =>
                 {
-                    var requisites = JsonSerializer.Deserialize<RequisiteDto[]>(jsonRequisites) ?? [];
                     pet.Requisites = requisites;
-
-                    var petPhotoDtos = JsonSerializer.Deserialize<PetPhotoDto[]>(jsonPetPhotos) ?? [];
+                    
                     pet.PetPhotos = petPhotoDtos;
                     
                     return pet;

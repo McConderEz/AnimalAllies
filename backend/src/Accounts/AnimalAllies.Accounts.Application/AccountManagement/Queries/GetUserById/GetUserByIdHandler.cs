@@ -77,11 +77,11 @@ public class GetUserByIdHandler: IQueryHandler<UserDto?, GetUserByIdQuery>
                                              join accounts.roles r on ru.roles_id = r.id
                                              left join accounts.participant_accounts pa on u.participant_account_id = pa.id
                                              left join accounts.volunteer_accounts va on u.volunteer_account_id = va.id
-                                    where u.id = @UserId
+                                    where u.id = @UserId limit 1
                                     """);
 
-        var user = await connection
-            .QueryAsync<UserDto, RoleDto,VolunteerAccountDto,ParticipantAccountDto,string,string, string, UserDto>(
+        /*var user = await connection
+            .QueryAsync<UserDto, RoleDto,VolunteerAccountDto?,ParticipantAccountDto?,string,string, string, UserDto>(
                 sql.ToString(),
                 (user, role,volunteer,participant, jsonSocialNetworks, jsonRequisites, jsonCertificates) =>
                 {
@@ -111,6 +111,36 @@ public class GetUserByIdHandler: IQueryHandler<UserDto?, GetUserByIdQuery>
 
                     user.Roles = [role];
                     
+                    return user;
+                },
+                param: parameters,
+                splitOn: "role_id, volunteer_id, participant_id, social_networks, requisites, certificates"
+            );*/
+        
+        var user = await connection
+            .QueryAsync<UserDto, RoleDto, VolunteerAccountDto?, ParticipantAccountDto?, SocialNetworkDto[], RequisiteDto[], CertificateDto[], UserDto>(
+                sql.ToString(),
+                (user, role, volunteer, participant, socialNetworks, requisites, certificates) =>
+                {
+                    user.SocialNetworks = socialNetworks;
+
+                    if (volunteer is not null)
+                    {
+                        volunteer.Requisites = requisites;
+                        volunteer.Certificates = certificates;
+                
+                        user.VolunteerAccount = volunteer;
+                        user.VolunteerAccountId = volunteer.VolunteerId;
+                    }
+
+                    if (participant is not null)
+                    {
+                        user.ParticipantAccount = participant;
+                        user.ParticipantAccountId = participant.ParticipantId;
+                    }
+
+                    user.Roles = new[] { role };
+            
                     return user;
                 },
                 param: parameters,
