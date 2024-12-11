@@ -77,11 +77,11 @@ public class GetUserByIdHandler: IQueryHandler<UserDto?, GetUserByIdQuery>
                                              join accounts.roles r on ru.roles_id = r.id
                                              left join accounts.participant_accounts pa on u.participant_account_id = pa.id
                                              left join accounts.volunteer_accounts va on u.volunteer_account_id = va.id
-                                    where u.id = @UserId
+                                    where u.id = @UserId limit 1
                                     """);
 
         var user = await connection
-            .QueryAsync<UserDto, RoleDto,VolunteerAccountDto,ParticipantAccountDto,string,string, string, UserDto>(
+            .QueryAsync<UserDto, RoleDto,VolunteerAccountDto?,ParticipantAccountDto?,string,string, string, UserDto>(
                 sql.ToString(),
                 (user, role,volunteer,participant, jsonSocialNetworks, jsonRequisites, jsonCertificates) =>
                 {
