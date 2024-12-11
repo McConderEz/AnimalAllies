@@ -71,13 +71,10 @@ public class GetVolunteerRequestsInWaitingWithPaginationHandler:
         sql.ApplyPagination(query.Page,query.PageSize);
         
         var volunteerRequests = 
-            await connection.QueryAsync<VolunteerRequestDto, string, VolunteerRequestDto>(
+            await connection.QueryAsync<VolunteerRequestDto, SocialNetworkDto[], VolunteerRequestDto>(
                 sql.ToString(),
-                (volunteerRequest, jsonSocialNetworks) =>
+                (volunteerRequest, socialNetworks) =>
                 {
-                    var socialNetworks = JsonSerializer
-                        .Deserialize<SocialNetworkDto[]>(jsonSocialNetworks) ?? [];
-
                     volunteerRequest.SocialNetworks = socialNetworks;
                     return volunteerRequest;
                 },

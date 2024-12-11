@@ -1,5 +1,8 @@
 using AnimalAllies.Core.Common;
+using AnimalAllies.Core.Dapper;
 using AnimalAllies.Core.Database;
+using AnimalAllies.Core.DTOs.Accounts;
+using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Messaging;
 using AnimalAllies.Core.Options;
 using AnimalAllies.SharedKernel.Constraints;
@@ -14,6 +17,7 @@ using AnimalAllies.Volunteer.Infrastructure.Options;
 using AnimalAllies.Volunteer.Infrastructure.Providers;
 using AnimalAllies.Volunteer.Infrastructure.Repository;
 using AnimalAllies.Volunteer.Infrastructure.Services;
+using Dapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Minio;
@@ -34,7 +38,6 @@ public static class DependencyInjection
             .AddServices(configuration);
         
         services.AddTransient<IDateTimeProvider, DateTimeProvider>();
-        
         
         services.AddSingleton<IMessageQueue<IEnumerable<Application.FileProvider.FileInfo>>,
             InMemoryMessageQueue<IEnumerable<Application.FileProvider.FileInfo>>>();
