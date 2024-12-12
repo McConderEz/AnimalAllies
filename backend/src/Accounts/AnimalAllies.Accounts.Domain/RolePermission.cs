@@ -2,9 +2,9 @@
 
 public class RolePermission
 {
-    public Guid RoleId { get; set; }
-    public Role Role { get; set; }
+    public Guid RoleId { get; init; }
+    public Role Role { get; init; } = default!;
     
-    public Guid PermissionId { get; set; }
-    public Permission Permission { get; set; }
+    public Guid PermissionId { get; init; }
+    public Permission Permission { get; init; } = default!;
 }
