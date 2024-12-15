@@ -5,6 +5,8 @@ using FileService.Application.Providers;
 using FileService.Application.Repositories;
 using FileService.Data.Models;
 using FileService.Data.Shared;
+using FileService.Jobs;
+using Hangfire;
 
 namespace FileService.Features;
 
@@ -28,12 +30,13 @@ public static class UploadPresignedUrl
 
     private static async Task<IResult> Handler( 
         UploadPresignedUrlRequest request,
-        IFilesDataRepository filesDataRepository,
-        IFileProvider provider,
+        IFilesDataRepository repository,
+        IFileProvider fileProvider,
         CancellationToken cancellationToken = default)
     {
-
         var key = Guid.NewGuid();
+
+        var fileId = Guid.NewGuid();
         
         var fileMetadata = new FileMetadata
         {
@@ -44,7 +47,22 @@ public static class UploadPresignedUrl
             Key = $"{key}.{request.Extension}"
         };
         
-        var result = await provider.GetPresignedUrlForUpload(fileMetadata, cancellationToken); 
+        var result = await fileProvider.GetPresignedUrlForUpload(fileMetadata, cancellationToken); 
+        
+        var metaDataResponse =
+            await fileProvider.GetObjectMetadata(fileMetadata.BucketName, fileMetadata.Key, cancellationToken);
+
+        metaDataResponse.Id = fileId;
+        
+        await repository.AddRangeAsync([metaDataResponse], cancellationToken);
+        
+        var jobId = BackgroundJob.Schedule<ConfirmConsistencyJob>(
+            j => j.Execute(
+                metaDataResponse.Id,metaDataResponse.BucketName, metaDataResponse.Key),
+            TimeSpan.FromMinutes(1));
+
+        BackgroundJob.Delete(jobId);
+        
         return Results.Ok(new
         {
             key,
