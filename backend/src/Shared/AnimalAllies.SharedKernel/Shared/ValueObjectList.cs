@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Text.Json.Serialization;
+using AnimalAllies.SharedKernel.Shared.Objects;
 
 namespace AnimalAllies.SharedKernel.Shared;
 

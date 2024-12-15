@@ -1,4 +1,5 @@
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using FluentValidation;
 
 namespace AnimalAllies.Core.Validators;

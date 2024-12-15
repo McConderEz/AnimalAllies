@@ -4,6 +4,7 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using Discussion.Application.Repository;
 using Discussion.Domain.ValueObjects;
@@ -20,7 +21,7 @@ public class CreateDiscussionHandler: ICommandHandler<CreateDiscussionCommand, D
     private readonly IValidator<CreateDiscussionCommand> _validator;
     private readonly IDiscussionRepository _repository;
     private readonly IAccountContract _accountContract;
-
+    //TODO: Удалить
     public CreateDiscussionHandler(
         ILogger<CreateDiscussionHandler> logger, 
         IValidator<CreateDiscussionCommand> validator, 

@@ -1,11 +1,14 @@
 ﻿using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.SharedKernel.Shared.Objects;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
+using VolunteerRequests.Domain.Events;
 using VolunteerRequests.Domain.ValueObjects;
 
 namespace VolunteerRequests.Domain.Aggregates;
 
-public class VolunteerRequest: Entity<VolunteerRequestId>
+public class VolunteerRequest: DomainEntity<VolunteerRequestId>
 {
     private VolunteerRequest(VolunteerRequestId id) : base(id){}
 
@@ -65,6 +68,7 @@ public class VolunteerRequest: Entity<VolunteerRequestId>
         RequestStatus = RequestStatus.Submitted;
         AdminId = adminId;
         DiscussionId = discussionId;
+        
         return Result.Success();
     }
 
@@ -102,6 +106,10 @@ public class VolunteerRequest: Entity<VolunteerRequestId>
         
         RequestStatus = RequestStatus.Rejected;
         RejectionComment = rejectionComment;
+
+        var @event = new VolunteerRequestRejectedEvent(UserId);
+        
+        AddDomainEvent(@event);
         
         return Result.Success();;
     }

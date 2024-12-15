@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using AnimalAllies.SharedKernel.Shared.Objects;
 
 namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
@@ -21,12 +22,12 @@ public class Requisite : ValueObject
     {
         if(string.IsNullOrWhiteSpace(title) || title.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Errors.General.ValueIsRequired(title);
+            return Errors.Errors.General.ValueIsRequired(title);
         }
         
         if(string.IsNullOrWhiteSpace(description) || title.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Errors.General.ValueIsRequired(description);
+            return Errors.Errors.General.ValueIsRequired(description);
         }
 
         return new Requisite(title, description);

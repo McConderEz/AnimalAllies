@@ -4,6 +4,7 @@ using AnimalAllies.Core.Extension;
 using AnimalAllies.Core.Messaging;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.Volunteer.Application.FileProvider;
 using AnimalAllies.Volunteer.Application.Providers;

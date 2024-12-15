@@ -2,6 +2,7 @@ using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using AnimalAllies.Species.Contracts;

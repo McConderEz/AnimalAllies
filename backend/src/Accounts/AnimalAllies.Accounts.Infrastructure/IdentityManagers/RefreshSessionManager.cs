@@ -1,6 +1,7 @@
 ﻿using AnimalAllies.Accounts.Application.Managers;
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using Microsoft.EntityFrameworkCore;
 
 namespace AnimalAllies.Accounts.Infrastructure.IdentityManagers;

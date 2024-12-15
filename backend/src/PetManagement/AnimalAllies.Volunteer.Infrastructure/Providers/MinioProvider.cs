@@ -1,4 +1,5 @@
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.Volunteer.Application.FileProvider;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 using Microsoft.Extensions.Logging;

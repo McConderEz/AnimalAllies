@@ -1,5 +1,7 @@
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.SharedKernel.Shared.Objects;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using AnimalAllies.Species.Domain.Entities;
 

@@ -1,3 +1,5 @@
+using AnimalAllies.SharedKernel.Shared.Errors;
+
 namespace AnimalAllies.SharedKernel.Shared;
 
 public class Result
@@ -22,6 +24,11 @@ public class Result
     public static Result Failure(Error error) => new(false, [error]);
     public static implicit operator Result(Error error) => new( false, [error]);
     public static implicit operator Result(ErrorList errors) => new( false, errors);
+
+    public override string ToString()
+    {
+        return string.Join("\n", Errors);
+    }
 }
 
 public class Result<TValue> : Result

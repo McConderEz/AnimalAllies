@@ -3,6 +3,7 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using Discussion.Contracts;
 using FluentValidation;
@@ -43,6 +44,8 @@ public class TakeRequestForSubmitHandler: ICommandHandler<TakeRequestForSubmitCo
         if (!validatorResult.IsValid)
             return validatorResult.ToErrorList();
 
+        //TODO: переписать на интеграционные события через Rabbitmq
+        
         var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
         try
         {

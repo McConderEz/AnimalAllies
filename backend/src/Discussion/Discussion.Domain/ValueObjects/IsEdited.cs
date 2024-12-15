@@ -1,4 +1,5 @@
 ﻿using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Objects;
 
 namespace Discussion.Domain.ValueObjects;
 

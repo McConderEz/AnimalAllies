@@ -34,7 +34,7 @@ public static class DependencyInjection
             .AddDiscussionManagementModule(configuration)
             .AddFramework()
             .AddSqlMappers();
-
+        
         return services;
     }
 

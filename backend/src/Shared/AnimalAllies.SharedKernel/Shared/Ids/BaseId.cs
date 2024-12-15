@@ -1,4 +1,6 @@
-namespace AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Objects;
+
+namespace AnimalAllies.SharedKernel.Shared.Ids;
 
 public class BaseId<TId>: ValueObject where TId: notnull
 {

@@ -1,6 +1,7 @@
 ﻿using AnimalAllies.Core.Validators;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using FluentValidation;
 
 namespace AnimalAllies.Species.Application.SpeciesManagement.Commands.CreateBreed;

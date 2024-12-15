@@ -2,6 +2,7 @@
 
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.SharedKernel.Shared.Objects;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 
 namespace AnimalAllies.Species.Domain.Entities;

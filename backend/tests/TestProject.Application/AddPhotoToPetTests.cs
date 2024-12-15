@@ -3,6 +3,7 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Messaging;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using AnimalAllies.Volunteer.Application.FileProvider;
@@ -16,7 +17,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using Moq;
-using static AnimalAllies.SharedKernel.Shared.Errors;
+using static AnimalAllies.SharedKernel.Shared.Errors.Errors;
 
 namespace TestProject.Application;
 

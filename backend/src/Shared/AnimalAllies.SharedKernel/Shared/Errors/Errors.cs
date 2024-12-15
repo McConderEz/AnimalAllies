@@ -1,4 +1,4 @@
-namespace AnimalAllies.SharedKernel.Shared;
+namespace AnimalAllies.SharedKernel.Shared.Errors;
 
 public static class Errors
 {

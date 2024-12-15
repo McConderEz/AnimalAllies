@@ -1,9 +1,11 @@
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
+using AnimalAllies.SharedKernel.Shared.Objects;
 
 namespace AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 
-public class PetDetails: SharedKernel.Shared.ValueObject
+public class PetDetails: ValueObject
 {
     public string Description { get; }
     public DateOnly BirthDate { get; } 

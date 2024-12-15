@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using AnimalAllies.SharedKernel.Shared.Objects;
 
 namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
@@ -21,12 +22,12 @@ public class SocialNetwork: ValueObject
     {
         if (string.IsNullOrWhiteSpace(title) || title.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Errors.General.ValueIsRequired(title);
+            return Errors.Errors.General.ValueIsRequired(title);
         }
 
         if (string.IsNullOrWhiteSpace(url) || url.Length > Constraints.Constraints.MAX_URL_LENGTH)
         {
-            return Errors.General.ValueIsRequired(url);
+            return Errors.Errors.General.ValueIsRequired(url);
         }
 
         return new SocialNetwork(title, url);
