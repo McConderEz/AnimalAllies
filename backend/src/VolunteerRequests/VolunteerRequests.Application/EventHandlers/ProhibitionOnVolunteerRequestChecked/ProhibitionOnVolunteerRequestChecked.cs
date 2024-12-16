@@ -1,11 +1,9 @@
 ﻿using AnimalAllies.SharedKernel.Exceptions;
-using AnimalAllies.SharedKernel.Shared;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using VolunteerRequests.Application.Repository;
 using VolunteerRequests.Domain.Events;
 
-namespace VolunteerRequests.Application.EventHandlers.VolunteerRequestRejectedEventHandlers;
+namespace VolunteerRequests.Application.EventHandlers.ProhibitionOnVolunteerRequestChecked;
 
 public class ProhibitionOnVolunteerRequestChecked : INotificationHandler<ProhibitionOnVolunteerRequestCheckedEvent>
 {

@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Shared\AnimalAllies.SharedKernel\AnimalAllies.SharedKernel.csproj" />
+      <ProjectReference Include="..\VolunteerRequests.Contracts\VolunteerRequests.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

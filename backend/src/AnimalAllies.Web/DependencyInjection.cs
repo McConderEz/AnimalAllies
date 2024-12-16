@@ -1,4 +1,6 @@
 ﻿using AnimalAllies.Accounts.Application;
+using AnimalAllies.Accounts.Application.AccountManagement.Consumers;
+using AnimalAllies.Accounts.Application.AccountManagement.Consumers.ApprovedVolunteerRequestEvent;
 using AnimalAllies.Accounts.Infrastructure;
 using AnimalAllies.Accounts.Presentation;
 using AnimalAllies.Core.Dapper;
@@ -15,6 +17,7 @@ using Dapper;
 using Discussion.Application;
 using Discussion.Infrastructure;
 using Discussion.Presentation;
+using MassTransit;
 using VolunteerRequests.Application;
 using VolunteerRequests.Infrastructure;
 
@@ -33,6 +36,7 @@ public static class DependencyInjection
             .AddVolunteerRequestsManagementModule(configuration)
             .AddDiscussionManagementModule(configuration)
             .AddFramework()
+            .AddMessageBus(configuration)
             .AddSqlMappers();
         
         return services;
@@ -44,6 +48,32 @@ public static class DependencyInjection
         SqlMapper.AddTypeHandler(typeof(RequisiteDto[]), new JsonTypeHandler<RequisiteDto[]>());
         SqlMapper.AddTypeHandler(typeof(CertificateDto[]), new JsonTypeHandler<CertificateDto[]>());
         SqlMapper.AddTypeHandler(typeof(PetPhotoDto[]), new JsonTypeHandler<PetPhotoDto[]>());
+    }
+
+    private static IServiceCollection AddMessageBus(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMassTransit(configure =>
+        {
+            configure.SetKebabCaseEndpointNameFormatter();
+
+
+            configure.AddConsumer<ApprovedVolunteerRequestEventConsume>();
+            
+            configure.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(new Uri(configuration["RabbitMQ:Host"]!), h =>
+                {
+                    h.Username(configuration["RabbitMQ:UserName"]!);
+                    h.Password(configuration["RabbitMQ:Password"]!);
+                });
+
+                cfg.Durable = true;
+                
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+        
+        return services;
     }
     
     private static IServiceCollection AddFramework(this IServiceCollection services)

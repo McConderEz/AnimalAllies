@@ -7,9 +7,11 @@ using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VolunteerRequests.Application.Repository;
+using VolunteerRequests.Domain.Aggregates;
 
 namespace VolunteerRequests.Application.Features.Commands.UpdateVolunteerRequest;
 
@@ -42,11 +44,27 @@ public class UpdateVolunteerRequestHandler : ICommandHandler<UpdateVolunteerRequ
         var volunteerRequestId = VolunteerRequestId.Create(command.VolunteerRequestId);
         var volunteerRequest = await _repository.GetById(volunteerRequestId, cancellationToken);
         if (volunteerRequest.IsFailure)
-            return validationResult.ToErrorList();
-
-        if (volunteerRequest.Value.UserId != command.UserId)
-            return Error.Failure("access.conflict", "Request belong another user!");
+            return volunteerRequest.Errors;
         
+        if (volunteerRequest.Value.UserId != command.UserId)
+            return volunteerRequest.Errors;
+        
+        var volunteerInfo = InitVolunteerInfo(command, cancellationToken).Value;
+
+        var result = volunteerRequest.Value.UpdateVolunteerRequest(volunteerInfo);
+        if (result.IsFailure)
+            return result.Errors;
+
+        await _unitOfWork.SaveChanges(cancellationToken);
+        
+        _logger.LogInformation("volunteer request with id {id} was updated", command.VolunteerRequestId);
+
+        return volunteerRequestId;
+    }
+
+    private Result<VolunteerInfo> InitVolunteerInfo(
+        UpdateVolunteerRequestCommand command, CancellationToken cancellationToken)
+    {
         var fullName = FullName.Create(
             command.FullNameDto.FirstName,
             command.FullNameDto.SecondName,
@@ -61,15 +79,7 @@ public class UpdateVolunteerRequestHandler : ICommandHandler<UpdateVolunteerRequ
 
         var volunteerInfo = new VolunteerInfo(
             fullName, email, phoneNumber, workExperience, volunteerDescription, socialNetworks);
-
-        var result = volunteerRequest.Value.UpdateVolunteerRequest(volunteerInfo);
-        if (result.IsFailure)
-            return result.Errors;
-
-        await _unitOfWork.SaveChanges(cancellationToken);
         
-        _logger.LogInformation("volunteer request with id {id} was updated", command.VolunteerRequestId);
-
-        return volunteerRequestId;
+        return volunteerInfo;
     }
 }

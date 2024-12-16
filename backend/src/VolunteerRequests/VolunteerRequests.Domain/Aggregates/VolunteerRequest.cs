@@ -3,6 +3,7 @@ using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.Objects;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
+using VolunteerRequests.Contracts.Messaging;
 using VolunteerRequests.Domain.Events;
 using VolunteerRequests.Domain.ValueObjects;
 
@@ -120,6 +121,19 @@ public class VolunteerRequest: DomainEntity<VolunteerRequestId>
             return Errors.General.ValueIsInvalid("volunteer request status");
         
         RequestStatus = RequestStatus.Approved;
+        
+        (string firstName, string secondName, string? patronymic) = VolunteerInfo.FullName;
+
+        //Возможно стоит передавать SocialNetworkDtos и CertificateDtos, но он в Core, поэтому думаем
+        var @event = new ApprovedVolunteerRequestEvent(
+            UserId,
+            firstName,
+            secondName,
+            patronymic,
+            VolunteerInfo.WorkExperience.Value);
+        
+        AddDomainEvent(@event);
+        
         return Result.Success();
     }
     

@@ -7,6 +7,8 @@ using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using Discussion.Contracts;
 using FluentValidation;
+using MassTransit;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VolunteerRequests.Application.Repository;
@@ -21,7 +23,6 @@ public class TakeRequestForSubmitHandler: ICommandHandler<TakeRequestForSubmitCo
     private readonly IVolunteerRequestsRepository _repository;
     private readonly IDiscussionContract _discussionContract;
     private readonly IValidator<TakeRequestForSubmitCommand> _validator;
-
 
     public TakeRequestForSubmitHandler(
         ILogger<TakeRequestForSubmitHandler> logger, 

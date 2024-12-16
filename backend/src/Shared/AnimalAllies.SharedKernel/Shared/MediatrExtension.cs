@@ -14,11 +14,12 @@ public static class MediatrExtension
         foreach (var @event in entity.DomainEvents)
         {
             await publisher.Publish(@event, cancellationToken);
-            entity.RemoveDomainEvent(@event);
         }
-    }
+        
+        entity.ClearDomainEvents();
+    } 
     
-    public static async Task PublishDomainEvent(
+    public static async Task  PublishDomainEvent(
         this IPublisher publisher,
         IDomainEvent @event,
         CancellationToken cancellationToken = default)

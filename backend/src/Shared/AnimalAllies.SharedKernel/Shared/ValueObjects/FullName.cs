@@ -21,7 +21,13 @@ public class FullName : ValueObject
         SecondName = secondName;
         Patronymic = patronymic;
     }
-    
+
+    public void Deconstruct(out string firstName, out string secondName, out string? patronymic)
+    {
+        firstName = FirstName;
+        secondName = SecondName;
+        patronymic = Patronymic;
+    }
     
     public static Result<FullName> Create(string firstName,string secondName, string? patronymic)
     {

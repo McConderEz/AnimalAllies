@@ -21,7 +21,7 @@ public class CreateDiscussionHandler: ICommandHandler<CreateDiscussionCommand, D
     private readonly IValidator<CreateDiscussionCommand> _validator;
     private readonly IDiscussionRepository _repository;
     private readonly IAccountContract _accountContract;
-    //TODO: Удалить
+
     public CreateDiscussionHandler(
         ILogger<CreateDiscussionHandler> logger, 
         IValidator<CreateDiscussionCommand> validator, 
