@@ -1,6 +1,8 @@
+using AnimalAllies.SharedKernel.Shared.Objects;
+
 namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
-public class WorkExperience : SharedKernel.Shared.ValueObject
+public class WorkExperience : ValueObject
 {
     public int Value { get; }
     
@@ -14,7 +16,7 @@ public class WorkExperience : SharedKernel.Shared.ValueObject
     public static Result<WorkExperience> Create(int workExperience)
     {
         if (workExperience < 0 || workExperience > Constraints.Constraints.MAX_EXP_VALUE)
-            return Errors.General.ValueIsInvalid(nameof(workExperience));
+            return Errors.Errors.General.ValueIsInvalid(nameof(workExperience));
 
         return Result<WorkExperience>.Success(new WorkExperience(workExperience));
     }

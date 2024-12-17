@@ -1,4 +1,5 @@
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 
 namespace AnimalAllies.Core.Models;
 

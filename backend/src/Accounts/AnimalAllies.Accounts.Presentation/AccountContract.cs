@@ -6,6 +6,7 @@ using AnimalAllies.Accounts.Contracts;
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Core.DTOs.Accounts;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

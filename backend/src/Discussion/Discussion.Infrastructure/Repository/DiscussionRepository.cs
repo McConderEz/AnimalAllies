@@ -1,4 +1,5 @@
 ﻿using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using Discussion.Application.Repository;
 using Discussion.Infrastructure.DbContexts;

@@ -1,5 +1,6 @@
 using AnimalAllies.Core.Validators;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 using FluentValidation;

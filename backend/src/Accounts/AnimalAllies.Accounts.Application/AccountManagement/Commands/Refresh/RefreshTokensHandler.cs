@@ -7,6 +7,7 @@ using AnimalAllies.Core.Extension;
 using AnimalAllies.Core.Models;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 

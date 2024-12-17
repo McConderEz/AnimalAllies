@@ -1,9 +1,11 @@
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
+using AnimalAllies.SharedKernel.Shared.Objects;
 
 namespace AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 
-public class PetPhysicCharacteristics : SharedKernel.Shared.ValueObject
+public class PetPhysicCharacteristics : ValueObject
 {
     public string Color { get; }
     public string HealthInformation { get; } 

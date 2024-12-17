@@ -33,7 +33,6 @@ public class AccountsDbContext(IConfiguration configuration)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //TODO: Отрефакторить конфигураци.
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(

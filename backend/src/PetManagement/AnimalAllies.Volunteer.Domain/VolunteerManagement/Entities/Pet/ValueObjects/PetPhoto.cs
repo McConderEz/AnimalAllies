@@ -1,6 +1,8 @@
+using AnimalAllies.SharedKernel.Shared.Objects;
+
 namespace AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 
-public class PetPhoto: SharedKernel.Shared.ValueObject
+public class PetPhoto: ValueObject
 {
     public FilePath Path { get; }
     public bool IsMain { get; }

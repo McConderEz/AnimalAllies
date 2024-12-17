@@ -4,6 +4,7 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;

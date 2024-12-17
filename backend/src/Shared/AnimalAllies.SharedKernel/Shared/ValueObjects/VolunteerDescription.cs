@@ -1,6 +1,8 @@
+using AnimalAllies.SharedKernel.Shared.Objects;
+
 namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
-public class VolunteerDescription : SharedKernel.Shared.ValueObject
+public class VolunteerDescription : ValueObject
 {
     public string Value { get; }
 
@@ -15,7 +17,7 @@ public class VolunteerDescription : SharedKernel.Shared.ValueObject
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length > Constraints.Constraints.MAX_DESCRIPTION_LENGTH)
         {
-            return Errors.General.ValueIsRequired(value);
+            return Errors.Errors.General.ValueIsRequired(value);
         }
 
         return new VolunteerDescription(value);

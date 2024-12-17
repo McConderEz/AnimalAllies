@@ -9,6 +9,7 @@ using AnimalAllies.Core.Models;
 using AnimalAllies.Core.Options;
 using AnimalAllies.Framework;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 

@@ -1,4 +1,6 @@
-﻿namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
+﻿using AnimalAllies.SharedKernel.Shared.Objects;
+
+namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
 public class CreatedAt : ValueObject
 {
@@ -14,7 +16,7 @@ public class CreatedAt : ValueObject
     public static Result<CreatedAt> Create(DateTime value)
     {
         if (value > DateTime.Now)
-            return Errors.General.ValueIsInvalid("created at");
+            return Errors.Errors.General.ValueIsInvalid("created at");
 
         return new CreatedAt(value);
     }

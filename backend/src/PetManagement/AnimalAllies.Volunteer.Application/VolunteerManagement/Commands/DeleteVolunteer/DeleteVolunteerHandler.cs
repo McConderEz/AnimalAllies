@@ -3,6 +3,7 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.Volunteer.Application.Repository;
 using FluentValidation;
@@ -17,20 +18,17 @@ public class DeleteVolunteerHandler : ICommandHandler<DeleteVolunteerCommand, Vo
     private readonly ILogger<DeleteVolunteerHandler> _logger;
     private readonly IValidator<DeleteVolunteerCommand> _validator;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IDateTimeProvider _dateTimeProvider;
-    
+
     public DeleteVolunteerHandler(
         IVolunteerRepository repository, 
         ILogger<DeleteVolunteerHandler> logger,
         IValidator<DeleteVolunteerCommand> validator, 
-        [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork, 
-        IDateTimeProvider dateTimeProvider)
+        [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork)
     {
         _repository = repository;
         _logger = logger;
         _validator = validator;
         _unitOfWork = unitOfWork;
-        _dateTimeProvider = dateTimeProvider;
     }
     
     public async Task<Result<VolunteerId>> Handle(
@@ -50,7 +48,7 @@ public class DeleteVolunteerHandler : ICommandHandler<DeleteVolunteerCommand, Vo
             return Errors.General.NotFound();
         
         
-        volunteer.Value.Delete(_dateTimeProvider.UtcNow);
+        volunteer.Value.Delete();
 
         await _unitOfWork.SaveChanges(cancellationToken);
         

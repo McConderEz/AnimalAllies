@@ -3,6 +3,7 @@ using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

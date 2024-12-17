@@ -1,12 +1,12 @@
-﻿using AnimalAllies.Accounts.Contracts;
-using AnimalAllies.Core.Abstractions;
+﻿using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
-using Discussion.Contracts;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VolunteerRequests.Application.Repository;
@@ -21,8 +21,7 @@ public class RejectVolunteerRequestHandler: ICommandHandler<RejectVolunteerReque
     private readonly IUnitOfWork _unitOfWork;
     private readonly IVolunteerRequestsRepository _repository;
     private readonly IValidator<RejectVolunteerRequestCommand> _validator;
-    private readonly IProhibitionSendingRepository _prohibitionSendingRepository;
-    private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IPublisher _publisher;
 
 
     public RejectVolunteerRequestHandler(
@@ -30,15 +29,13 @@ public class RejectVolunteerRequestHandler: ICommandHandler<RejectVolunteerReque
         [FromKeyedServices(Constraints.Context.VolunteerRequests)]IUnitOfWork unitOfWork, 
         IVolunteerRequestsRepository repository, 
         IValidator<RejectVolunteerRequestCommand> validator,
-        IProhibitionSendingRepository prohibitionSendingRepository,
-        IDateTimeProvider dateTimeProvider)
+        IPublisher _publisher)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _repository = repository;
         _validator = validator;
-        _prohibitionSendingRepository = prohibitionSendingRepository;
-        _dateTimeProvider = dateTimeProvider;
+        this._publisher = _publisher;
     }
     
     public async Task<Result<string>> Handle(
@@ -61,27 +58,15 @@ public class RejectVolunteerRequestHandler: ICommandHandler<RejectVolunteerReque
             if (volunteerRequest.Value.AdminId != command.AdminId)
                 return Error.Failure("access.denied", 
                     "this request is under consideration by another admin");
-
-            var prohibitionSendingId = ProhibitionSendingId.NewGuid();
-            var prohibitionSending = ProhibitionSending.Create(
-                prohibitionSendingId,
-                volunteerRequest.Value.UserId,
-                _dateTimeProvider.UtcNow);
-
-            if (prohibitionSending.IsFailure)
-                return prohibitionSending.Errors;
             
-            var prohibitionSendingResult = await _prohibitionSendingRepository.Create(prohibitionSending.Value, cancellationToken);
-
-            if (prohibitionSendingResult.IsFailure)
-                return prohibitionSendingResult.Errors;
-
             var rejectionComment = RejectionComment.Create(command.RejectionComment).Value;
 
             var rejectResult = volunteerRequest.Value.RejectRequest(rejectionComment);
             if (rejectResult.IsFailure)
                 return rejectResult.Errors;
 
+            await _publisher.PublishDomainEvents(volunteerRequest.Value, cancellationToken);
+            
             await _unitOfWork.SaveChanges(cancellationToken);
             
             transaction.Commit();

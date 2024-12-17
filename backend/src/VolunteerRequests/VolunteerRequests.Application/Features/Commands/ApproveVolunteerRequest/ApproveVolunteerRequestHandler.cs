@@ -4,6 +4,7 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,7 +44,9 @@ public class ApproveVolunteerRequestHandler: ICommandHandler<ApproveVolunteerReq
             return validationResult.ToErrorList();
 
         var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
-
+        
+        //TODO: переписать на интеграционные события через Rabbitmq
+        
         try
         {
             var volunteerRequestId = VolunteerRequestId.Create(command.VolunteerRequestId);

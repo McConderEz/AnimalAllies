@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using AnimalAllies.SharedKernel.Shared.Objects;
 
 namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
@@ -19,7 +20,7 @@ public class PhoneNumber : ValueObject
     public static Result<PhoneNumber> Create(string number)
     {
         if (string.IsNullOrWhiteSpace(number) || !ValidationRegex.IsMatch(number))
-            return Errors.General.ValueIsRequired(number);
+            return Errors.Errors.General.ValueIsRequired(number);
 
         var phoneNumber = new PhoneNumber(number);
 

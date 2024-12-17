@@ -1,4 +1,4 @@
-namespace AnimalAllies.SharedKernel.Shared;
+namespace AnimalAllies.SharedKernel.Shared.Objects;
 
 public abstract class ValueObject
 {

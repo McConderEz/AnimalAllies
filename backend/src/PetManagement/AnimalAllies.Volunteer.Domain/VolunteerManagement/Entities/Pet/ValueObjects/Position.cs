@@ -1,10 +1,12 @@
 
 
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
+using AnimalAllies.SharedKernel.Shared.Objects;
 
 namespace AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 
-public class Position : SharedKernel.Shared.ValueObject
+public class Position : ValueObject
 {
     public static Position First = new(1);
     public int Value { get; }

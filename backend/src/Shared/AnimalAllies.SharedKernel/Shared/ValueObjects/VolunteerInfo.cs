@@ -1,4 +1,6 @@
-﻿namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
+﻿using AnimalAllies.SharedKernel.Shared.Objects;
+
+namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
 public class VolunteerInfo : ValueObject
 {

@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace AnimalAllies.SharedKernel.Shared;
+namespace AnimalAllies.SharedKernel.Shared.Errors;
 
 public class ErrorList : IEnumerable<Error>
 {
