@@ -1,5 +1,4 @@
-﻿using AnimalAllies.SharedKernel.Exceptions;
-using AnimalAllies.SharedKernel.Shared;
+﻿using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -7,7 +6,7 @@ using VolunteerRequests.Application.Repository;
 using VolunteerRequests.Domain.Aggregates;
 using VolunteerRequests.Domain.Events;
 
-namespace VolunteerRequests.Application.EventHandlers.VolunteerRequestRejectedEventHandlers;
+namespace VolunteerRequests.Application.EventHandlers.VolunteerRequestRejected;
 
 public class VolunteerRequestRejected: INotificationHandler<VolunteerRequestRejectedEvent>
 {

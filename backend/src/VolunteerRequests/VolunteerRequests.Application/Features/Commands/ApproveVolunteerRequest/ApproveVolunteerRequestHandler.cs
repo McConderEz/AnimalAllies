@@ -1,15 +1,19 @@
 ﻿using AnimalAllies.Accounts.Contracts;
 using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
+using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using FluentValidation;
+using MassTransit;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VolunteerRequests.Application.Repository;
+using VolunteerRequests.Contracts.Messaging;
 
 namespace VolunteerRequests.Application.Features.Commands.ApproveVolunteerRequest;
 
@@ -19,21 +23,20 @@ public class ApproveVolunteerRequestHandler: ICommandHandler<ApproveVolunteerReq
     private readonly IValidator<ApproveVolunteerRequestCommand> _validator;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IVolunteerRequestsRepository _repository;
-    private readonly IAccountContract _accountContract;
-
-
+    private readonly IPublisher _publisher;
+    
     public ApproveVolunteerRequestHandler(
         ILogger<ApproveVolunteerRequestHandler> logger,
         IValidator<ApproveVolunteerRequestCommand> validator, 
         [FromKeyedServices(Constraints.Context.VolunteerRequests)]IUnitOfWork unitOfWork, 
         IVolunteerRequestsRepository repository, 
-        IAccountContract accountContract)
+        IPublisher publisher)
     {
         _logger = logger;
         _validator = validator;
         _unitOfWork = unitOfWork;
         _repository = repository;
-        _accountContract = accountContract;
+        _publisher = publisher;
     }
 
     public async Task<Result> Handle(
@@ -45,29 +48,25 @@ public class ApproveVolunteerRequestHandler: ICommandHandler<ApproveVolunteerReq
 
         var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
         
-        //TODO: переписать на интеграционные события через Rabbitmq
-        
         try
         {
             var volunteerRequestId = VolunteerRequestId.Create(command.VolunteerRequestId);
             
-            var volunteerRequest = await _repository.GetById(volunteerRequestId, cancellationToken);
-            if (volunteerRequest.IsFailure)
-                return volunteerRequest.Errors;
+            var volunteerRequestResult = await _repository.GetById(volunteerRequestId, cancellationToken);
+            if (volunteerRequestResult.IsFailure)
+                return volunteerRequestResult.Errors;
 
-            if (volunteerRequest.Value.AdminId != command.AdminId)
+            var volunteerRequest = volunteerRequestResult.Value;
+            
+            if (volunteerRequest.AdminId != command.AdminId)
                 return Error.Failure("access.denied", 
                     "this request is under consideration by another admin");
-
-            var approveResult = volunteerRequest.Value.ApproveRequest();
+            
+            var approveResult = volunteerRequest.ApproveRequest();
             if (approveResult.IsFailure)
                 return approveResult.Errors;
-
-
-            var createVolunteerAccountResult = await _accountContract.CreateVolunteerAccount(
-                volunteerRequest.Value.UserId, volunteerRequest.Value.VolunteerInfo, cancellationToken);
-            if (createVolunteerAccountResult.IsFailure)
-                return createVolunteerAccountResult.Errors;
+            
+            await _publisher.PublishDomainEvents(volunteerRequest, cancellationToken);
 
             await _unitOfWork.SaveChanges(cancellationToken);
             

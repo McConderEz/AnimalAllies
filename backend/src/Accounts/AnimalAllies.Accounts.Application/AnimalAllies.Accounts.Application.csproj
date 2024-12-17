@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Shared\AnimalAllies.Core\AnimalAllies.Core.csproj" />
       <ProjectReference Include="..\..\Shared\AnimalAllies.SharedKernel\AnimalAllies.SharedKernel.csproj" />
+      <ProjectReference Include="..\..\VolunteerRequests\VolunteerRequests.Contracts\VolunteerRequests.Contracts.csproj" />
       <ProjectReference Include="..\AnimalAllies.Accounts.Contracts\AnimalAllies.Accounts.Contracts.csproj" />
       <ProjectReference Include="..\AnimalAllies.Accounts.Domain\AnimalAllies.Accounts.Domain.csproj" />
     </ItemGroup>

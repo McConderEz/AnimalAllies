@@ -64,7 +64,7 @@ public class RejectVolunteerRequestHandler: ICommandHandler<RejectVolunteerReque
             var rejectResult = volunteerRequest.Value.RejectRequest(rejectionComment);
             if (rejectResult.IsFailure)
                 return rejectResult.Errors;
-
+            
             await _publisher.PublishDomainEvents(volunteerRequest.Value, cancellationToken);
             
             await _unitOfWork.SaveChanges(cancellationToken);
