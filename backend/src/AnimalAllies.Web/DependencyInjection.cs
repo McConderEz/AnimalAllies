@@ -57,7 +57,7 @@ public static class DependencyInjection
             configure.SetKebabCaseEndpointNameFormatter();
 
 
-            configure.AddConsumer<ApprovedVolunteerRequestEventConsume>();
+            configure.AddConsumer<ApprovedVolunteerRequestEventConsumer>();
             
             configure.UsingRabbitMq((context, cfg) =>
             {

@@ -9,16 +9,16 @@ using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Accounts.Application.AccountManagement.Consumers.ApprovedVolunteerRequestEvent;
 
-public class ApprovedVolunteerRequestEventConsume: IConsumer<VolunteerRequests.Contracts.Messaging.ApprovedVolunteerRequestEvent>
+public class ApprovedVolunteerRequestEventConsumer: IConsumer<VolunteerRequests.Contracts.Messaging.ApprovedVolunteerRequestEvent>
 {
     private readonly UserManager<User> _userManager;
-    private readonly ILogger<ApprovedVolunteerRequestEventConsume> _logger;
+    private readonly ILogger<ApprovedVolunteerRequestEventConsumer> _logger;
     private readonly IAccountManager _accountManager;
 
-    public ApprovedVolunteerRequestEventConsume(
+    public ApprovedVolunteerRequestEventConsumer(
         UserManager<User> userManager,
         IAccountManager accountManager,
-        ILogger<ApprovedVolunteerRequestEventConsume> logger)
+        ILogger<ApprovedVolunteerRequestEventConsumer> logger)
     {
         _userManager = userManager;
         _accountManager = accountManager;
