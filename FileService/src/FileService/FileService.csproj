@@ -14,13 +14,13 @@
         <PackageReference Include="Hangfire.Core" Version="1.8.15" />
         <PackageReference Include="Hangfire.PostgreSql" Version="1.20.10" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
         <PackageReference Include="Minio" Version="6.0.3" />
         <PackageReference Include="MongoDB.Bson" Version="3.0.0" />
         <PackageReference Include="MongoDB.Driver" Version="3.0.0" />
         <PackageReference Include="MongoDB.Driver.Core" Version="2.30.0" />
+        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.1" />
-        <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
         <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
         <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
         <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
