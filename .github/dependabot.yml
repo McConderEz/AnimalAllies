@@ -6,7 +6,16 @@
 version: 2
 updates:
   - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/" # Location of package manifests
+    directories:
+      - "/Accounts/"
+      - "/AnimalAllies.Web/"
+      - "/BreedManagement/"
+      - "/Discussion/"
+      - "/PetManagement/"
+      - "/Shared/"
+      - "/VolunteerRequests/"
+      - "/tests/TestProject.Application/"
+      - "/tests/TestProject.Domain/"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
