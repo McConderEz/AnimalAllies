@@ -8,6 +8,7 @@ updates:
   - package-ecosystem: "dotnet-sdk"
     directories:
       - "backend"
+      - "FileService"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -19,6 +20,7 @@ updates:
   - package-ecosystem: "nuget" # See documentation for possible values
     directories:
       - "backend"
+      - "FileService"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
