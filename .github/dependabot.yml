@@ -7,15 +7,7 @@ version: 2
 updates:
   - package-ecosystem: "dotnet-sdk"
     directories:
-      - "backend/src/Accounts/"
       - "backend/src/AnimalAllies.Web/"
-      - "backend/src/BreedManagement/"
-      - "backend/src/Discussion/"
-      - "backend/src/PetManagement/"
-      - "backend/src/Shared/"
-      - "backend/src/VolunteerRequests/"
-      - "backend/tests/TestProject.Application/"
-      - "backend/tests/TestProject.Domain/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -26,15 +18,7 @@ updates:
 
   - package-ecosystem: "nuget" # See documentation for possible values
     directories:
-      - "backend/src/Accounts/"
       - "backend/src/AnimalAllies.Web/"
-      - "backend/src/BreedManagement/"
-      - "backend/src/Discussion/"
-      - "backend/src/PetManagement/"
-      - "backend/src/Shared/"
-      - "backend/src/VolunteerRequests/"
-      - "backend/tests/TestProject.Application/"
-      - "backend/tests/TestProject.Domain/"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
