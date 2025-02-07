@@ -2,12 +2,12 @@
 # package ecosystems to update and where the package manifests are located.
 # Please see the documentation for all configuration options:
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
 version: 2
 updates:
   - package-ecosystem: "dotnet-sdk"
     directories:
-      - "backend/src/AnimalAllies.Web/"
+      - "backend"
+      - "FileService"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -18,7 +18,8 @@ updates:
 
   - package-ecosystem: "nuget" # See documentation for possible values
     directories:
-      - "backend/src/AnimalAllies.Web/"
+      - "backend"
+      - "FileService"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
