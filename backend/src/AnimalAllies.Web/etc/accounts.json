@@ -1,0 +1,68 @@
+﻿{
+  "Roles": {
+    "Admin": [
+      "species.read",
+      "species.create",
+      "species.update",
+      "species.delete",
+      "volunteer.read",
+      "volunteer.create",
+      "volunteer.update",
+      "volunteer.delete",
+      "volunteer.restore",
+      "volunteerRequests.read",
+      "volunteerRequests.review",
+      "volunteerRequests.delete",
+      "discussion.read",
+      "discussion.create",
+      "discussion.update",
+      "discussion.delete"
+    ],
+    "Volunteer": [
+      "volunteer.read",
+      "volunteer.create",
+      "volunteer.update",
+      "volunteer.delete"
+    ],
+    "Participant": [
+      "volunteer.read",
+      "species.read",
+      "volunteerRequests.readOwn",
+      "volunteerRequests.update",
+      "volunteerRequests.create",
+      "discussion.read",
+      "discussion.create",
+      "discussion.update",
+      "discussion.delete"
+    ]
+  },
+  "Permissions": {
+    "BreedManagement": [
+      "species.read",
+      "species.create",
+      "species.update",
+      "species.delete"
+    ],
+    "PetManagement": [
+      "volunteer.read",
+      "volunteer.create",
+      "volunteer.update",
+      "volunteer.delete",
+      "volunteer.restore"
+    ],
+    "VolunteerRequests": [
+      "volunteerRequests.read",
+      "volunteerRequests.readOwn",
+      "volunteerRequests.review",
+      "volunteerRequests.create",
+      "volunteerRequests.update",
+      "volunteerRequests.delete"
+    ],
+    "Discussion": [
+      "discussion.read",
+      "discussion.create",
+      "discussion.update",
+      "discussion.delete"
+    ]
+  }
+}
