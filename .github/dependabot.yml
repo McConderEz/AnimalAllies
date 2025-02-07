@@ -7,7 +7,7 @@ version: 2
 updates:
   - package-ecosystem: "dotnet-sdk"
     directories:
-      - "backend/src/AnimalAllies.Web/"
+      - "backend"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -18,7 +18,7 @@ updates:
 
   - package-ecosystem: "nuget" # See documentation for possible values
     directories:
-      - "backend/src/AnimalAllies.Web/"
+      - "backend"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
