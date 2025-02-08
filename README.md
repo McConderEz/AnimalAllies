@@ -5,9 +5,6 @@
 [![RabbitMQ](https://img.shields.io/badge/RabbitMQ-8.3.6-green.svg)](https://www.rabbitmq.com/)
 [![Entity Framework Core](https://img.shields.io/badge/Entity%20Framework%20Core-9.0.1-purple.svg)](https://docs.microsoft.com/en-us/ef/core/)
 
-
-Добавлен значок **Views**, который показывает количество просмотров репозитория на GitHub.
-
 AnimalAllies - платформа волонтёрской помощи животным, где оказывается ряд услуг: материальная помощь нуждающимся животным, поиск пропавших питомцев, оставление животного на временное на попечительство в виду отъезда и т.д.
 
 <details><summary><h2>Скриншоты</h2></summary>
