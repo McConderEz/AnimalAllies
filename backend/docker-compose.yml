@@ -12,6 +12,9 @@
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
+      - ADMIN_USERNAME=admin
+      - ADMIN_EMAIL=admin@gmail.com
+      - ADMIN_PASSWORD=Admin123
     
   postgres:
     container_name: postgres

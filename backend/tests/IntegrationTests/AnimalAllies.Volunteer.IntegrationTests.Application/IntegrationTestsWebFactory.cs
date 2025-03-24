@@ -1,4 +1,6 @@
-﻿using AnimalAllies.Volunteer.Application.Database;
+﻿using System.Data.Common;
+using AnimalAllies.Accounts.Infrastructure.Seeding;
+using AnimalAllies.Volunteer.Application.Database;
 using AnimalAllies.Volunteer.Infrastructure.DbContexts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -6,7 +8,11 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Npgsql;
+using Respawn;
 using Testcontainers.PostgreSql;
 
 namespace AnimalAllies.Volunteer.IntegrationTests.Application;
@@ -17,8 +23,11 @@ public class IntegrationTestsWebFactory: WebApplicationFactory<Program>,IAsyncLi
         .WithImage("postgres")
         .WithDatabase("animalAllies_tests")
         .WithUsername("postgres")
-        .WithPassword("345890")
+        .WithPassword("postgres")
         .Build();
+
+    private Respawner _respawner = null!;
+    private DbConnection _dbConnection = null!;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -31,27 +40,21 @@ public class IntegrationTestsWebFactory: WebApplicationFactory<Program>,IAsyncLi
 
     protected virtual void ConfigureDefaultServices(IServiceCollection services)
     {
-        var writeContext = services.SingleOrDefault(s =>
-            s.ServiceType == typeof(WriteDbContext));
+        services.RemoveAll(typeof(IHostedService));
         
-        var readContext = services.SingleOrDefault(s =>
-            s.ServiceType == typeof(ReadDbContext));
-        
-        if(writeContext is not null)
-            services.Remove(writeContext);
-        
-        if(readContext is not null)
-            services.Remove(readContext);
+        services.RemoveAll(typeof(WriteDbContext));
 
+        var connectionString = _dbContainer.GetConnectionString();
+        
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string>
             {
-                { "ConnectionStrings:DefaultConnection", _dbContainer.GetConnectionString() }
+                { "ConnectionStrings:DefaultConnection", connectionString }
             }!)
             .Build();
-        
-        services.AddScoped<WriteDbContext>(_ => new WriteDbContext(configuration));
-        services.AddScoped<IReadDbContext>(_ => new ReadDbContext(configuration));
+
+        services.AddScoped<WriteDbContext>(_ =>
+            new WriteDbContext(configuration));
     }
 
     public async Task InitializeAsync()
@@ -59,15 +62,35 @@ public class IntegrationTestsWebFactory: WebApplicationFactory<Program>,IAsyncLi
         await _dbContainer.StartAsync();
 
         using var scope = Services.CreateScope();
-        
         var dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
         await dbContext.Database.MigrateAsync();
+        
+        _dbConnection = new NpgsqlConnection(_dbContainer.GetConnectionString());
+        await InitializeRespawner();
+        //await Task.CompletedTask;
     }
 
-    public async Task DisposeAsync()
+    private async Task InitializeRespawner()
+    {
+        await _dbConnection.OpenAsync();
+        _respawner = await Respawner.CreateAsync(_dbConnection, new RespawnerOptions
+            {
+                DbAdapter = DbAdapter.Postgres,
+                SchemasToInclude = ["public"]
+            }
+        );
+    }
+    
+    public async Task ResetDatabaseAsync()
+    {
+        await _respawner.ResetAsync(_dbConnection); 
+    }
+    
+    public new async Task DisposeAsync()
     {
         await _dbContainer.StopAsync();
         await _dbContainer.DisposeAsync();
+        //await Task.CompletedTask;
         await base.DisposeAsync();
     }
 }

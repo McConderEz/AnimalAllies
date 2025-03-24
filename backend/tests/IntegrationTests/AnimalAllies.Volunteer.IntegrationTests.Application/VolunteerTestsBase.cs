@@ -26,10 +26,10 @@ public class VolunteerTestsBase: IClassFixture<IntegrationTestsWebFactory>, IAsy
         return Task.CompletedTask;
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
-        _scope.Dispose();
+        await _factory.ResetDatabaseAsync();
         
-        return Task.CompletedTask;
+        _scope.Dispose();
     }
 }
