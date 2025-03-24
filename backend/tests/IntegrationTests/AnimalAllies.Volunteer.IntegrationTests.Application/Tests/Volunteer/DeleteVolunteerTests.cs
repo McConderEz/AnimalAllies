@@ -6,9 +6,8 @@ using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeleteVolu
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Org.BouncyCastle.Ocsp;
 
-namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests;
+namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests.Volunteer;
 
 public class DeleteVolunteerTests: VolunteerTestsBase
 {
@@ -25,8 +24,8 @@ public class DeleteVolunteerTests: VolunteerTestsBase
         //Arrange
         var volunteer = SeedVolunteer();
 
-        await _context.Volunteers.AddAsync(volunteer);
-        await _context.SaveChangesAsync();
+        await _volunteerDbContext.Volunteers.AddAsync(volunteer);
+        await _volunteerDbContext.SaveChangesAsync();
         
         var command = new DeleteVolunteerCommand(volunteer.Id.Id);
         
@@ -37,7 +36,7 @@ public class DeleteVolunteerTests: VolunteerTestsBase
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         
-        var isVolunteerExist = await _context.Volunteers.FirstOrDefaultAsync(v => v.Id == volunteer.Id);
+        var isVolunteerExist = await _volunteerDbContext.Volunteers.FirstOrDefaultAsync(v => v.Id == volunteer.Id);
 
         isVolunteerExist.Should().NotBeNull();
         isVolunteerExist.IsDeleted.Should().BeTrue();

@@ -9,9 +9,9 @@ namespace AnimalAllies.Volunteer.Infrastructure;
 
 public class UnitOfWork: IUnitOfWork
 {
-    private readonly WriteDbContext _dbContext;
+    private readonly VolunteerWriteDbContext _dbContext;
 
-    public UnitOfWork(WriteDbContext dbContext)
+    public UnitOfWork(VolunteerWriteDbContext dbContext)
     {
         _dbContext = dbContext;
     }

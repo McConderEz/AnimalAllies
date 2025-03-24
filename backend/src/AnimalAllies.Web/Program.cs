@@ -1,8 +1,8 @@
 using AnimalAllies.Accounts.Infrastructure.Seeding;
 using AnimalAllies.Framework.Middlewares;
+using AnimalAllies.Web;
 using AnimalAllies.Web.Extensions;
 using Serilog;
-using AnimalAllies.Web;
 
 DotNetEnv.Env.Load();
 
@@ -56,4 +56,7 @@ app.MapControllers();
 
 app.Run();
 
-public partial class Program;
+namespace AnimalAllies.Web
+{
+    public partial class Program;
+}

@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests;
+namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests.Volunteer;
 
 public class CreateVolunteerTests : VolunteerTestsBase
 {
@@ -29,7 +29,7 @@ public class CreateVolunteerTests : VolunteerTestsBase
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         
-        var volunteer = await _context.Volunteers.FirstOrDefaultAsync(v => v.Id == result.Value);
+        var volunteer = await _volunteerDbContext.Volunteers.FirstOrDefaultAsync(v => v.Id == result.Value);
         
         volunteer.Should().NotBeNull();
         volunteer.Id.Should().Be(result.Value);

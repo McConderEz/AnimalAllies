@@ -8,7 +8,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests
+namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests.Volunteer
 {
     public class RestoreVolunteerTests : VolunteerTestsBase
     {
@@ -34,10 +34,10 @@ namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests
             
             volunteer.Delete();
 
-            await _context.SaveChangesAsync();
+            await _volunteerDbContext.SaveChangesAsync();
             
-            await _context.Volunteers.AddAsync(volunteer);
-            await _context.SaveChangesAsync();
+            await _volunteerDbContext.Volunteers.AddAsync(volunteer);
+            await _volunteerDbContext.SaveChangesAsync();
 
             var command = new RestoreVolunteerCommand(volunteer.Id.Id);
             
@@ -48,7 +48,7 @@ namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().Be(volunteer.Id);
             
-            var restoredVolunteer = await _context.Volunteers
+            var restoredVolunteer = await _volunteerDbContext.Volunteers
                 .FirstOrDefaultAsync(v => v.Id == volunteer.Id);
                 
             restoredVolunteer.Should().NotBeNull();

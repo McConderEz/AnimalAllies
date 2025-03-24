@@ -1,13 +1,13 @@
 ﻿using AnimalAllies.Core.Database;
 using AnimalAllies.Core.DTOs;
-using AnimalAllies.Species.Application.Database;
+using AnimalAllies.Volunteer.Application.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace AnimalAllies.Species.Infrastructure.DbContexts;
+namespace AnimalAllies.Volunteer.Infrastructure.DbContexts;
 
-public class ReadDbContext(IConfiguration configuration):DbContext, IReadDbContext
+public class VolunteerReadDbContext(IConfiguration configuration) : DbContext, IReadDbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -22,15 +22,15 @@ public class ReadDbContext(IConfiguration configuration):DbContext, IReadDbConte
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("species");
+        modelBuilder.HasDefaultSchema("volunteers");
         modelBuilder.ApplyConfigurationsFromAssembly(
-            typeof(ReadDbContext).Assembly, 
+            typeof(VolunteerReadDbContext).Assembly,
             type => type.FullName?.Contains("Configurations.Read") ?? false);
     }
 
     private static readonly ILoggerFactory CreateLoggerFactory
         = LoggerFactory.Create(builder => { builder.AddConsole(); });
-    
-    public IQueryable<BreedDto> Breeds => Set<BreedDto>();
-    public IQueryable<SpeciesDto> Species => Set<SpeciesDto>();
-} 
+
+    public IQueryable<VolunteerDto> Volunteers => Set<VolunteerDto>();
+    public IQueryable<PetDto> Pets => Set<PetDto>();
+}

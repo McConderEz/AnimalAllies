@@ -9,7 +9,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests
+namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests.Volunteer
 {
     public class CreateRequisitesTests : VolunteerTestsBase
     {
@@ -33,8 +33,8 @@ namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests
                 PhoneNumber.Create("+79991234567").Value,
                 new ValueObjectList<Requisite>([]));
             
-            await _context.Volunteers.AddAsync(originalVolunteer);
-            await _context.SaveChangesAsync();
+            await _volunteerDbContext.Volunteers.AddAsync(originalVolunteer);
+            await _volunteerDbContext.SaveChangesAsync();
 
             var requisites = new List<RequisiteDto>
             {
@@ -61,7 +61,7 @@ namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().Be(originalVolunteer.Id);
             
-            var updatedVolunteer = await _context.Volunteers
+            var updatedVolunteer = await _volunteerDbContext.Volunteers
                 .FirstOrDefaultAsync(v => v.Id == originalVolunteer.Id);
                 
             updatedVolunteer.Should().NotBeNull();
@@ -113,8 +113,8 @@ namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests
                 PhoneNumber.Create("+79991234567").Value,
                 new ValueObjectList<Requisite>([]));
             
-            await _context.Volunteers.AddAsync(originalVolunteer);
-            await _context.SaveChangesAsync();
+            await _volunteerDbContext.Volunteers.AddAsync(originalVolunteer);
+            await _volunteerDbContext.SaveChangesAsync();
 
             var invalidRequisites = new List<RequisiteDto>
             {

@@ -9,9 +9,9 @@ namespace AnimalAllies.Species.Infrastructure.Repository;
 
 public class SpeciesRepository : ISpeciesRepository
 {
-    private readonly WriteDbContext _context;
+    private readonly SpeciesWriteDbContext _context;
 
-    public SpeciesRepository(WriteDbContext context)
+    public SpeciesRepository(SpeciesWriteDbContext context)
     {
         _context = context;
     }

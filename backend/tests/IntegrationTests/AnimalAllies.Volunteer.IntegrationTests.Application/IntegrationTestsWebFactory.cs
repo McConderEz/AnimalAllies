@@ -1,5 +1,10 @@
 ﻿using System.Data.Common;
+using AnimalAllies.Core.DTOs;
+using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.Species.Contracts;
+using AnimalAllies.Species.Infrastructure.DbContexts;
 using AnimalAllies.Volunteer.Infrastructure.DbContexts;
+using AnimalAllies.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -9,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
+using NSubstitute;
 using Respawn;
 using Testcontainers.PostgreSql;
 
@@ -25,6 +31,7 @@ public class IntegrationTestsWebFactory: WebApplicationFactory<Program>,IAsyncLi
 
     private Respawner _respawner = null!;
     private DbConnection _dbConnection = null!;
+    private readonly ISpeciesContracts _speciesContractMock = Substitute.For<ISpeciesContracts>();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -39,7 +46,10 @@ public class IntegrationTestsWebFactory: WebApplicationFactory<Program>,IAsyncLi
     {
         services.RemoveAll<IHostedService>();
         
-        services.RemoveAll<WriteDbContext>();
+        services.RemoveAll<VolunteerWriteDbContext>();
+
+        services.RemoveAll<SpeciesWriteDbContext>();
+        
 
         var connectionString = _dbContainer.GetConnectionString();
         
@@ -49,9 +59,15 @@ public class IntegrationTestsWebFactory: WebApplicationFactory<Program>,IAsyncLi
                 { "ConnectionStrings:DefaultConnection", connectionString }
             }!)
             .Build();
-
-        services.AddScoped<WriteDbContext>(_ =>
-            new WriteDbContext(configuration));
+        
+        services.AddScoped<VolunteerWriteDbContext>(_ =>
+            new VolunteerWriteDbContext(configuration));
+        
+        services.AddScoped<SpeciesWriteDbContext>(_ =>
+            new SpeciesWriteDbContext(configuration));
+        
+        services.RemoveAll<ISpeciesContracts>();
+        services.AddScoped<ISpeciesContracts>(_ => _speciesContractMock);
     }
 
     public async Task InitializeAsync()
@@ -59,12 +75,14 @@ public class IntegrationTestsWebFactory: WebApplicationFactory<Program>,IAsyncLi
         await _dbContainer.StartAsync();
 
         using var scope = Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-        await dbContext.Database.MigrateAsync();
+        
+        var volunteerDbContext = scope.ServiceProvider.GetRequiredService<VolunteerWriteDbContext>();
+        await volunteerDbContext.Database.MigrateAsync();
+        var speciesDbContext = scope.ServiceProvider.GetRequiredService<SpeciesWriteDbContext>();
+        await speciesDbContext.Database.MigrateAsync();
         
         _dbConnection = new NpgsqlConnection(_dbContainer.GetConnectionString());
         await InitializeRespawner();
-        //await Task.CompletedTask;
     }
 
     private async Task InitializeRespawner()
@@ -73,7 +91,7 @@ public class IntegrationTestsWebFactory: WebApplicationFactory<Program>,IAsyncLi
         _respawner = await Respawner.CreateAsync(_dbConnection, new RespawnerOptions
             {
                 DbAdapter = DbAdapter.Postgres,
-                SchemasToInclude = ["public"]
+                SchemasToInclude = ["volunteers", "accounts", "species", "volunteer_requests", "discussions"]
             }
         );
     }
@@ -83,11 +101,32 @@ public class IntegrationTestsWebFactory: WebApplicationFactory<Program>,IAsyncLi
         await _respawner.ResetAsync(_dbConnection); 
     }
     
+    public void SetupSuccessSpeciesContractsMock(Guid speciesId, Guid breedId)
+    {
+        var speciesDto = new SpeciesDto
+        {
+            Id = speciesId,
+            Name = "Dog"
+        };
+        
+        var breedDto = new BreedDto
+        {
+            Id = breedId,
+            Name = "Labrador",
+        };
+        
+        _speciesContractMock.GetSpecies(Arg.Any<CancellationToken>())
+            .Returns(Result<List<SpeciesDto>>.Success([speciesDto]));
+        
+        _speciesContractMock.GetBreedsBySpeciesId(Arg.Any<Guid>(),Arg.Any<CancellationToken>())
+            .Returns(Result<List<BreedDto>>.Success([breedDto]));
+    }
+    
     public new async Task DisposeAsync()
     {
         await _dbContainer.StopAsync();
         await _dbContainer.DisposeAsync();
-        //await Task.CompletedTask;
+
         await base.DisposeAsync();
     }
 }

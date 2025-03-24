@@ -1,23 +1,24 @@
-﻿using AnimalAllies.Volunteer.Infrastructure.DbContexts;
+﻿using AnimalAllies.Species.Infrastructure.DbContexts;
+using AnimalAllies.Volunteer.Infrastructure.DbContexts;
 using AutoFixture;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Serilog.Core;
 
 namespace AnimalAllies.Volunteer.IntegrationTests.Application;
 
 public class VolunteerTestsBase: IClassFixture<IntegrationTestsWebFactory>, IAsyncLifetime
 {
-    protected readonly IntegrationTestsWebFactory _factory;
+    private readonly IntegrationTestsWebFactory _factory;
     protected readonly IServiceScope _scope;
-    protected readonly WriteDbContext _context;
+    protected readonly VolunteerWriteDbContext _volunteerDbContext;
+    protected readonly SpeciesWriteDbContext _speciesDbContext;
     protected readonly Fixture _fixture;
 
     protected VolunteerTestsBase(IntegrationTestsWebFactory factory)
     {
         _factory = factory;
         _scope = factory.Services.CreateScope();
-        _context = _scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+        _volunteerDbContext = _scope.ServiceProvider.GetRequiredService<VolunteerWriteDbContext>();
+        _speciesDbContext = _scope.ServiceProvider.GetRequiredService<SpeciesWriteDbContext>();
         _fixture = new Fixture();
     }
 

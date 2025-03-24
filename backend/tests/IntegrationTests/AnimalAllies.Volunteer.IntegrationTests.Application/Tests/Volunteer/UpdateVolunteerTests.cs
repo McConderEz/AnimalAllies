@@ -8,7 +8,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests
+namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests.Volunteer
 {
     public class UpdateVolunteerTests : VolunteerTestsBase
     {
@@ -31,8 +31,8 @@ namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests
                 WorkExperience.Create(3).Value,
                 PhoneNumber.Create("+79991234567").Value, new ValueObjectList<Requisite>([]));
             
-            await _context.Volunteers.AddAsync(originalVolunteer);
-            await _context.SaveChangesAsync();
+            await _volunteerDbContext.Volunteers.AddAsync(originalVolunteer);
+            await _volunteerDbContext.SaveChangesAsync();
 
             var updateDto = new UpdateVolunteerMainInfoDto(
                 new FullNameDto("Петр", "Петров", "Петрович"),
@@ -50,7 +50,7 @@ namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests
             // Assert
             result.IsSuccess.Should().BeTrue();
             
-            var updatedVolunteer = await _context.Volunteers
+            var updatedVolunteer = await _volunteerDbContext.Volunteers
                 .FirstOrDefaultAsync(v => v.Id == originalVolunteer.Id);
                 
             updatedVolunteer.Should().NotBeNull();

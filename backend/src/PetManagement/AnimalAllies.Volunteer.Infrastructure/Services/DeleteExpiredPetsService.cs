@@ -8,11 +8,11 @@ namespace AnimalAllies.Volunteer.Infrastructure.Services;
 
 public class DeleteExpiredPetsService
 {
-    private readonly WriteDbContext _dbContext;
+    private readonly VolunteerWriteDbContext _dbContext;
     private readonly EntityDeletion _entityDeletion;
 
     public DeleteExpiredPetsService(
-        WriteDbContext dbContext,
+        VolunteerWriteDbContext dbContext,
         IOptions<EntityDeletion> entityDeletion)
     {
         _dbContext = dbContext;
