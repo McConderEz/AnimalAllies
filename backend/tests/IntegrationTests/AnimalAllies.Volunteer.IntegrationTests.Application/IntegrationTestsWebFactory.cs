@@ -3,8 +3,10 @@ using AnimalAllies.Volunteer.Infrastructure.DbContexts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Testcontainers.PostgreSql;
 
 namespace AnimalAllies.Volunteer.IntegrationTests.Application;
@@ -17,9 +19,13 @@ public class IntegrationTestsWebFactory: WebApplicationFactory<Program>,IAsyncLi
         .WithUsername("postgres")
         .WithPassword("345890")
         .Build();
-    
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        Environment.SetEnvironmentVariable("ADMIN__USERNAME", "Admin");
+        Environment.SetEnvironmentVariable("ADMIN__EMAIL", "admin@gmail.com");
+        Environment.SetEnvironmentVariable("ADMIN__PASSWORD", "Admin123");
+        
         builder.ConfigureTestServices(ConfigureDefaultServices);
     }
 
@@ -41,7 +47,8 @@ public class IntegrationTestsWebFactory: WebApplicationFactory<Program>,IAsyncLi
             .AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "ConnectionStrings:DefaultConnection", _dbContainer.GetConnectionString() }
-            }!).Build();
+            }!)
+            .Build();
         
         services.AddScoped<WriteDbContext>(_ => new WriteDbContext(configuration));
         services.AddScoped<IReadDbContext>(_ => new ReadDbContext(configuration));
@@ -52,16 +59,15 @@ public class IntegrationTestsWebFactory: WebApplicationFactory<Program>,IAsyncLi
         await _dbContainer.StartAsync();
 
         using var scope = Services.CreateScope();
+        
         var dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-        await dbContext.Database.EnsureDeletedAsync();
-        await dbContext.Database.EnsureCreatedAsync();
+        await dbContext.Database.MigrateAsync();
     }
 
-    public new async Task DisposeAsync()
+    public async Task DisposeAsync()
     {
-        await base.DisposeAsync();
-        
         await _dbContainer.StopAsync();
         await _dbContainer.DisposeAsync();
+        await base.DisposeAsync();
     }
 }
