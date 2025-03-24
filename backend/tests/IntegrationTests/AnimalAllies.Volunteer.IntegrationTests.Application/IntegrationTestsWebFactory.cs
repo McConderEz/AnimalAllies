@@ -1,6 +1,4 @@
 ﻿using System.Data.Common;
-using AnimalAllies.Accounts.Infrastructure.Seeding;
-using AnimalAllies.Volunteer.Application.Database;
 using AnimalAllies.Volunteer.Infrastructure.DbContexts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -10,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Npgsql;
 using Respawn;
 using Testcontainers.PostgreSql;
@@ -40,9 +37,9 @@ public class IntegrationTestsWebFactory: WebApplicationFactory<Program>,IAsyncLi
 
     protected virtual void ConfigureDefaultServices(IServiceCollection services)
     {
-        services.RemoveAll(typeof(IHostedService));
+        services.RemoveAll<IHostedService>();
         
-        services.RemoveAll(typeof(WriteDbContext));
+        services.RemoveAll<WriteDbContext>();
 
         var connectionString = _dbContainer.GetConnectionString();
         

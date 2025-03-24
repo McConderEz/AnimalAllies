@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AnimalAllies.Volunteer.IntegrationTests.Application;
+namespace AnimalAllies.Volunteer.IntegrationTests.Application.Tests;
 
 public class CreateVolunteerTests : VolunteerTestsBase
 {
