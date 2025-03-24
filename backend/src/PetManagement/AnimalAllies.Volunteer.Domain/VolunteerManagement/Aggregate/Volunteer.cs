@@ -284,6 +284,8 @@ public class Volunteer: Entity<VolunteerId>, ISoftDeletable
         if (pet.IsFailure)
             return pet.Errors;
 
+        pet.Value.Restore();
+        
         var resultMove = MovePet(pet.Value, Position.Create(_pets.Count).Value);
         if (resultMove.IsFailure)
             return resultMove.Errors;
