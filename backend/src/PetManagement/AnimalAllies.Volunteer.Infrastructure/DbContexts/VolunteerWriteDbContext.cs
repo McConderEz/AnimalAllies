@@ -1,12 +1,11 @@
 using AnimalAllies.Core.Interceptors;
-using AnimalAllies.SharedKernel.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace AnimalAllies.Species.Infrastructure.DbContexts;
+namespace AnimalAllies.Volunteer.Infrastructure.DbContexts;
 
-public class WriteDbContext(IConfiguration configuration) : DbContext
+public class VolunteerWriteDbContext(IConfiguration configuration) : DbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -15,18 +14,20 @@ public class WriteDbContext(IConfiguration configuration) : DbContext
             .UseLoggerFactory(CreateLoggerFactory)
             .EnableSensitiveDataLogging()
             .UseSnakeCaseNamingConvention();
+
+        //optionsBuilder.AddInterceptors(new SoftDeleteInterceptor());
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("species");
+        modelBuilder.HasDefaultSchema("volunteers");
         modelBuilder.ApplyConfigurationsFromAssembly(
-            typeof(WriteDbContext).Assembly, 
+            typeof(VolunteerWriteDbContext).Assembly, 
             type => type.FullName?.Contains("Configurations.Write") ?? false);
     }
 
     private static readonly ILoggerFactory CreateLoggerFactory
         = LoggerFactory.Create(builder => { builder.AddConsole(); });
-    
-    public DbSet<Domain.Species> Species { get; set; } = null!;
+
+    public DbSet<Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer> Volunteers { get; set; } = null!;
 }

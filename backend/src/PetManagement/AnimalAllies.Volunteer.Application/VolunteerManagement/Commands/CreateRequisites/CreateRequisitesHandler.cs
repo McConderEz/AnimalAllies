@@ -38,7 +38,7 @@ public class CreateRequisitesHandler : ICommandHandler<CreateRequisitesCommand, 
             return validationResult.ToErrorList();
         }
         
-        var volunteer = await _repository.GetById(VolunteerId.Create(command.Id));
+        var volunteer = await _repository.GetById(VolunteerId.Create(command.Id), cancellationToken);
 
         if (volunteer.IsFailure)
             return Errors.General.NotFound();

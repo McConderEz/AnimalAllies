@@ -35,7 +35,7 @@ public class ConfirmConsistencyJob(
                                   " Deleting file from cloud storage and MongoDB record.");
 
                 await fileProvider.DeleteFile(metadata);
-                await filesRepository.DeleteRangeAsync(new[] { fileId });
+                await filesRepository.DeleteRangeAsync([fileId]);
             }
 
             logger.LogInformation("End ConfirmConsistencyJob");

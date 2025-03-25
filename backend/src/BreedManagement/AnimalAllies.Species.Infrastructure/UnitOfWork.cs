@@ -7,9 +7,9 @@ namespace AnimalAllies.Species.Infrastructure;
 
 public class UnitOfWork: IUnitOfWork
 {
-    private readonly WriteDbContext _dbContext;
+    private readonly SpeciesWriteDbContext _dbContext;
 
-    public UnitOfWork(WriteDbContext dbContext)
+    public UnitOfWork(SpeciesWriteDbContext dbContext)
     {
         _dbContext = dbContext;
     }

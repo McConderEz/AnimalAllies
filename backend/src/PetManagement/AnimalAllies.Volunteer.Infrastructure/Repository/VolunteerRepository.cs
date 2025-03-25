@@ -11,9 +11,9 @@ namespace AnimalAllies.Volunteer.Infrastructure.Repository;
 
 public class VolunteerRepository: IVolunteerRepository
 {
-    private readonly WriteDbContext _context;
+    private readonly VolunteerWriteDbContext _context;
     
-    public VolunteerRepository(WriteDbContext context)
+    public VolunteerRepository(VolunteerWriteDbContext context)
     {
         _context = context;
     }

@@ -1,21 +1,14 @@
-using AnimalAllies.Accounts.Application;
-using AnimalAllies.Accounts.Infrastructure;
 using AnimalAllies.Accounts.Infrastructure.Seeding;
-using AnimalAllies.Accounts.Presentation;
 using AnimalAllies.Framework.Middlewares;
-using AnimalAllies.Web.Extensions;
-using AnimalAllies.Species.Application;
-using AnimalAllies.Volunteer.Application;
-using AnimalAllies.Volunteer.Infrastructure;
-using Serilog;
-using AnimalAllies.Species.Infrastructure;
-using AnimalAllies.Species.Presentation;
-using AnimalAllies.Volunteer.Presentation;
 using AnimalAllies.Web;
+using AnimalAllies.Web.Extensions;
+using Serilog;
 
 DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddLogger(builder.Configuration);
 
@@ -62,3 +55,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+namespace AnimalAllies.Web
+{
+    public partial class Program;
+}
