@@ -139,8 +139,6 @@ public class UpdatePetHandler: ICommandHandler<UpdatePetCommand, Guid>
 
         if (result.IsFailure)
             return result.Errors;
-        
-        //await _volunteerRepository.Save(volunteerResult.Value, cancellationToken);
 
         await _unitOfWork.SaveChanges(cancellationToken);
         

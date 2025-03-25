@@ -1,10 +1,13 @@
 using AnimalAllies.Core.Abstractions;
+using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.MovePetPosition;
@@ -12,17 +15,20 @@ namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.MovePe
 public class MovePetPositionHandler : ICommandHandler<MovePetPositionCommand, VolunteerId>
 {
     private readonly IVolunteerRepository _repository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IValidator<MovePetPositionCommand> _validator;
     private readonly ILogger<MovePetPositionHandler> _logger;
 
     public MovePetPositionHandler(
         IVolunteerRepository repository,
         IValidator<MovePetPositionCommand> validator,
-        ILogger<MovePetPositionHandler> logger)
+        ILogger<MovePetPositionHandler> logger, 
+        [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork)
     {
         _repository = repository;
         _validator = validator;
         _logger = logger;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Result<VolunteerId>> Handle(MovePetPositionCommand command, CancellationToken cancellationToken = default)
@@ -52,10 +58,7 @@ public class MovePetPositionHandler : ICommandHandler<MovePetPositionCommand, Vo
         if (moveResult.IsFailure)
             return moveResult.Errors;
 
-        var result = await _repository.Save(volunteer.Value, cancellationToken);
-
-        if (result.IsFailure)
-            return result.Errors;
+        await _unitOfWork.SaveChanges(cancellationToken);
 
         _logger.LogInformation(
             "pet with id {petId} of volunteer with id {volunteerId} move to position {position}",
