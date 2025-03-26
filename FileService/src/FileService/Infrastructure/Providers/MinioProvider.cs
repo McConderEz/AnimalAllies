@@ -10,7 +10,7 @@ namespace FileService.Infrastructure.Providers;
 public class MinioProvider : IFileProvider
 {
     private const int MAX_DEGREE_OF_PARALLELISM = 10;
-    private const int EXPIRATION_URL = 3;
+    private const int EXPIRATION_URL = 1;
     private readonly IAmazonS3 _client;
     private readonly ILogger<MinioProvider> _logger;
 
@@ -70,7 +70,7 @@ public class MinioProvider : IFileProvider
                 Key = fileMetadata.Key,
                 Verb = HttpVerb.PUT,
                 Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
-                Protocol = Protocol.HTTP,
+                Protocol = Protocol.HTTPS,
                 UploadId = fileMetadata.UploadId,
                 PartNumber = fileMetadata.PartNumber,
             };
@@ -119,7 +119,7 @@ public class MinioProvider : IFileProvider
                 Key = fileMetadata.Key,
                 Verb = HttpVerb.GET,
                 Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
-                Protocol = Protocol.HTTP,
+                Protocol = Protocol.HTTPS,
             };
 
             var url = await _client.GetPreSignedURLAsync(presignedRequest);
@@ -180,7 +180,7 @@ public class MinioProvider : IFileProvider
                 Key = fileMetadata.Key,
                 Verb = HttpVerb.DELETE,
                 Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
-                Protocol = Protocol.HTTP
+                Protocol = Protocol.HTTPS,
             };
             
             var url = await _client.GetPreSignedURLAsync(deleteRequest);
@@ -214,7 +214,7 @@ public class MinioProvider : IFileProvider
                 Key = fileMetadata.Key,
                 Verb = HttpVerb.GET,
                 Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
-                Protocol = Protocol.HTTP,
+                Protocol = Protocol.HTTPS,
             };
 
             var url = await _client.GetPreSignedURLAsync(presignedRequest);
@@ -277,15 +277,11 @@ public class MinioProvider : IFileProvider
             var presignedRequest = new GetPreSignedUrlRequest
             {
                 BucketName = fileMetadata.BucketName,
-                Key = fileMetadata.Key,
+                Key = Uri.EscapeDataString(fileMetadata.Key),
                 Verb = HttpVerb.PUT,
-                Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
+                Expires = DateTime.UtcNow.AddDays(7),
                 ContentType = fileMetadata.ContentType,
-                Protocol = Protocol.HTTP,
-                Metadata =
-                {
-                    ["file-name"] = fileMetadata.Name
-                }
+                Protocol = Protocol.HTTP
             };
             
             var result = await _client.GetPreSignedURLAsync(presignedRequest);

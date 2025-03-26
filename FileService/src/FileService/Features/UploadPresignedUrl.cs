@@ -34,39 +34,51 @@ public static class UploadPresignedUrl
         IFileProvider fileProvider,
         CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrEmpty(request.ContentType))
+            return Results.BadRequest("Content type is empty");
+
+        var sanitizedFilename = Path.GetFileName(request.FileName);
+        
         var key = Guid.NewGuid();
 
-        var fileId = Guid.NewGuid();
+        var fileKey = $"{key}_{sanitizedFilename}";
+        
         
         var fileMetadata = new FileMetadata
         {
             BucketName = request.BucketName,
             ContentType = request.ContentType,
-            Name = request.FileName,
+            Name = sanitizedFilename,
             Prefix = request.Prefix,
-            Key = $"{key}.{request.Extension}"
+            Key = fileKey
         };
         
-        var result = await fileProvider.GetPresignedUrlForUpload(fileMetadata, cancellationToken); 
-        
-        var metaDataResponse =
-            await fileProvider.GetObjectMetadata(fileMetadata.BucketName, fileMetadata.Key, cancellationToken);
+        var result = await fileProvider.GetPresignedUrlForUpload(fileMetadata, cancellationToken);
+        if (result.IsFailure)
+            return Results.Problem(result.Errors.FirstOrDefault()!.ErrorMessage);
 
-        metaDataResponse.Id = fileId;
+        var dbRecord = new FileMetadata
+        {
+            Id = Guid.NewGuid(),
+            BucketName = request.BucketName,
+            ContentType = request.ContentType,
+            DownloadUrl = result.Value,
+            Extension = Path.GetExtension(request.FileName),
+            Key = fileMetadata.Key,
+            Name = sanitizedFilename
+        };
         
-        await repository.AddRangeAsync([metaDataResponse], cancellationToken);
+        await repository.AddRangeAsync([dbRecord], cancellationToken);
         
         var jobId = BackgroundJob.Schedule<ConfirmConsistencyJob>(
             j => j.Execute(
-                metaDataResponse.Id,metaDataResponse.BucketName, metaDataResponse.Key),
-            TimeSpan.FromMinutes(1));
-
-        BackgroundJob.Delete(jobId);
+                dbRecord.Id, dbRecord.BucketName, dbRecord.Key),
+            TimeSpan.FromMinutes(5));
         
         return Results.Ok(new
         {
-            key,
-            url = result.Value
+            FileId = dbRecord.Id,
+            UploadUrl = result.Value,
         });
     }
 }
