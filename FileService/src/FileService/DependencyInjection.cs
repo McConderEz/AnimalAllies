@@ -4,7 +4,10 @@ using FileService.Data.Options;
 using FileService.Infrastructure;
 using FileService.Infrastructure.Providers;
 using FileService.Infrastructure.Repositories;
+using Microsoft.Extensions.Options;
 using Minio;
+using MongoDB.Driver;
+using MongoDatabaseSettings = FileService.Data.Options.MongoDatabaseSettings;
 
 namespace FileService;
 
@@ -15,7 +18,7 @@ public static class DependencyInjection
     {
         services
             .AddMinio(configuration)
-            .AddMongoDb(configuration)
+            .AddMongo(configuration)
             .AddRepositories();
         
         return services;
@@ -25,14 +28,6 @@ public static class DependencyInjection
     {
         services.AddScoped<IFilesDataRepository,FilesDataRepository>();
 
-        return services;
-    }
-    
-    private static IServiceCollection AddMongoDb(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.Configure<MongoDatabaseSettings>(configuration.GetSection(MongoDatabaseSettings.Mongo));
-        services.AddScoped<ApplicationDbContext>();
-        
         return services;
     }
     
@@ -56,6 +51,27 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IFileProvider, MinioProvider>();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddMongo(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<MongoDatabaseSettings>(
+            configuration.GetSection(MongoDatabaseSettings.Mongo) ?? throw new ApplicationException());
+        
+        services.AddSingleton<IMongoClient>(serviceProvider =>
+        {
+            var settings = serviceProvider.GetRequiredService<IOptions<MongoDatabaseSettings>>().Value;
+            return new MongoClient(settings.ConnectionString);
+        });
+        
+        services.AddScoped<IMongoDatabase>(serviceProvider =>
+        {
+            var settings = serviceProvider.GetRequiredService<IOptions<MongoDatabaseSettings>>().Value;
+            var client = serviceProvider.GetRequiredService<IMongoClient>();
+            return client.GetDatabase(settings.DatabaseName);
+        });
 
         return services;
     }
