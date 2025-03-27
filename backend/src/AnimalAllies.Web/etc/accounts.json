@@ -9,7 +9,14 @@
       "volunteer.create",
       "volunteer.update",
       "volunteer.delete",
-      "volunteer.restore"
+      "volunteer.restore",
+      "volunteerRequests.read",
+      "volunteerRequests.review",
+      "volunteerRequests.delete",
+      "discussion.read",
+      "discussion.create",
+      "discussion.update",
+      "discussion.delete"
     ],
     "Volunteer": [
       "volunteer.read",
@@ -19,7 +26,14 @@
     ],
     "Participant": [
       "volunteer.read",
-      "species.read"
+      "species.read",
+      "volunteerRequests.readOwn",
+      "volunteerRequests.update",
+      "volunteerRequests.create",
+      "discussion.read",
+      "discussion.create",
+      "discussion.update",
+      "discussion.delete"
     ]
   },
   "Permissions": {
@@ -35,6 +49,20 @@
       "volunteer.update",
       "volunteer.delete",
       "volunteer.restore"
+    ],
+    "VolunteerRequests": [
+      "volunteerRequests.read",
+      "volunteerRequests.readOwn",
+      "volunteerRequests.review",
+      "volunteerRequests.create",
+      "volunteerRequests.update",
+      "volunteerRequests.delete"
+    ],
+    "Discussion": [
+      "discussion.read",
+      "discussion.create",
+      "discussion.update",
+      "discussion.delete"
     ]
   }
 }

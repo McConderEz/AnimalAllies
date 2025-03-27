@@ -44,7 +44,10 @@ public class RestorePetHandler: ICommandHandler<RestorePetCommand, PetId>
             return volunteer.Errors;
         
         var petId = PetId.Create(command.PetId);
-        volunteer.Value.RestorePet(petId);
+        
+        var result = volunteer.Value.RestorePet(petId);
+        if (result.IsFailure)
+            return result.Errors;
 
         await _unitOfWork.SaveChanges(cancellationToken);
         

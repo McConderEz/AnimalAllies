@@ -3,6 +3,7 @@ using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using AnimalAllies.Species.Contracts;
@@ -138,8 +139,6 @@ public class UpdatePetHandler: ICommandHandler<UpdatePetCommand, Guid>
 
         if (result.IsFailure)
             return result.Errors;
-        
-        //await _volunteerRepository.Save(volunteerResult.Value, cancellationToken);
 
         await _unitOfWork.SaveChanges(cancellationToken);
         

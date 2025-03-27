@@ -1,4 +1,5 @@
 ﻿using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using Discussion.Application.Repository;
 using Discussion.Infrastructure.DbContexts;
@@ -21,10 +22,21 @@ public class DiscussionRepository: IDiscussionRepository
         return entity.Id;
     }
 
-    public async Task<Result<Domain.Aggregate.Discussion>> GetById(VolunteerRequestId id, CancellationToken cancellationToken = default)
+    public async Task<Result<Domain.Aggregate.Discussion>> GetById(DiscussionId id, CancellationToken cancellationToken = default)
     {
         var discussion = await _context.Discussions.Include(d => d.Messages)
             .FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
+
+        if (discussion == null)
+            return Errors.General.NotFound();
+
+        return discussion;
+    }
+
+    public async Task<Result<Domain.Aggregate.Discussion>> GetByRelationId(Guid relationId, CancellationToken cancellationToken = default)
+    {
+        var discussion = await _context.Discussions.Include(d => d.Messages)
+            .FirstOrDefaultAsync(v => v.RelationId == relationId, cancellationToken);
 
         if (discussion == null)
             return Errors.General.NotFound();

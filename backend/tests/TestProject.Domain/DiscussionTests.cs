@@ -3,7 +3,6 @@ using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using Discussion.Domain.Entities;
 using Discussion.Domain.ValueObjects;
 using FluentAssertions;
-using VolunteerRequests.Domain.Aggregate;
 using VolunteerRequests.Domain.ValueObjects;
 
 namespace TestProject.Domain;
@@ -32,10 +31,11 @@ public class DiscussionTests
     {
         // arrange
         var discussion = InitDiscussion();
+        var userId = discussion.Users.FirstMember;
 
         // act
-        discussion.CloseDiscussion();
-        var result = discussion.CloseDiscussion();
+        discussion.CloseDiscussion(userId);
+        var result = discussion.CloseDiscussion(userId);
 
         // assert
         result.IsSuccess.Should().BeFalse();

@@ -2,12 +2,14 @@
 using System.Security.Claims;
 using System.Text;
 using AnimalAllies.Accounts.Application;
+using AnimalAllies.Accounts.Application.Managers;
 using AnimalAllies.Accounts.Application.Models;
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Core.Models;
 using AnimalAllies.Core.Options;
 using AnimalAllies.Framework;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,27 +21,37 @@ public class JwtTokenProvider : ITokenProvider
     private readonly JwtOptions _jwtOptions;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly AccountsDbContext _accountsDbContext;
+    private readonly IPermissionManager _permissionManager;
 
     public JwtTokenProvider(
         IOptions<JwtOptions> options,
         IDateTimeProvider dateTimeProvider,
         IOptions<RefreshSessionOptions> refreshSessionOptions,
-        AccountsDbContext accountsDbContext)
+        AccountsDbContext accountsDbContext,
+        IPermissionManager permissionManager)
     {
         _dateTimeProvider = dateTimeProvider;
         _accountsDbContext = accountsDbContext;
+        _permissionManager = permissionManager;
         _refreshSessionOptions = refreshSessionOptions.Value;
         _jwtOptions = options.Value;
     }
 
-    public JwtTokenResult GenerateAccessToken(User user)
+    public async Task<JwtTokenResult> GenerateAccessToken(User user, CancellationToken cancellationToken = default)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
         var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         var roleClaims = user.Roles
             .Select(r => new Claim(CustomClaims.Role, r.Name ?? string.Empty));
-
+        
+        var permissions = await _permissionManager.GetPermissionsByUserId(user.Id, cancellationToken);
+        if (!permissions.Value.Any())
+            throw new ApplicationException("fail to load permission in jwt");
+        
+        var permissionClaims = permissions.Value
+            .Select(p => new Claim(CustomClaims.Permission, p));
+        
         var jti = Guid.NewGuid();
         
         var claims = new[]
@@ -50,7 +62,10 @@ public class JwtTokenProvider : ITokenProvider
             new Claim(CustomClaims.Jti, jti.ToString())
         };
 
-        claims = claims.Concat(roleClaims).ToArray();
+        claims = claims
+            .Concat(roleClaims)
+            .Concat(permissionClaims)
+            .ToArray();
         
         var jwtToken = new JwtSecurityToken(
             issuer: _jwtOptions.Issuer,

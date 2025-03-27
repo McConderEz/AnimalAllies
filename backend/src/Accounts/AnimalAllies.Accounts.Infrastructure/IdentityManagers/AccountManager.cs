@@ -26,6 +26,7 @@ public class AccountManager(AccountsDbContext accountsDbContext) : IAccountManag
         VolunteerAccount volunteerAccount, CancellationToken cancellationToken = default)
     {
         await accountsDbContext.VolunteerAccounts.AddAsync(volunteerAccount,cancellationToken);
+
         await accountsDbContext.SaveChangesAsync(cancellationToken);
 
         return Result.Success();

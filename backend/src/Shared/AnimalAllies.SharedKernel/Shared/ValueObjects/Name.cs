@@ -1,3 +1,5 @@
+using AnimalAllies.SharedKernel.Shared.Objects;
+
 namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
 public class Name : ValueObject
@@ -15,7 +17,7 @@ public class Name : ValueObject
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length > Constraints.Constraints.MAX_VALUE_LENGTH)
         {
-            return Errors.General.ValueIsRequired(value);
+            return Errors.Errors.General.ValueIsRequired(value);
         }
 
         return Result<Name>.Success(new Name(value));

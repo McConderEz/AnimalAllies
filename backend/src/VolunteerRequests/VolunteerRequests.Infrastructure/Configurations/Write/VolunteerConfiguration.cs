@@ -5,7 +5,7 @@ using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using VolunteerRequests.Domain.Aggregate;
+using VolunteerRequests.Domain.Aggregates;
 
 namespace VolunteerRequests.Infrastructure.Configurations.Write;
 
@@ -99,7 +99,7 @@ public class VolunteerConfiguration: IEntityTypeConfiguration<VolunteerRequest>
 
         builder.Property(v => v.AdminId)
             .HasColumnName("admin_id");
-        
+
         builder.Property(v => v.DiscussionId)
             .HasColumnName("discussion_id");
         

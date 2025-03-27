@@ -7,6 +7,7 @@ using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using Dapper;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,14 +63,12 @@ public class GetVolunteerByIdHandler : IQueryHandler<VolunteerDto, GetVolunteerB
                                     """);
         
         var volunteer = 
-            await connection.QueryAsync<VolunteerDto, string, string, VolunteerDto>(
+            await connection.QueryAsync<VolunteerDto, RequisiteDto[], SocialNetworkDto[], VolunteerDto>(
                 sql.ToString(),
-                (volunteer, jsonRequisites, jsonSocialNetworks) =>
+                (volunteer, requisites, socialNetworks) =>
                 {
-                    var requisites = JsonSerializer.Deserialize<RequisiteDto[]>(jsonRequisites) ?? [];
                     volunteer.Requisites = requisites;
-
-                    var socialNetworks = JsonSerializer.Deserialize<SocialNetworkDto[]>(jsonSocialNetworks) ?? [];
+                    
                     volunteer.SocialNetworks = socialNetworks;
                     
                     return volunteer;

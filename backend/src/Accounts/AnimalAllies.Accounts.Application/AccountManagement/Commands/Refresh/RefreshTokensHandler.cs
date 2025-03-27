@@ -7,6 +7,7 @@ using AnimalAllies.Core.Extension;
 using AnimalAllies.Core.Models;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -72,8 +73,8 @@ public class RefreshTokensHandler: ICommandHandler<RefreshTokensCommand, LoginRe
         _refreshSessionManager.Delete(refreshSession.Value);
         await _unitOfWork.SaveChanges(cancellationToken);
 
-        var accessToken = _tokenProvider
-            .GenerateAccessToken(refreshSession.Value.User);
+        var accessToken = await _tokenProvider
+            .GenerateAccessToken(refreshSession.Value.User,cancellationToken);
         var refreshToken = await _tokenProvider
             .GenerateRefreshToken(refreshSession.Value.User,accessToken.Jti, cancellationToken);
 

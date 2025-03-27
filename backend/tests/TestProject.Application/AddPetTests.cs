@@ -1,12 +1,15 @@
 using System.Runtime.InteropServices.JavaScript;
 using AnimalAllies.Core.Database;
+using AnimalAllies.Core.DTOs;
 using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using AnimalAllies.Species.Application.Database;
 using AnimalAllies.Species.Application.Repository;
 using AnimalAllies.Species.Contracts;
+using AnimalAllies.Species.Domain;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPet;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet;
@@ -76,6 +79,9 @@ public class AddPetTests
         
         _volunteerRepositoryMock.Setup(v => v.Save(It.IsAny<AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate.Volunteer>(), ct))
             .ReturnsAsync(Result<VolunteerId>.Success(volunteer.Id));
+
+        _speciesContractMock.Setup(v => v.GetSpecies(ct))
+            .ReturnsAsync(Result<List<SpeciesDto>>.Success([]));
         
         var handler = new AddPetHandler(
             _volunteerRepositoryMock.Object,

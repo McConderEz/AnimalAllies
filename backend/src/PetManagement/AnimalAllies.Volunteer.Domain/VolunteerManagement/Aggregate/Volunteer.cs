@@ -1,17 +1,20 @@
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.SharedKernel.Shared.Objects;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 
 namespace AnimalAllies.Volunteer.Domain.VolunteerManagement.Aggregate;
 
-public class Volunteer: SoftDeletableEntity<VolunteerId>
+public class Volunteer: Entity<VolunteerId>, ISoftDeletable
 {
     private readonly List<Pet> _pets = [];
     private List<Requisite> _requisites = [];
     private List<SocialNetwork> _socialNetworks = [];
 
+    //Ef core configuration
     private Volunteer(VolunteerId id) : base(id){}
     
     public Volunteer(
@@ -39,6 +42,8 @@ public class Volunteer: SoftDeletableEntity<VolunteerId>
     public WorkExperience WorkExperience { get; private set; }
     public IReadOnlyList<Requisite> Requisites => _requisites;
     public IReadOnlyList<Pet> Pets => _pets;
+    public bool IsDeleted { get; private set; }
+    public DateTime? DeletionDate { get; private set; }    
 
     public Result AddPet(Pet pet)
     {
@@ -115,7 +120,7 @@ public class Volunteer: SoftDeletableEntity<VolunteerId>
 
         RecalculatePositionOfOtherPets(pet.Value.Position);
         
-        pet.Value.Delete(deletionDate);
+        pet.Value.Delete();
         return Result.Success();
     }
     
@@ -128,7 +133,7 @@ public class Volunteer: SoftDeletableEntity<VolunteerId>
         RecalculatePositionOfOtherPets(pet.Value.Position);
 
         _pets.Remove(pet.Value);
-        pet.Value.Delete(deletionDate);
+        pet.Value.Delete();
         return Result.Success();
     }
 
@@ -242,11 +247,12 @@ public class Volunteer: SoftDeletableEntity<VolunteerId>
         return Result.Success();
     }
 
-    public override void Delete(DateTime deletionDate)
+    public void Delete()
     {
-        base.Delete(deletionDate);
+        IsDeleted = true;
+        DeletionDate = DateTime.UtcNow;
         
-        _pets.ForEach(p => p.Delete(deletionDate));
+        _pets.ForEach(p => p.Delete());
     }
 
     private Result RecalculatePositionOfOtherPets(Position currentPosition)
@@ -265,9 +271,10 @@ public class Volunteer: SoftDeletableEntity<VolunteerId>
         return Result.Success();
     }
     
-    public override void Restore()
+    public void Restore()
     {
-        base.Restore();
+        IsDeleted = false;
+        DeletionDate = null;
         _pets.ForEach(p => p.Restore());
     }
 
@@ -277,6 +284,8 @@ public class Volunteer: SoftDeletableEntity<VolunteerId>
         if (pet.IsFailure)
             return pet.Errors;
 
+        pet.Value.Restore();
+        
         var resultMove = MovePet(pet.Value, Position.Create(_pets.Count).Value);
         if (resultMove.IsFailure)
             return resultMove.Errors;

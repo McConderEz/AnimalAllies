@@ -1,8 +1,9 @@
 using System.Text.RegularExpressions;
+using AnimalAllies.SharedKernel.Shared.Objects;
 
 namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
-public class Email: SharedKernel.Shared.ValueObject
+public class Email: ValueObject
 {
     public static readonly Regex ValidationRegex = new Regex(
         @"^[\w-\.]{1,40}@([\w-]+\.)+[\w-]{2,4}$",
@@ -21,7 +22,7 @@ public class Email: SharedKernel.Shared.ValueObject
     {
         if (!ValidationRegex.IsMatch(email))
         {
-            return Errors.General.ValueIsInvalid(email);
+            return Errors.Errors.General.ValueIsInvalid(email);
         }
 
         return new Email(email);

@@ -7,6 +7,7 @@ using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using Dapper;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,14 +71,12 @@ public class GetPetByIdHandler : IQueryHandler<PetDto, GetPetByIdQuery>
                                     """);
         
         var pets = 
-            await connection.QueryAsync<PetDto, string, string, PetDto>(
+            await connection.QueryAsync<PetDto, RequisiteDto[], PetPhotoDto[], PetDto>(
                 sql.ToString(),
-                (pet, jsonRequisites, jsonPetPhotos) =>
+                (pet, requisites, petPhotoDtos) =>
                 {
-                    var requisites = JsonSerializer.Deserialize<RequisiteDto[]>(jsonRequisites) ?? [];
                     pet.Requisites = requisites;
-
-                    var petPhotoDtos = JsonSerializer.Deserialize<PetPhotoDto[]>(jsonPetPhotos) ?? [];
+                    
                     pet.PetPhotos = petPhotoDtos;
                     
                     return pet;

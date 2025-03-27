@@ -1,4 +1,5 @@
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using AnimalAllies.Volunteer.Application.Repository;
@@ -10,9 +11,9 @@ namespace AnimalAllies.Volunteer.Infrastructure.Repository;
 
 public class VolunteerRepository: IVolunteerRepository
 {
-    private readonly WriteDbContext _context;
+    private readonly VolunteerWriteDbContext _context;
     
-    public VolunteerRepository(WriteDbContext context)
+    public VolunteerRepository(VolunteerWriteDbContext context)
     {
         _context = context;
     }
@@ -54,7 +55,7 @@ public class VolunteerRepository: IVolunteerRepository
         var volunteer = await _context.Volunteers
             .Include(x => x.Pets)
             .FirstOrDefaultAsync(x => x.Id == id,cancellationToken);
-
+        
         if (volunteer == null)
             return Result<Domain.VolunteerManagement.Aggregate.Volunteer>.Failure(Errors.General.NotFound(id.Id));
 

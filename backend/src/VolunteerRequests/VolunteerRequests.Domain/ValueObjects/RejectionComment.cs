@@ -1,5 +1,7 @@
 ﻿using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
+using AnimalAllies.SharedKernel.Shared.Objects;
 
 namespace VolunteerRequests.Domain.ValueObjects;
 
@@ -16,7 +18,7 @@ public class RejectionComment : ValueObject
 
     public static Result<RejectionComment> Create(string value)
     {
-        if (string.IsNullOrWhiteSpace(value) && value.Length > Constraints.MAX_DESCRIPTION_LENGTH)
+        if (string.IsNullOrEmpty(value) && value.Length > Constraints.MAX_DESCRIPTION_LENGTH)
             return Errors.General.ValueIsRequired("rejection comment");
 
         return new RejectionComment(value);

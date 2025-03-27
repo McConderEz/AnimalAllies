@@ -1,10 +1,12 @@
 
 
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
+using AnimalAllies.SharedKernel.Shared.Objects;
 
 namespace AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 
-public class HelpStatus: SharedKernel.Shared.ValueObject
+public class HelpStatus: ValueObject
 {
     public static readonly HelpStatus NeedsHelp = new(nameof(NeedsHelp));
     public static readonly HelpStatus SearchingHome = new(nameof(SearchingHome));

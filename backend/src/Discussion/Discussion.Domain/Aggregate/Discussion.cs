@@ -1,5 +1,7 @@
 ﻿using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.SharedKernel.Shared.Objects;
 using Discussion.Domain.Entities;
 using Discussion.Domain.ValueObjects;
 
@@ -71,11 +73,15 @@ public class Discussion: Entity<DiscussionId>
         return Result.Success();
     }
 
-    public Result CloseDiscussion()
+    public Result CloseDiscussion(Guid userId)
     {
         if (DiscussionStatus == DiscussionStatus.Closed)
             return Error.Failure("discussion.status", "Discussion is already closed");
 
+        if (Users.FirstMember != userId && Users.SecondMember != userId)
+            return Error.Failure("access.denied",
+                "close discussion can user that take part in discussion");
+        
         DiscussionStatus = DiscussionStatus.Closed;
         
         return Result.Success();

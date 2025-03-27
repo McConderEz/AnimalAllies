@@ -1,8 +1,9 @@
 using System.Text.RegularExpressions;
+using AnimalAllies.SharedKernel.Shared.Objects;
 
 namespace AnimalAllies.SharedKernel.Shared.ValueObjects;
 
-public class FullName : SharedKernel.Shared.ValueObject
+public class FullName : ValueObject
 {
 
     private static readonly Regex ValidationRegex = new Regex(
@@ -20,15 +21,21 @@ public class FullName : SharedKernel.Shared.ValueObject
         SecondName = secondName;
         Patronymic = patronymic;
     }
-    
+
+    public void Deconstruct(out string firstName, out string secondName, out string? patronymic)
+    {
+        firstName = FirstName;
+        secondName = SecondName;
+        patronymic = Patronymic;
+    }
     
     public static Result<FullName> Create(string firstName,string secondName, string? patronymic)
     {
         if (string.IsNullOrWhiteSpace(firstName) || !ValidationRegex.IsMatch(firstName))
-            return Errors.General.ValueIsInvalid(firstName);
+            return Errors.Errors.General.ValueIsInvalid(firstName);
 
         if (string.IsNullOrWhiteSpace(secondName) || !ValidationRegex.IsMatch(secondName))
-            return Errors.General.ValueIsInvalid(secondName);
+            return Errors.Errors.General.ValueIsInvalid(secondName);
 
         return new FullName(firstName, secondName, patronymic);
     }

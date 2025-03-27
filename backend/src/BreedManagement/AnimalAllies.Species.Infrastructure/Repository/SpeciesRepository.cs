@@ -1,4 +1,5 @@
 ﻿using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.Species.Application.Repository;
 using AnimalAllies.Species.Infrastructure.DbContexts;
@@ -8,9 +9,9 @@ namespace AnimalAllies.Species.Infrastructure.Repository;
 
 public class SpeciesRepository : ISpeciesRepository
 {
-    private readonly WriteDbContext _context;
+    private readonly SpeciesWriteDbContext _context;
 
-    public SpeciesRepository(WriteDbContext context)
+    public SpeciesRepository(SpeciesWriteDbContext context)
     {
         _context = context;
     }

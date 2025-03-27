@@ -1,4 +1,6 @@
 ﻿using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
+using AnimalAllies.SharedKernel.Shared.Objects;
 
 namespace Discussion.Domain.ValueObjects;
 
@@ -7,7 +9,7 @@ public class DiscussionStatus : ValueObject
     public static readonly DiscussionStatus Open = new(nameof(Open));
     public static readonly DiscussionStatus Closed = new(nameof(Closed));
 
-    public static readonly DiscussionStatus[] _all = [Open, Closed];
+    private static readonly DiscussionStatus[] _all = [Open, Closed];
     
     public string Value { get; }
     

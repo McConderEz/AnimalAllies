@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using VolunteerRequests.Domain.Aggregate;
+using VolunteerRequests.Domain.Aggregates;
 
 namespace VolunteerRequests.Infrastructure.DbContexts;
 
@@ -30,4 +30,5 @@ public class WriteDbContext(IConfiguration configuration) : DbContext
         = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
    public DbSet<VolunteerRequest> VolunteerRequests { get; set; } = null!;
+   public DbSet<ProhibitionSending> ProhibitionsSending { get; set; } = null!;
 }

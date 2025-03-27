@@ -1,4 +1,5 @@
 ﻿using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using Microsoft.AspNetCore.Identity;
 
 namespace AnimalAllies.Accounts.Application.Extensions;

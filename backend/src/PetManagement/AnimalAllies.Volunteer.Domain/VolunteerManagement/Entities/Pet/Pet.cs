@@ -1,12 +1,14 @@
 
 using AnimalAllies.SharedKernel.Shared;
+using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
+using AnimalAllies.SharedKernel.Shared.Objects;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 
 namespace AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet;
 
-public class Pet : SoftDeletableEntity<PetId>
+public class Pet : Entity<PetId>, ISoftDeletable
 {
     private Pet(PetId id) : base(id)
     {
@@ -44,6 +46,20 @@ public class Pet : SoftDeletableEntity<PetId>
     public Position Position { get; private set; }
     public IReadOnlyList<Requisite> Requisites { get; private set; }
     public IReadOnlyList<PetPhoto> PetPhotoDetails { get; private set; } = [];
+    public bool IsDeleted { get; private set; }
+    public DateTime? DeletionDate { get; private set; }    
+    
+    public void Delete()
+    {
+        IsDeleted = true;
+        DeletionDate = DateTime.UtcNow;
+    }
+    
+    public void Restore()
+    {
+        IsDeleted = false;
+        DeletionDate = null;
+    }
 
     public Result AddPhotos(ValueObjectList<PetPhoto>? photos)
     {
