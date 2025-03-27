@@ -1,10 +1,10 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using FileService.Api.Endpoints;
+﻿using FileService.Api.Endpoints;
 using FileService.Application.Providers;
 using FileService.Application.Repositories;
+using FileService.Contract;
+using FileService.Contract.Requests;
+using FileService.Contract.Responses;
 using FileService.Data.Models;
-using FileService.Data.Shared;
 using FileService.Jobs;
 using Hangfire;
 
@@ -12,14 +12,6 @@ namespace FileService.Features;
 
 public static class UploadPresignedUrl
 {
-    private record UploadPresignedUrlRequest(
-        string BucketName,
-        string FileName, 
-        string ContentType,
-        string Prefix,
-        string Extension,
-        long Size);
-    
     public sealed class Endpoint: IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
@@ -36,20 +28,18 @@ public static class UploadPresignedUrl
     {
         if (string.IsNullOrEmpty(request.ContentType))
             return Results.BadRequest("Content type is empty");
-
-        var sanitizedFilename = Path.GetFileName(request.FileName);
         
         var key = Guid.NewGuid();
-
-        var fileKey = $"{key}_{sanitizedFilename}";
         
+        var extension = Path.GetExtension(request.FileName);
+
+        var fileKey = $"{key}{extension}";
         
         var fileMetadata = new FileMetadata
         {
             BucketName = request.BucketName,
             ContentType = request.ContentType,
-            Name = sanitizedFilename,
-            Prefix = request.Prefix,
+            FileName = request.FileName,
             Key = fileKey
         };
         
@@ -59,26 +49,23 @@ public static class UploadPresignedUrl
 
         var dbRecord = new FileMetadata
         {
-            Id = Guid.NewGuid(),
+            Id = key,
             BucketName = request.BucketName,
             ContentType = request.ContentType,
-            DownloadUrl = result.Value,
             Extension = Path.GetExtension(request.FileName),
             Key = fileMetadata.Key,
-            Name = sanitizedFilename
+            FileName = request.FileName,
         };
         
         await repository.AddRangeAsync([dbRecord], cancellationToken);
         
-        var jobId = BackgroundJob.Schedule<ConfirmConsistencyJob>(
+        BackgroundJob.Schedule<ConfirmConsistencyJob>(
             j => j.Execute(
                 dbRecord.Id, dbRecord.BucketName, dbRecord.Key),
-            TimeSpan.FromMinutes(5));
+            TimeSpan.FromMinutes(3));
         
-        return Results.Ok(new
-        {
-            FileId = dbRecord.Id,
-            UploadUrl = result.Value,
-        });
+        var response = new GetUploadPresignedUrlResponse(dbRecord.Id, dbRecord.Extension, result.Value);
+        
+        return Results.Ok(response);
     }
 }

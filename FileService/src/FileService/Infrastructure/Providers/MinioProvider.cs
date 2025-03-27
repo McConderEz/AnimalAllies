@@ -48,7 +48,7 @@ public class MinioProvider : IFileProvider
             ContentType = fileMetadata.ContentType,
             Metadata =
             {
-                ["file-name"] = fileMetadata.Name
+                ["file-name"] = fileMetadata.FileName
             }
         };
 
@@ -70,7 +70,7 @@ public class MinioProvider : IFileProvider
                 Key = fileMetadata.Key,
                 Verb = HttpVerb.PUT,
                 Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
-                Protocol = Protocol.HTTPS,
+                Protocol = Protocol.HTTP,
                 UploadId = fileMetadata.UploadId,
                 PartNumber = fileMetadata.PartNumber,
             };
@@ -119,7 +119,7 @@ public class MinioProvider : IFileProvider
                 Key = fileMetadata.Key,
                 Verb = HttpVerb.GET,
                 Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
-                Protocol = Protocol.HTTPS,
+                Protocol = Protocol.HTTP,
             };
 
             var url = await _client.GetPreSignedURLAsync(presignedRequest);
@@ -180,7 +180,7 @@ public class MinioProvider : IFileProvider
                 Key = fileMetadata.Key,
                 Verb = HttpVerb.DELETE,
                 Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
-                Protocol = Protocol.HTTPS,
+                Protocol = Protocol.HTTP,
             };
             
             var url = await _client.GetPreSignedURLAsync(deleteRequest);
@@ -214,7 +214,7 @@ public class MinioProvider : IFileProvider
                 Key = fileMetadata.Key,
                 Verb = HttpVerb.GET,
                 Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
-                Protocol = Protocol.HTTPS,
+                Protocol = Protocol.HTTP,
             };
 
             var url = await _client.GetPreSignedURLAsync(presignedRequest);
@@ -279,7 +279,7 @@ public class MinioProvider : IFileProvider
                 BucketName = fileMetadata.BucketName,
                 Key = Uri.EscapeDataString(fileMetadata.Key),
                 Verb = HttpVerb.PUT,
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
                 ContentType = fileMetadata.ContentType,
                 Protocol = Protocol.HTTP
             };

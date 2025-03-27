@@ -42,4 +42,12 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\FileService.Contract\FileService.Contract.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\FileService.Contract\FileService.Contract.csproj" />
+    </ItemGroup>
+
 </Project>
