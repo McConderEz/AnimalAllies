@@ -29,11 +29,11 @@ public static class UploadPresignedUrl
         if (string.IsNullOrEmpty(request.ContentType))
             return Results.BadRequest("Content type is empty");
         
-        var key = Guid.NewGuid();
+        var id = Guid.NewGuid();
         
         var extension = Path.GetExtension(request.FileName);
 
-        var fileKey = $"{key}{extension}";
+        var fileKey = $"{id}{extension}";
         
         var fileMetadata = new FileMetadata
         {
@@ -49,7 +49,7 @@ public static class UploadPresignedUrl
 
         var dbRecord = new FileMetadata
         {
-            Id = key,
+            Id = id,
             BucketName = request.BucketName,
             ContentType = request.ContentType,
             Extension = Path.GetExtension(request.FileName),
@@ -60,8 +60,7 @@ public static class UploadPresignedUrl
         await repository.AddRangeAsync([dbRecord], cancellationToken);
         
         BackgroundJob.Schedule<ConfirmConsistencyJob>(
-            j => j.Execute(
-                dbRecord.Id, dbRecord.BucketName, dbRecord.Key),
+            j => j.Execute(new[] {dbRecord}, cancellationToken),
             TimeSpan.FromMinutes(3));
         
         var response = new GetUploadPresignedUrlResponse(dbRecord.Id, dbRecord.Extension, result.Value);

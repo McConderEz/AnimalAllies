@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using System.Collections.Concurrent;
+using Amazon.S3;
 using Amazon.S3.Model;
 using FileService.Application.Providers;
 using FileService.Data.Models;
@@ -9,7 +10,7 @@ namespace FileService.Infrastructure.Providers;
 
 public class MinioProvider : IFileProvider
 {
-    private const int MAX_DEGREE_OF_PARALLELISM = 10;
+    private const int MAX_DEGREE_OF_PARALLELISM = 50;
     private const int EXPIRATION_URL = 1;
     private readonly IAmazonS3 _client;
     private readonly ILogger<MinioProvider> _logger;
@@ -296,6 +297,57 @@ public class MinioProvider : IFileProvider
                 fileMetadata.BucketName);
 
             return Error.Failure("file.upload", "Fail to upload file in minio");
+        }
+    }
+    
+    public async Task<Result<List<string>>> GetPresignedUrlsForUploadParallel(
+        IEnumerable<FileMetadata> fileMetadata,
+        CancellationToken cancellationToken = default)
+    {
+        var fileMetadatas = fileMetadata.ToList();
+        
+        try
+        {
+            var results = new ConcurrentBag<string>();
+            var errors = new ConcurrentBag<ErrorList>();
+
+            await Parallel.ForEachAsync(fileMetadatas, new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = MAX_DEGREE_OF_PARALLELISM,
+                    CancellationToken = cancellationToken
+                },
+                async (metadata, token) =>
+                {
+                    var presignedRequest = new GetPreSignedUrlRequest
+                    {
+                        BucketName = metadata.BucketName,
+                        Key = Uri.EscapeDataString(metadata.Key),
+                        Verb = HttpVerb.PUT,
+                        Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
+                        ContentType = metadata.ContentType,
+                        Protocol = Protocol.HTTP
+                    };
+
+                    var result = await _client.GetPreSignedURLAsync(presignedRequest);
+
+                    if (result is null)
+                        errors.Add(Error.NotFound("object.not.found", 
+                            "File does`t exist in minio"));
+                    else
+                        results.Add(result);
+                });
+            
+            if (errors.Any())
+                return Error.Failure("file.upload", $"Failed to upload {errors.Count} files");
+    
+            return results.ToList();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Fail to upload files in minio");
+
+            return Error.Failure("files.upload", "Fail to upload files in minio");
         }
     }
     

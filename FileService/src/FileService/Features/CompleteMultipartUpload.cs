@@ -48,9 +48,8 @@ public static class CompleteMultipartUpload
         await repository.AddRangeAsync([metaDataResponse], cancellationToken);
 
         var jobId = BackgroundJob.Schedule<ConfirmConsistencyJob>(
-            j => j.Execute(
-                metaDataResponse.Id,metaDataResponse.BucketName, metaDataResponse.Key),
-            TimeSpan.FromMinutes(1));
+            j => j.Execute(new []{metaDataResponse}, cancellationToken),
+            TimeSpan.FromMinutes(3));
 
         BackgroundJob.Delete(jobId);
         
