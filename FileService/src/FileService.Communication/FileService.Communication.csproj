@@ -4,12 +4,12 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackageId>FileService</PackageId>
-        <Version>1.0.1</Version>
-        <Authors>Minoddein</Authors>
-        <Company>MinoddeinBy418</Company>
-        <PackageDescription>FileService</PackageDescription>
-        <RepositoryUrl>https://github.com/Minoddein/AnimalAllies</RepositoryUrl>
+        <PackageId>FileService.Communication</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>McConderEz</Authors>
+        <Company>McConderEzBy418</Company>
+        <PackageDescription>FileService.Communication</PackageDescription>
+        <RepositoryUrl>https://gitlab.com/McConderEz/AnimalAllies.git</RepositoryUrl>
     </PropertyGroup>
     
     <ItemGroup>

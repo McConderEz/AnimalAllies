@@ -14,4 +14,9 @@
       <ProjectReference Include="..\AnimalAllies.Accounts.Domain\AnimalAllies.Accounts.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FileService.Communication" Version="1.0.0" />
+      <PackageReference Include="FileService.Contracts" Version="1.0.0" />
+    </ItemGroup>
+
 </Project>

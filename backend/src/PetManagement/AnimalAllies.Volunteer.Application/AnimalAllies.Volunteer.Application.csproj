@@ -11,6 +11,11 @@
       <ProjectReference Include="..\..\Shared\AnimalAllies.Core\AnimalAllies.Core.csproj" />
       <ProjectReference Include="..\AnimalAllies.Volunteer.Domain\AnimalAllies.Volunteer.Domain.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FileService.Communication" Version="1.0.0" />
+      <PackageReference Include="FileService.Contracts" Version="1.0.0" />
+    </ItemGroup>
     
 
 </Project>
