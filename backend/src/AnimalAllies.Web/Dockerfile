@@ -1,12 +1,26 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+﻿# Базовый образ для runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+# Сборка приложения
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
+
+ 
 WORKDIR /src
+
+RUN --mount=type=secret,id=nuget_username \
+    --mount=type=secret,id=nuget_password \
+    dotnet nuget add source "https://gitlab.com/api/v4/projects/63188031/packages/nuget/index.json" \
+    --name "gitlab-mcconder" \
+    --username "$(cat /run/secrets/nuget_username)" \
+    --password "$(cat /run/secrets/nuget_password)" \
+    --store-password-in-clear-text
+
+# Копируем файлы проектов
 COPY ["src/AnimalAllies.Web/AnimalAllies.Web.csproj", "src/AnimalAllies.Web/"]
 COPY ["src/Accounts/AnimalAllies.Accounts.Infrastructure/AnimalAllies.Accounts.Infrastructure.csproj", "src/Accounts/AnimalAllies.Accounts.Infrastructure/"]
 COPY ["src/Shared/AnimalAllies.Framework/AnimalAllies.Framework.csproj", "src/Shared/AnimalAllies.Framework/"]
@@ -36,15 +50,21 @@ COPY ["src/VolunteerRequests/VolunteerRequests.Application/VolunteerRequests.App
 COPY ["src/VolunteerRequests/VolunteerRequests.Domain/VolunteerRequests.Domain.csproj", "src/VolunteerRequests/VolunteerRequests.Domain/"]
 COPY ["src/VolunteerRequests/VolunteerRequests.Infrastructure/VolunteerRequests.Infrastructure.csproj", "src/VolunteerRequests/VolunteerRequests.Infrastructure/"]
 COPY ["src/VolunteerRequests/VolunteerRequests.Presentation/VolunteerRequests.Presentation.csproj", "src/VolunteerRequests/VolunteerRequests.Presentation/"]
+
+# Восстанавливаем зависимости
 RUN dotnet restore "src/AnimalAllies.Web/AnimalAllies.Web.csproj"
+
+# Копируем остальные файлы и собираем
 COPY . .
 WORKDIR "/src/src/AnimalAllies.Web"
 RUN dotnet build "AnimalAllies.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
+# Публикуем приложение
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "AnimalAllies.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
+# Финальный образ
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .

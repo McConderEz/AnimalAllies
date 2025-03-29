@@ -15,8 +15,4 @@
       <ProjectReference Include="..\AnimalAllies.Volunteer.Application\AnimalAllies.Volunteer.Application.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Migrations\" />
-    </ItemGroup>
-
 </Project>

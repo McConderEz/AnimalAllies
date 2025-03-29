@@ -1,7 +1,7 @@
-﻿using FileService.Application.Providers;
+﻿using Amazon.S3;
+using FileService.Application.Providers;
 using FileService.Application.Repositories;
 using FileService.Data.Options;
-using FileService.Infrastructure;
 using FileService.Infrastructure.Providers;
 using FileService.Infrastructure.Repositories;
 using Microsoft.Extensions.Options;
@@ -49,6 +49,22 @@ public static class DependencyInjection
             options.WithSSL(minioOptions.WithSsl);
             
         });
+        
+        services.AddSingleton<IAmazonS3>(_ =>
+        {
+            var minioOptions = configuration.GetSection(MinioOptions.MINIO)
+                .Get<MinioOptions>() ?? throw new ApplicationException("Missing minio configuration");
+            
+            var config = new AmazonS3Config
+            {
+                ServiceURL = minioOptions.Endpoint,
+                ForcePathStyle = true,
+                UseHttp = true
+            };
+
+            return new AmazonS3Client(minioOptions.AccessKey, minioOptions.SecretKey, config);
+        });
+
 
         services.AddScoped<IFileProvider, MinioProvider>();
 

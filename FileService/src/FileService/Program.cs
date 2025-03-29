@@ -1,6 +1,5 @@
-using Amazon.S3;
+
 using FileService;
-using FileService.Api;
 using FileService.Api.Extensions;
 using FileService.Api.Middlewares;
 using Hangfire;
@@ -19,7 +18,9 @@ builder.Services.AddHttpLogging(o =>
 builder.Services.AddSerilog();
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddFileServiceInfrastructure(builder.Configuration);
 
 builder.Services.AddEndpoints();
@@ -30,18 +31,6 @@ builder.Services.AddHangfire(configuration => configuration
     .UseRecommendedSerializerSettings()
     .UsePostgreSqlStorage(c =>
         c.UseNpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection"))));
-
-builder.Services.AddSingleton<IAmazonS3>(_ =>
-{
-    var config = new AmazonS3Config
-    {
-        ServiceURL = "http://localhost:9000",
-        ForcePathStyle = true,
-        UseHttp = true
-    };
-
-    return new AmazonS3Client("minioadmin", "minioadmin", config);
-});
 
 var app = builder.Build();
 
@@ -61,3 +50,4 @@ app.UseHangfireDashboard();
 app.MapEndpoints();
 
 app.Run();
+
