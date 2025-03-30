@@ -22,20 +22,32 @@
     secrets:
       - nuget_username
       - nuget_password
+    ports:
+      - "8080:8080"
       
   fileservice:
     image: fileservice
+    hostname: fileservice
     build:
       context: ../FileService
       dockerfile: src/FileService/Dockerfile
+    networks:
+      - fileservice-network
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
     
   postgres:
     container_name: postgres
+    hostname: postgres
     image: postgres:latest
     restart: always
     networks:
+      - fileservice-network
       - backend-network
     environment:
       POSTGRES_DB: "animalAllies"
@@ -137,3 +149,5 @@ secrets:
 networks:
   backend-network:
     driver: bridge
+  fileservice-network:
+    driver: bridge 

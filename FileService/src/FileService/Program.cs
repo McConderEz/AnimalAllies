@@ -1,4 +1,3 @@
-
 using FileService;
 using FileService.Api.Extensions;
 using FileService.Api.Middlewares;
@@ -38,11 +37,14 @@ app.UseExceptionMiddleware();
 
 app.UseSerilogRequestLogging();
 
-if (app.Environment.IsDevelopment())
+/*if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+}*/
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHangfireServer();
 app.UseHangfireDashboard();
