@@ -134,7 +134,7 @@ public class VolunteerController: ApplicationController
         return Ok(result);
     }
     
-    [Permission("volunteer.create")]
+    //[Permission("volunteer.create")]
     [HttpPost]
     public async Task<IActionResult> Create(
         [FromServices] CreateVolunteerHandler handler,
@@ -213,7 +213,7 @@ public class VolunteerController: ApplicationController
         return Ok(response.Value);
     }
     
-    [Permission("volunteer.create")]
+    //[Permission("volunteer.create")]
     [HttpPost("{id:guid}/pet")]
     public async Task<ActionResult> AddPet(
         [FromRoute] Guid id,
@@ -231,20 +231,16 @@ public class VolunteerController: ApplicationController
         return Ok(result.Value);
     }
     
-    [Permission("volunteer.update")]
+    //[Permission("volunteer.update")]
     [HttpPost("{volunteerId:guid}/{petId:guid}/petPhoto")]
     public async Task<ActionResult> AddPetPhoto(
         [FromRoute] Guid volunteerId,
         [FromRoute] Guid petId,
-        [FromForm] AddPetPhotosRequest request,
+        [FromBody] AddPetPhotosRequest request,
         [FromServices] AddPetPhotosHandler handler,
         CancellationToken cancellationToken = default)
     {
-        await using var fileProcessor = new FormFileProcessor();
-
-        var fileDtos = fileProcessor.Process(request.Files);
-
-        var command = request.ToCommand(volunteerId, petId, fileDtos);
+        var command = request.ToCommand(volunteerId, petId);
 
         var result = await handler.Handle(command, cancellationToken);
 

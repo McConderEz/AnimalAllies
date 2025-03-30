@@ -10,6 +10,8 @@ using AnimalAllies.Volunteer.Application.FileProvider;
 using AnimalAllies.Volunteer.Application.Providers;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
+using FileService.Communication;
+using FileService.Contract.Requests;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -21,7 +23,8 @@ namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPet
 public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
 {
     private const string BUCKET_NAME = "photos";
-    private readonly IFileProvider _fileProvider;
+    //private readonly IFileProvider _fileProvider;
+    private readonly FileHttpClient _fileHttpClient;
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly ILogger<AddPetPhotosHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
@@ -29,19 +32,21 @@ public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
     private readonly IValidator<AddPetPhotosCommand> _validator;
 
     public AddPetPhotosHandler(
-        IFileProvider fileProvider,
+        //IFileProvider fileProvider,
         IVolunteerRepository volunteerRepository,
         ILogger<AddPetPhotosHandler> logger,
         [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork,
         IMessageQueue<IEnumerable<FileInfo>> messageQueue,
-        IValidator<AddPetPhotosCommand> validator)
+        IValidator<AddPetPhotosCommand> validator,
+        FileHttpClient fileHttpClient)
     {
-        _fileProvider = fileProvider;
+        //_fileProvider = fileProvider;
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _unitOfWork = unitOfWork;
         _messageQueue = messageQueue;
         _validator = validator;
+        _fileHttpClient = fileHttpClient;
         _messageQueue = messageQueue;
     }
     
@@ -75,38 +80,33 @@ public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
             if (pet.IsFailure)
                 return Errors.General.NotFound(petId.Id);
 
-            List<FileData> filesData = [];
-            foreach (var file in command.Photos)
-            {
-                var extension = Path.GetExtension(file.FileName);
+            List<UploadPresignedUrlRequest> uploadPresignedUrlRequests = [];
+            uploadPresignedUrlRequests.AddRange(
+                command.Photos.Select(file =>
+                    new UploadPresignedUrlRequest(file.BucketName, file.FileName, file.ContentType)));
 
-                var filePath = FilePath.Create(Guid.NewGuid(), extension);
+            var response = await _fileHttpClient.GetUploadPresignedUrlAsync(
+                uploadPresignedUrlRequests[0], 
+                cancellationToken);
 
-                if (filePath.IsFailure)
-                    return filePath.Errors;
+            if (response is null)
+                return Errors.General.Null();
 
-                var fileContent = new FileData(file.Content,new FileInfo(filePath.Value, BUCKET_NAME));
+            List<PetPhoto> files = [];
 
-                filesData.Add(fileContent);
-            }
+            var file = new PetPhoto(FilePath.Create(response.FileId, response.Extension).Value, false);
 
-            var photos = filesData
+            var photos = new[] {file};
+            
+            /*var photos = filesData
                 .Select(f => new PetPhoto(f.FileInfo.FilePath, false))
-                .ToList();
+                .ToList();*/
             
             var petPhotoList = new ValueObjectList<PetPhoto>(photos);
 
             pet.Value.AddPhotos(petPhotoList);
 
             await _unitOfWork.SaveChanges(cancellationToken);
-            
-            var uploadResult = await _fileProvider.UploadFiles(filesData, cancellationToken);
-            if (uploadResult.IsFailure)
-            {
-                await _messageQueue.WriteAsync(filesData.Select(f => f.FileInfo), cancellationToken);
-                    
-                return uploadResult.Errors;
-            }
 
             transaction.Commit();
             

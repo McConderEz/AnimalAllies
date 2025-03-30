@@ -13,9 +13,9 @@ public static class FileServiceExtensions
         
         services.AddHttpClient<FileHttpClient>((sp, config) =>
         {
-            var fileOptions = sp.GetRequiredService<IOptions<FileServiceOptions>>().Value; 
+            var options = sp.GetRequiredService<IOptions<FileServiceOptions>>().Value;
             
-            config.BaseAddress = new Uri(fileOptions.Url);
+            config.BaseAddress = new Uri(options.Url);
         });
 
         return services;
