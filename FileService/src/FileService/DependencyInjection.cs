@@ -57,7 +57,7 @@ public static class DependencyInjection
             
             var config = new AmazonS3Config
             {
-                ServiceURL = minioOptions.Endpoint,
+                ServiceURL = minioOptions.AwsEndpoint,
                 ForcePathStyle = true,
                 UseHttp = true
             };

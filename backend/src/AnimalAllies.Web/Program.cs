@@ -38,7 +38,7 @@ app.UseExceptionMiddleware();
 
 app.UseSerilogRequestLogging();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() | app.Environment.EnvironmentName == "Docker")
 {
     app.UseSwagger();
     app.UseSwaggerUI();

@@ -27,7 +27,6 @@
       
   fileservice:
     image: fileservice
-    hostname: fileservice
     build:
       context: ../FileService
       dockerfile: src/FileService/Dockerfile

@@ -7,6 +7,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.Services.AddLogger(builder.Configuration);
 
 builder.Services.AddHttpLogging(o =>
@@ -37,14 +38,11 @@ app.UseExceptionMiddleware();
 
 app.UseSerilogRequestLogging();
 
-/*if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}*/
-
-app.UseSwagger();
-app.UseSwaggerUI();
+}
 
 app.UseHangfireServer();
 app.UseHangfireDashboard();
