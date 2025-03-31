@@ -357,20 +357,15 @@ public class MinioProvider : IFileProvider
         
         var response = await _client.ListBucketsAsync(cancellationToken);
 
-        foreach (var bucketName in buckets)
+        foreach (var request in from bucketName in buckets
+                 let isExist = response.Buckets
+                     .Exists(b => b.BucketName.Equals(bucketName, StringComparison.OrdinalIgnoreCase)) 
+                 where !isExist select new PutBucketRequest
+                 {
+                     BucketName = bucketName
+                 })
         {
-            var isExist = response.Buckets
-                .Exists(b => b.BucketName.Equals(bucketName, StringComparison.OrdinalIgnoreCase));
-
-            if (!isExist)
-            {
-                var request = new PutBucketRequest
-                {
-                    BucketName = bucketName
-                };
-
-                await _client.PutBucketAsync(request, cancellationToken);
-            }
+            await _client.PutBucketAsync(request, cancellationToken);
         }
     }
 }

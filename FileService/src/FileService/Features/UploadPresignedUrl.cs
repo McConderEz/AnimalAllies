@@ -55,6 +55,7 @@ public static class UploadPresignedUrl
             Extension = Path.GetExtension(request.FileName),
             Key = fileMetadata.Key,
             FileName = request.FileName,
+            CreatedAt = DateTime.UtcNow
         };
         
         await repository.AddRangeAsync([dbRecord], cancellationToken);

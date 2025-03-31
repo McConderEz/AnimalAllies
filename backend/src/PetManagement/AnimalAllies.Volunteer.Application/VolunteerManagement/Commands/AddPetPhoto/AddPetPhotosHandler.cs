@@ -6,9 +6,8 @@ using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
-using AnimalAllies.Volunteer.Application.FileProvider;
-using AnimalAllies.Volunteer.Application.Providers;
 using AnimalAllies.Volunteer.Application.Repository;
+using AnimalAllies.Volunteer.Contracts.Responses;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 using FileService.Communication;
 using FileService.Contract.Requests;
@@ -20,10 +19,9 @@ using FileInfo = AnimalAllies.Volunteer.Application.FileProvider.FileInfo;
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPetPhoto;
 
-public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
+public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, AddPetPhotosResponse>
 {
     private const string BUCKET_NAME = "photos";
-    //private readonly IFileProvider _fileProvider;
     private readonly FileHttpClient _fileHttpClient;
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly ILogger<AddPetPhotosHandler> _logger;
@@ -32,7 +30,6 @@ public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
     private readonly IValidator<AddPetPhotosCommand> _validator;
 
     public AddPetPhotosHandler(
-        //IFileProvider fileProvider,
         IVolunteerRepository volunteerRepository,
         ILogger<AddPetPhotosHandler> logger,
         [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork,
@@ -40,7 +37,6 @@ public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
         IValidator<AddPetPhotosCommand> validator,
         FileHttpClient fileHttpClient)
     {
-        //_fileProvider = fileProvider;
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -51,7 +47,7 @@ public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
     }
     
 
-    public async Task<Result<Guid>> Handle(
+    public async Task<Result<AddPetPhotosResponse>> Handle(
         AddPetPhotosCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -85,26 +81,31 @@ public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
                 command.Photos.Select(file =>
                     new UploadPresignedUrlRequest(file.BucketName, file.FileName, file.ContentType)));
 
-            var response = await _fileHttpClient.GetUploadPresignedUrlAsync(
-                uploadPresignedUrlRequests[0], 
+            var request = new UploadPresignedUrlsRequest(uploadPresignedUrlRequests);
+            
+            var response = await _fileHttpClient.GetManyUploadPresignedUrlsAsync(
+                request, 
                 cancellationToken);
 
             if (response is null)
                 return Errors.General.Null();
 
-            List<PetPhoto> files = [];
-
-            var file = new PetPhoto(FilePath.Create(response.FileId, response.Extension).Value, false);
-
-            var photos = new[] {file};
-            
-            /*var photos = filesData
-                .Select(f => new PetPhoto(f.FileInfo.FilePath, false))
-                .ToList();*/
+            List<PetPhoto> photos = [];
+            foreach (var presignedUrlResponse in response)
+            {
+                var path = FilePath.Create(presignedUrlResponse.FileId, presignedUrlResponse.Extension);
+                if (path.IsFailure)
+                    return path.Errors;
+                
+                photos.Add(new PetPhoto(path.Value, false));
+            }
             
             var petPhotoList = new ValueObjectList<PetPhoto>(photos);
 
             pet.Value.AddPhotos(petPhotoList);
+
+            var addPetPhotosResponse = new AddPetPhotosResponse(
+                response.Select(r => r.UploadUrl));
 
             await _unitOfWork.SaveChanges(cancellationToken);
 
@@ -112,7 +113,7 @@ public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
             
             _logger.LogInformation("Files uploaded to pet with id - {id}", petId.Id);
 
-            return pet.Value.Id.Id;
+            return addPetPhotosResponse;
         }
         catch (Exception ex)
         {

@@ -18,8 +18,6 @@ public class FileMetadata
     public string FullPath { get; set; } = string.Empty;
     [BsonElement("size")]
     public long Size { get; set; }
-    [BsonIgnore]
-    public string StorageInfo { get; set; } = string.Empty;
     [BsonElement("bucket_name")]
     public string BucketName { get; set; } = string.Empty;
     [BsonElement("prefix")]
@@ -28,8 +26,7 @@ public class FileMetadata
     public string Key { get; set; } = string.Empty;
     [BsonIgnore]
     public string UploadId { get; set; } = string.Empty;
-    [BsonElement("download_url")]
-    public string DownloadUrl { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
     public int PartNumber { get; set; }
     public IEnumerable<ETagInfo>? ETags;
 }

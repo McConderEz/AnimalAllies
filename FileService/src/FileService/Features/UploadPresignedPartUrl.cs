@@ -31,7 +31,8 @@ public static class UploadPresignedPartUrl
             Prefix = request.Prefix,
             Key = $"{request.Prefix}/{key}",
             UploadId = request.UploadId,
-            PartNumber = request.PartNumber
+            PartNumber = request.PartNumber,
+            CreatedAt = DateTime.UtcNow
         };
         
         

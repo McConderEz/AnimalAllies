@@ -1,4 +1,5 @@
 ﻿using Amazon.S3;
+using FileService.Api.Extensions;
 using FileService.Application.Providers;
 using FileService.Application.Repositories;
 using FileService.Data.Options;
@@ -67,6 +68,8 @@ public static class DependencyInjection
 
 
         services.AddScoped<IFileProvider, MinioProvider>();
+
+        services.AddTransient<Seeding>();
 
         return services;
     }

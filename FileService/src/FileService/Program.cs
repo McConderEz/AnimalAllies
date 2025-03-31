@@ -34,6 +34,10 @@ builder.Services.AddHangfire(configuration => configuration
 
 var app = builder.Build();
 
+var seeding = app.Services.GetRequiredService<Seeding>();
+
+await seeding.SeedBucket();
+
 app.UseExceptionMiddleware();
 
 app.UseSerilogRequestLogging();

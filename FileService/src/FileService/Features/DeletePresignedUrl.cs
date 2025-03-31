@@ -35,6 +35,13 @@ public static class DeletePresignedUrl
         if (result.IsFailure)
             return Results.BadRequest(result.Errors);
 
+        if (!Guid.TryParse(request.FileId, out var guid))
+        {
+            return Results.BadRequest();
+        }
+        
+        await filesDataRepository.DeleteRangeAsync([guid], cancellationToken);
+        
         var response = new GetDeletePresignedUrlResponse(result.Value);
         
         return Results.Ok(response);

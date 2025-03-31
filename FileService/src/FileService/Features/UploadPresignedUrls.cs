@@ -38,7 +38,8 @@ public static class UploadPresignedUrls
             ContentType = metadata.ContentType,
             FileName = metadata.FileName,
             Key = fileKey,
-            Extension = extension
+            Extension = extension,
+            CreatedAt = DateTime.UtcNow
         }).ToList();
 
 
