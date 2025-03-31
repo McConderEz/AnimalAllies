@@ -7,6 +7,9 @@ using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.Volunteer.Application.Providers;
 using AnimalAllies.Volunteer.Application.Repository;
+using AnimalAllies.Volunteer.Contracts.Responses;
+using FileService.Communication;
+using FileService.Contract.Requests;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,31 +17,31 @@ using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.DeletePetPhoto;
 
-public class DeletePetPhotosHandler : ICommandHandler<DeletePetPhotosCommand, Guid>
+public class DeletePetPhotosHandler : ICommandHandler<DeletePetPhotosCommand, DeletePetPhotosResponse>
 {
     private const string BUCKET_NAME = "photos";
-    private readonly IFileProvider _fileProvider;
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly ILogger<DeletePetPhotosHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidator<DeletePetPhotosCommand> _validator;
+    private readonly FileHttpClient _fileHttpClient;
 
     public DeletePetPhotosHandler(
-        IFileProvider fileProvider,
         IVolunteerRepository volunteerRepository,
         ILogger<DeletePetPhotosHandler> logger,
         [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork,
-        IValidator<DeletePetPhotosCommand> validator)
+        IValidator<DeletePetPhotosCommand> validator, 
+        FileHttpClient fileHttpClient)
     {
-        _fileProvider = fileProvider;
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _unitOfWork = unitOfWork;
         _validator = validator;
+        _fileHttpClient = fileHttpClient;
     }
     
 
-    public async Task<Result<Guid>> Handle(
+    public async Task<Result<DeletePetPhotosResponse>> Handle(
         DeletePetPhotosCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -53,7 +56,6 @@ public class DeletePetPhotosHandler : ICommandHandler<DeletePetPhotosCommand, Gu
 
         try
         {
-
             var volunteerResult = await _volunteerRepository.GetById(
                 VolunteerId.Create(command.VolunteerId), cancellationToken);
 
@@ -69,11 +71,19 @@ public class DeletePetPhotosHandler : ICommandHandler<DeletePetPhotosCommand, Gu
             
             var petPreviousPhotos = pet.Value.PetPhotoDetails
                 .Select(f => new FileProvider.FileInfo(f.Path, BUCKET_NAME)).ToList();
-            
-            if(petPreviousPhotos.Any())
-                 petPreviousPhotos.ForEach(f => _fileProvider.RemoveFile(f, cancellationToken));
+
+            var request = new DeletePresignedUrlsRequest(petPreviousPhotos.Select(p =>
+                new DeletePresignedUrlRequest(p.BucketName, Path.GetFileNameWithoutExtension(p.FilePath.Path),
+                    Path.GetExtension(p.FilePath.Path))));
+
+            var response = await _fileHttpClient.GetDeletePresignedUrlAsync(request, cancellationToken);
+
+            if (response is null)
+                return Errors.General.Null("response from file service");
 
             pet.Value.DeletePhotos();
+
+            var deleteUrlResponse = new DeletePetPhotosResponse(response.DeleteUrl);
 
             await _unitOfWork.SaveChanges(cancellationToken);
 
@@ -81,7 +91,7 @@ public class DeletePetPhotosHandler : ICommandHandler<DeletePetPhotosCommand, Gu
             
             _logger.LogInformation("Files deleted from pet with id - {id}", petId.Id);
 
-            return pet.Value.Id.Id;
+            return deleteUrlResponse;
         }
         catch (Exception ex)
         {

@@ -20,29 +20,34 @@ public static class DeletePresignedUrl
     }
 
     private static async Task<IResult> Handler( 
-        DeletePresignedUrlRequest request,
+        DeletePresignedUrlsRequest request,
         IFilesDataRepository filesDataRepository,
         IFileProvider provider,
         CancellationToken cancellationToken = default)
     {
-        var fileMetadata = new FileMetadata
-        {
-            BucketName = request.BucketName,
-            Key = $"{request.FileId}{request.Extension}",
-        };
-        
-        var result = await provider.GetPresignedUrlForDelete(fileMetadata, cancellationToken);
+        List<FileMetadata> fileMetadatas = [];
+        fileMetadatas.AddRange(request.Requests
+            .Select(file => 
+                new FileMetadata { BucketName = file.BucketName, Key = $"{file.FileId}{file.Extension}", }));
+
+        var result = await provider.GetPresignedUrlsForDeleteParallel(fileMetadatas, cancellationToken);
         if (result.IsFailure)
             return Results.BadRequest(result.Errors);
 
-        if (!Guid.TryParse(request.FileId, out var guid))
+        List<Guid> guids = [];
+        foreach (var file in request.Requests)
         {
-            return Results.BadRequest();
+            if (!Guid.TryParse(file.FileId, out var guid))
+            {
+                return Results.BadRequest();
+            }
+            
+            guids.Add(guid);
         }
         
-        await filesDataRepository.DeleteRangeAsync([guid], cancellationToken);
+        await filesDataRepository.DeleteRangeAsync(guids, cancellationToken);
         
-        var response = new GetDeletePresignedUrlResponse(result.Value);
+        var response = new GetDeletePresignedUrlsResponse(result.Value);
         
         return Results.Ok(response);
     }

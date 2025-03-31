@@ -26,24 +26,20 @@ public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, AddPetPh
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly ILogger<AddPetPhotosHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMessageQueue<IEnumerable<FileInfo>> _messageQueue;
     private readonly IValidator<AddPetPhotosCommand> _validator;
 
     public AddPetPhotosHandler(
         IVolunteerRepository volunteerRepository,
         ILogger<AddPetPhotosHandler> logger,
         [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork,
-        IMessageQueue<IEnumerable<FileInfo>> messageQueue,
         IValidator<AddPetPhotosCommand> validator,
         FileHttpClient fileHttpClient)
     {
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _messageQueue = messageQueue;
         _validator = validator;
         _fileHttpClient = fileHttpClient;
-        _messageQueue = messageQueue;
     }
     
 

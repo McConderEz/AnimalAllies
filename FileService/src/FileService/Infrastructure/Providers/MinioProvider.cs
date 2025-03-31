@@ -21,6 +21,54 @@ public class MinioProvider : IFileProvider
         _logger = logger;
     }
 
+    public async Task<Result<List<string>>> GetPresignedUrlsForDeleteParallel(IEnumerable<FileMetadata> fileMetadata, CancellationToken cancellationToken)
+    {
+        var fileMetadatas = fileMetadata.ToList();
+        
+        try
+        {
+            var results = new ConcurrentBag<string>();
+            var errors = new ConcurrentBag<ErrorList>();
+
+            await Parallel.ForEachAsync(fileMetadatas, new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = MAX_DEGREE_OF_PARALLELISM,
+                    CancellationToken = cancellationToken
+                },
+                async (metadata, token) =>
+                {
+                    var deleteRequest = new GetPreSignedUrlRequest
+                    {
+                        BucketName = metadata.BucketName,
+                        Key = metadata.Key,
+                        Verb = HttpVerb.DELETE,
+                        Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
+                        Protocol = Protocol.HTTP,
+                    };
+
+                    var result = await _client.GetPreSignedURLAsync(deleteRequest);
+
+                    if (result is null)
+                        errors.Add(Error.NotFound("object.not.found", 
+                            "File does`t exist in minio"));
+                    else
+                        results.Add(result);
+                });
+            
+            if (errors.Any())
+                return Error.Failure("file.upload", $"Failed to upload {errors.Count} files");
+    
+            return results.ToList();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Fail to upload files in minio");
+
+            return Error.Failure("files.upload", "Fail to upload files in minio");
+        }
+    }
+
     public async Task DeleteFile(FileMetadata fileMetadata, CancellationToken cancellationToken = default)
     {
         try

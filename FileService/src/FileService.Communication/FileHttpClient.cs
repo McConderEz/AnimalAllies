@@ -87,13 +87,13 @@ public class FileHttpClient(HttpClient httpClient)
     }
     
     /// <summary>
-    /// Получение ссылки на удаление файла из S3
+    /// Получение ссылки на скачивагие файла из S3
     /// </summary>
     /// <param name="request">Запрос</param>
     /// <param name="cancellationToken">Токен отмен</param>
     /// <returns></returns>
-    public async Task<GetDeletePresignedUrlResponse?> GetDeletePresignedUrlAsync(
-        DownloadPresignedUrlRequest request, CancellationToken cancellationToken = default)
+    public async Task<GetDeletePresignedUrlsResponse?> GetDeletePresignedUrlAsync(
+        DeletePresignedUrlsRequest request, CancellationToken cancellationToken = default)
     {
         var response = await httpClient.PostAsJsonAsync(
             "files/presigned-for-deletion",
@@ -106,7 +106,7 @@ public class FileHttpClient(HttpClient httpClient)
         }
         
         var fileResponse = await response.Content
-            .ReadFromJsonAsync<GetDeletePresignedUrlResponse>(cancellationToken);
+            .ReadFromJsonAsync<GetDeletePresignedUrlsResponse>(cancellationToken);
 
         return fileResponse;
     }

@@ -22,6 +22,8 @@ public interface IFileProvider
     Task<Result<IReadOnlyList<string>>> DownloadFiles(
         IEnumerable<FileMetadata> filesMetadata, CancellationToken cancellationToken = default);
     Task<Result<string>> GetPresignedUrlForDelete(FileMetadata fileMetadata, CancellationToken cancellationToken);
+    Task<Result<List<string>>> GetPresignedUrlsForDeleteParallel(
+        IEnumerable<FileMetadata> fileMetadata, CancellationToken cancellationToken);
     Task DeleteFile(FileMetadata fileMetadata, CancellationToken cancellationToken = default);
     Task<Result<List<string>>> GetPresignedUrlsForUploadParallel(
         IEnumerable<FileMetadata> fileMetadata,
