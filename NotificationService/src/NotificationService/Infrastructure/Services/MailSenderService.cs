@@ -56,7 +56,7 @@ public class MailSenderService
         mail.Subject = mailData.Subject;
 
         using var client = new SmtpClient();
-
+        
         await client.ConnectAsync(_mailOptions.Host, _mailOptions.Port);
         await client.AuthenticateAsync(_mailOptions.UserName, _mailOptions.Password);
         await client.SendAsync(mail);

@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{55A73465-A32
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService", "src\NotificationService\NotificationService.csproj", "{A5969C30-D8D8-4E0D-B07E-65020292B4E6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.Contracts", "src\NotificationService.Contracts\NotificationService.Contracts.csproj", "{01AB985D-4353-455A-A054-B5EB96E96C42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,11 +19,16 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A5969C30-D8D8-4E0D-B07E-65020292B4E6} = {55A73465-A327-47BC-8E9A-A92E52D7926D}
+		{01AB985D-4353-455A-A054-B5EB96E96C42} = {55A73465-A327-47BC-8E9A-A92E52D7926D}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A5969C30-D8D8-4E0D-B07E-65020292B4E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A5969C30-D8D8-4E0D-B07E-65020292B4E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5969C30-D8D8-4E0D-B07E-65020292B4E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5969C30-D8D8-4E0D-B07E-65020292B4E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01AB985D-4353-455A-A054-B5EB96E96C42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01AB985D-4353-455A-A054-B5EB96E96C42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01AB985D-4353-455A-A054-B5EB96E96C42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01AB985D-4353-455A-A054-B5EB96E96C42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

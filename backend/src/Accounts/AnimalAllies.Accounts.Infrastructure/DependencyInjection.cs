@@ -41,6 +41,7 @@ public static class DependencyInjection
         services
             .AddIdentity<User,Role>(options =>
             {
+                options.SignIn.RequireConfirmedEmail = true;
                 options.User.RequireUniqueEmail = true;
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 8;
