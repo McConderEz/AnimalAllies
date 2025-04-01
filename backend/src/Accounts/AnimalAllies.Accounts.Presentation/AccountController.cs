@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.AddAvatar;
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.AddSocialNetworks;
+using AnimalAllies.Accounts.Application.AccountManagement.Commands.ConfirmEmail;
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.Login;
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.Refresh;
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.Register;
@@ -35,7 +36,26 @@ public class AccountController: ApplicationController
             return result.Errors.ToResponse();
         
         return Ok(result.IsSuccess);
-    } 
+    }
+
+    [HttpGet("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail(
+        [FromQuery] Guid userId,
+        [FromQuery] string code,
+        [FromServices] ConfirmEmailHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        if (userId == Guid.Empty || string.IsNullOrEmpty(code))
+            return BadRequest("Invalid parameters");
+
+        var request = new ConfirmEmailCommand(userId, code);
+
+        var result = await handler.Handle(request, cancellationToken);
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
+
+        return Ok(result);
+    }
     
     [HttpPost("authentication")]
     public async Task<IActionResult> Login(

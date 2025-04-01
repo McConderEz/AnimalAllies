@@ -45,7 +45,7 @@ public class SendConfirmTokenByEmailEvent: IConsumer<SendConfirmTokenByEmailRequ
         
         var encodedCode = WebUtility.UrlEncode(message.Code);
         
-        var url = $"http://localhost:5299/Account/ConfirmEmail?" +
+        var url = $"http://localhost:5299/api/Account/confirm-email?" +
                   $"userId={message.UserId.ToString()}" +
                   $"&code={encodedCode}";
 
