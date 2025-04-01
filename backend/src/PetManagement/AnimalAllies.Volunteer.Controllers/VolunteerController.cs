@@ -293,10 +293,11 @@ public class VolunteerController: ApplicationController
     public async Task<ActionResult> DeletePetPhoto(
         [FromRoute] Guid volunteerId,
         [FromRoute] Guid petId,
+        [FromBody] DeletePetPhotosRequest request,
         [FromServices] DeletePetPhotosHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var command = new DeletePetPhotosCommand(volunteerId, petId);
+        var command = new DeletePetPhotosCommand(volunteerId, petId, request.FilePaths);
 
         var result = await handler.Handle(command, cancellationToken);
 

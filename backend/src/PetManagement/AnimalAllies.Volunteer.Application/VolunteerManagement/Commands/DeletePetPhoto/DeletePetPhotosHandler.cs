@@ -8,6 +8,7 @@ using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.Volunteer.Application.Providers;
 using AnimalAllies.Volunteer.Application.Repository;
 using AnimalAllies.Volunteer.Contracts.Responses;
+using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
 using FileService.Communication;
 using FileService.Contract.Requests;
 using FluentValidation;
@@ -70,6 +71,7 @@ public class DeletePetPhotosHandler : ICommandHandler<DeletePetPhotosCommand, De
                 return Errors.General.NotFound(petId.Id);
             
             var petPreviousPhotos = pet.Value.PetPhotoDetails
+                .Where(f => !command.FilePaths.Contains(f.Path.Path))
                 .Select(f => new FileProvider.FileInfo(f.Path, BUCKET_NAME)).ToList();
 
             var request = new DeletePresignedUrlsRequest(petPreviousPhotos.Select(p =>
@@ -81,7 +83,10 @@ public class DeletePetPhotosHandler : ICommandHandler<DeletePetPhotosCommand, De
             if (response is null)
                 return Errors.General.Null("response from file service");
 
-            pet.Value.DeletePhotos();
+            var filePaths = command.FilePaths.Select(f =>
+                FilePath.Create(Guid.Parse(Path.GetFileNameWithoutExtension(f)), Path.GetExtension(f)).Value);
+            
+            pet.Value.DeletePhotos(filePaths);
 
             var deleteUrlResponse = new DeletePetPhotosResponse(response.DeleteUrl);
 

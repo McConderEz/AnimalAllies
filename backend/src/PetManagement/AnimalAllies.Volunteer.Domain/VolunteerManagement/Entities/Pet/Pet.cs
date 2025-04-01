@@ -73,9 +73,11 @@ public class Pet : Entity<PetId>, ISoftDeletable
         return Result.Success();
     }
 
-    public Result DeletePhotos()
+    public Result DeletePhotos(IEnumerable<FilePath> filePaths)
     {
-        PetPhotoDetails = new ValueObjectList<PetPhoto>([]);
+        var photos = PetPhotoDetails.Where(f => !filePaths.Contains(f.Path));
+        
+        PetPhotoDetails = new ValueObjectList<PetPhoto>(photos);
         
         return Result.Success();
     }
