@@ -63,7 +63,12 @@ public class Pet : Entity<PetId>, ISoftDeletable
 
     public Result AddPhotos(ValueObjectList<PetPhoto>? photos)
     {
-        PetPhotoDetails = photos;
+        if (photos is null)
+            return Errors.General.Null("photos");
+        
+        var newPhotoList = PetPhotoDetails.Union(photos);
+        
+        PetPhotoDetails = new ValueObjectList<PetPhoto>(newPhotoList);
 
         return Result.Success();
     }

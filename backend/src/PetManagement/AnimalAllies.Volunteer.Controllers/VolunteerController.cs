@@ -231,7 +231,7 @@ public class VolunteerController: ApplicationController
         return Ok(result.Value);
     }
     
-    [Permission("volunteer.update")]
+    //[Permission("volunteer.update")]
     [HttpPost("{volunteerId:guid}/{petId:guid}/petPhoto")]
     public async Task<ActionResult> AddPetPhoto(
         [FromRoute] Guid volunteerId,

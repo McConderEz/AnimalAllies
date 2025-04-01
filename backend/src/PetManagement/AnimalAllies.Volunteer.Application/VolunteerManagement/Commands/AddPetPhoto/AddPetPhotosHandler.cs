@@ -1,7 +1,6 @@
 using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
-using AnimalAllies.Core.Messaging;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Errors;
@@ -14,7 +13,6 @@ using FileService.Contract.Requests;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using FileInfo = AnimalAllies.Volunteer.Application.FileProvider.FileInfo;
 
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPetPhoto;
@@ -98,7 +96,11 @@ public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, AddPetPh
             
             var petPhotoList = new ValueObjectList<PetPhoto>(photos);
 
-            pet.Value.AddPhotos(petPhotoList);
+            var result = pet.Value.AddPhotos(petPhotoList);
+            
+            if (result.IsFailure)
+                return result.Errors;
+            
 
             var addPetPhotosResponse = new AddPetPhotosResponse(
                 response.Select(r => r.UploadUrl));
