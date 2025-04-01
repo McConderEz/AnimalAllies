@@ -14,8 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{577BA787
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject.Domain", "tests\TestProject.Domain\TestProject.Domain.csproj", "{9D78674C-74F3-442D-8317-25F98C5A17FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject.Application", "tests\TestProject.Application\TestProject.Application.csproj", "{A66ED065-2FF8-4FEB-9E00-9E919AA0FD58}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalAllies.Volunteer.Application", "src\PetManagement\AnimalAllies.Volunteer.Application\AnimalAllies.Volunteer.Application.csproj", "{5FB75F59-9751-4158-A630-4F6CCE54FDEE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalAllies.Volunteer.Domain", "src\PetManagement\AnimalAllies.Volunteer.Domain\AnimalAllies.Volunteer.Domain.csproj", "{2D8745AE-8A26-4F88-84BD-90E0A39B074F}"
@@ -110,10 +108,6 @@ Global
 		{9D78674C-74F3-442D-8317-25F98C5A17FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D78674C-74F3-442D-8317-25F98C5A17FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D78674C-74F3-442D-8317-25F98C5A17FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A66ED065-2FF8-4FEB-9E00-9E919AA0FD58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A66ED065-2FF8-4FEB-9E00-9E919AA0FD58}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A66ED065-2FF8-4FEB-9E00-9E919AA0FD58}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A66ED065-2FF8-4FEB-9E00-9E919AA0FD58}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5FB75F59-9751-4158-A630-4F6CCE54FDEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5FB75F59-9751-4158-A630-4F6CCE54FDEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FB75F59-9751-4158-A630-4F6CCE54FDEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -252,7 +246,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9D78674C-74F3-442D-8317-25F98C5A17FE} = {577BA787-2133-46A6-A6EB-71DF80E34DB1}
-		{A66ED065-2FF8-4FEB-9E00-9E919AA0FD58} = {577BA787-2133-46A6-A6EB-71DF80E34DB1}
 		{5FB75F59-9751-4158-A630-4F6CCE54FDEE} = {74FB658E-257B-46FD-BDA2-CCB04BCF4E2B}
 		{2D8745AE-8A26-4F88-84BD-90E0A39B074F} = {74FB658E-257B-46FD-BDA2-CCB04BCF4E2B}
 		{2D997510-F498-4DD0-8F0B-8EF34DB3674D} = {74FB658E-257B-46FD-BDA2-CCB04BCF4E2B}

@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using System.Collections.Concurrent;
+using Amazon.S3;
 using Amazon.S3.Model;
 using FileService.Application.Providers;
 using FileService.Data.Models;
@@ -9,7 +10,7 @@ namespace FileService.Infrastructure.Providers;
 
 public class MinioProvider : IFileProvider
 {
-    private const int MAX_DEGREE_OF_PARALLELISM = 10;
+    private const int MAX_DEGREE_OF_PARALLELISM = 50;
     private const int EXPIRATION_URL = 1;
     private readonly IAmazonS3 _client;
     private readonly ILogger<MinioProvider> _logger;
@@ -18,6 +19,54 @@ public class MinioProvider : IFileProvider
     {
         _client = client;
         _logger = logger;
+    }
+
+    public async Task<Result<List<string>>> GetPresignedUrlsForDeleteParallel(IEnumerable<FileMetadata> fileMetadata, CancellationToken cancellationToken)
+    {
+        var fileMetadatas = fileMetadata.ToList();
+        
+        try
+        {
+            var results = new ConcurrentBag<string>();
+            var errors = new ConcurrentBag<ErrorList>();
+
+            await Parallel.ForEachAsync(fileMetadatas, new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = MAX_DEGREE_OF_PARALLELISM,
+                    CancellationToken = cancellationToken
+                },
+                async (metadata, token) =>
+                {
+                    var deleteRequest = new GetPreSignedUrlRequest
+                    {
+                        BucketName = metadata.BucketName,
+                        Key = metadata.Key,
+                        Verb = HttpVerb.DELETE,
+                        Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
+                        Protocol = Protocol.HTTP,
+                    };
+
+                    var result = await _client.GetPreSignedURLAsync(deleteRequest);
+
+                    if (result is null)
+                        errors.Add(Error.NotFound("object.not.found", 
+                            "File does`t exist in minio"));
+                    else
+                        results.Add(result);
+                });
+            
+            if (errors.Any())
+                return Error.Failure("file.upload", $"Failed to upload {errors.Count} files");
+    
+            return results.ToList();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Fail to upload files in minio");
+
+            return Error.Failure("files.upload", "Fail to upload files in minio");
+        }
     }
 
     public async Task DeleteFile(FileMetadata fileMetadata, CancellationToken cancellationToken = default)
@@ -48,7 +97,7 @@ public class MinioProvider : IFileProvider
             ContentType = fileMetadata.ContentType,
             Metadata =
             {
-                ["file-name"] = fileMetadata.Name
+                ["file-name"] = fileMetadata.FileName
             }
         };
 
@@ -70,7 +119,7 @@ public class MinioProvider : IFileProvider
                 Key = fileMetadata.Key,
                 Verb = HttpVerb.PUT,
                 Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
-                Protocol = Protocol.HTTPS,
+                Protocol = Protocol.HTTP,
                 UploadId = fileMetadata.UploadId,
                 PartNumber = fileMetadata.PartNumber,
             };
@@ -119,7 +168,7 @@ public class MinioProvider : IFileProvider
                 Key = fileMetadata.Key,
                 Verb = HttpVerb.GET,
                 Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
-                Protocol = Protocol.HTTPS,
+                Protocol = Protocol.HTTP,
             };
 
             var url = await _client.GetPreSignedURLAsync(presignedRequest);
@@ -180,7 +229,7 @@ public class MinioProvider : IFileProvider
                 Key = fileMetadata.Key,
                 Verb = HttpVerb.DELETE,
                 Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
-                Protocol = Protocol.HTTPS,
+                Protocol = Protocol.HTTP,
             };
             
             var url = await _client.GetPreSignedURLAsync(deleteRequest);
@@ -214,7 +263,7 @@ public class MinioProvider : IFileProvider
                 Key = fileMetadata.Key,
                 Verb = HttpVerb.GET,
                 Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
-                Protocol = Protocol.HTTPS,
+                Protocol = Protocol.HTTP,
             };
 
             var url = await _client.GetPreSignedURLAsync(presignedRequest);
@@ -279,7 +328,7 @@ public class MinioProvider : IFileProvider
                 BucketName = fileMetadata.BucketName,
                 Key = Uri.EscapeDataString(fileMetadata.Key),
                 Verb = HttpVerb.PUT,
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
                 ContentType = fileMetadata.ContentType,
                 Protocol = Protocol.HTTP
             };
@@ -299,26 +348,72 @@ public class MinioProvider : IFileProvider
         }
     }
     
+    public async Task<Result<List<string>>> GetPresignedUrlsForUploadParallel(
+        IEnumerable<FileMetadata> fileMetadata,
+        CancellationToken cancellationToken = default)
+    {
+        var fileMetadatas = fileMetadata.ToList();
+        
+        try
+        {
+            var results = new ConcurrentBag<string>();
+            var errors = new ConcurrentBag<ErrorList>();
+
+            await Parallel.ForEachAsync(fileMetadatas, new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = MAX_DEGREE_OF_PARALLELISM,
+                    CancellationToken = cancellationToken
+                },
+                async (metadata, token) =>
+                {
+                    var presignedRequest = new GetPreSignedUrlRequest
+                    {
+                        BucketName = metadata.BucketName,
+                        Key = Uri.EscapeDataString(metadata.Key),
+                        Verb = HttpVerb.PUT,
+                        Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
+                        ContentType = metadata.ContentType,
+                        Protocol = Protocol.HTTP
+                    };
+
+                    var result = await _client.GetPreSignedURLAsync(presignedRequest);
+
+                    if (result is null)
+                        errors.Add(Error.NotFound("object.not.found", 
+                            "File does`t exist in minio"));
+                    else
+                        results.Add(result);
+                });
+            
+            if (errors.Any())
+                return Error.Failure("file.upload", $"Failed to upload {errors.Count} files");
+    
+            return results.ToList();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Fail to upload files in minio");
+
+            return Error.Failure("files.upload", "Fail to upload files in minio");
+        }
+    }
+    
     private async Task IsBucketExist(IEnumerable<string> bucketNames,CancellationToken cancellationToken)
     {
         HashSet<string> buckets = [..bucketNames];
         
         var response = await _client.ListBucketsAsync(cancellationToken);
 
-        foreach (var bucketName in buckets)
+        foreach (var request in from bucketName in buckets
+                 let isExist = response.Buckets
+                     .Exists(b => b.BucketName.Equals(bucketName, StringComparison.OrdinalIgnoreCase)) 
+                 where !isExist select new PutBucketRequest
+                 {
+                     BucketName = bucketName
+                 })
         {
-            var isExist = response.Buckets
-                .Exists(b => b.BucketName.Equals(bucketName, StringComparison.OrdinalIgnoreCase));
-
-            if (!isExist)
-            {
-                var request = new PutBucketRequest
-                {
-                    BucketName = bucketName
-                };
-
-                await _client.PutBucketAsync(request, cancellationToken);
-            }
+            await _client.PutBucketAsync(request, cancellationToken);
         }
     }
 }

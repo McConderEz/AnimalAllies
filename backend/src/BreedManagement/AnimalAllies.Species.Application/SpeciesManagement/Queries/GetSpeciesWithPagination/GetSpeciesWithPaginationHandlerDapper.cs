@@ -75,7 +75,7 @@ public class GetSpeciesWithPaginationHandlerDapper : IQueryHandler<PagedList<Spe
                                     select 
                                         id,
                                         name
-                                        from species
+                                        from species.species
                                     """);
         
 

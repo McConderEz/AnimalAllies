@@ -1,19 +1,13 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using FileService.Api.Endpoints;
+﻿using FileService.Api.Endpoints;
 using FileService.Application.Providers;
 using FileService.Application.Repositories;
-using FileService.Data.Models;
-using FileService.Data.Shared;
-using Microsoft.AspNetCore.Mvc;
+using FileService.Contract.Requests;
+using FileService.Contract.Responses;
 
 namespace FileService.Features;
 
 public static class GetFilesByIds
 {
-    private record GetFilesByIdsRequest(
-        IEnumerable<Guid> FileIds);
-    
     public sealed class Endpoint: IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
@@ -34,12 +28,12 @@ public static class GetFilesByIds
         if (urls.IsFailure)
             return Results.Conflict(error: urls.Errors);
         
-        files = files.Zip(urls.Value,(file,url) => 
+        var responseData = files.Zip(urls.Value,(file,url) => 
         { 
-            file.DownloadUrl = url;
-            return file;
+            var response = new ResponseData(url, file.Id, file.Extension);
+            return response;
         }).ToList();
         
-        return Results.Ok(files);
+        return Results.Ok(responseData);
     }
 }

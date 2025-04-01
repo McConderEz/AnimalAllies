@@ -1,6 +1,4 @@
-using Amazon.S3;
 using FileService;
-using FileService.Api;
 using FileService.Api.Extensions;
 using FileService.Api.Middlewares;
 using Hangfire;
@@ -8,6 +6,7 @@ using Hangfire.PostgreSql;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddLogger(builder.Configuration);
 
@@ -19,7 +18,9 @@ builder.Services.AddHttpLogging(o =>
 builder.Services.AddSerilog();
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddFileServiceInfrastructure(builder.Configuration);
 
 builder.Services.AddEndpoints();
@@ -31,25 +32,17 @@ builder.Services.AddHangfire(configuration => configuration
     .UsePostgreSqlStorage(c =>
         c.UseNpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
-builder.Services.AddSingleton<IAmazonS3>(_ =>
-{
-    var config = new AmazonS3Config
-    {
-        ServiceURL = "http://localhost:9000",
-        ForcePathStyle = true,
-        UseHttp = true
-    };
-
-    return new AmazonS3Client("minioadmin", "minioadmin", config);
-});
-
 var app = builder.Build();
+
+var seeding = app.Services.GetRequiredService<Seeding>();
+
+await seeding.SeedBucket();
 
 app.UseExceptionMiddleware();
 
 app.UseSerilogRequestLogging();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -61,3 +54,4 @@ app.UseHangfireDashboard();
 app.MapEndpoints();
 
 app.Run();
+

@@ -1,10 +1,14 @@
-﻿using FileService.Application.Providers;
+﻿using Amazon.S3;
+using FileService.Api.Extensions;
+using FileService.Application.Providers;
 using FileService.Application.Repositories;
 using FileService.Data.Options;
-using FileService.Infrastructure;
 using FileService.Infrastructure.Providers;
 using FileService.Infrastructure.Repositories;
+using Microsoft.Extensions.Options;
 using Minio;
+using MongoDB.Driver;
+using MongoDatabaseSettings = FileService.Data.Options.MongoDatabaseSettings;
 
 namespace FileService;
 
@@ -15,7 +19,7 @@ public static class DependencyInjection
     {
         services
             .AddMinio(configuration)
-            .AddMongoDb(configuration)
+            .AddMongo(configuration)
             .AddRepositories();
         
         return services;
@@ -25,14 +29,6 @@ public static class DependencyInjection
     {
         services.AddScoped<IFilesDataRepository,FilesDataRepository>();
 
-        return services;
-    }
-    
-    private static IServiceCollection AddMongoDb(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.Configure<MongoDatabaseSettings>(configuration.GetSection(MongoDatabaseSettings.Mongo));
-        services.AddScoped<ApplicationDbContext>();
-        
         return services;
     }
     
@@ -54,8 +50,47 @@ public static class DependencyInjection
             options.WithSSL(minioOptions.WithSsl);
             
         });
+        
+        services.AddSingleton<IAmazonS3>(_ =>
+        {
+            var minioOptions = configuration.GetSection(MinioOptions.MINIO)
+                .Get<MinioOptions>() ?? throw new ApplicationException("Missing minio configuration");
+            
+            var config = new AmazonS3Config
+            {
+                ServiceURL = minioOptions.AwsEndpoint,
+                ForcePathStyle = true,
+                UseHttp = true
+            };
+
+            return new AmazonS3Client(minioOptions.AccessKey, minioOptions.SecretKey, config);
+        });
+
 
         services.AddScoped<IFileProvider, MinioProvider>();
+
+        services.AddTransient<Seeding>();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddMongo(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<MongoDatabaseSettings>(
+            configuration.GetSection(MongoDatabaseSettings.Mongo) ?? throw new ApplicationException());
+        
+        services.AddSingleton<IMongoClient>(serviceProvider =>
+        {
+            var settings = serviceProvider.GetRequiredService<IOptions<MongoDatabaseSettings>>().Value;
+            return new MongoClient(settings.ConnectionString);
+        });
+        
+        services.AddScoped<IMongoDatabase>(serviceProvider =>
+        {
+            var settings = serviceProvider.GetRequiredService<IOptions<MongoDatabaseSettings>>().Value;
+            var client = serviceProvider.GetRequiredService<IMongoClient>();
+            return client.GetDatabase(settings.DatabaseName);
+        });
 
         return services;
     }

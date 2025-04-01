@@ -1,18 +1,13 @@
 ﻿using FileService.Api.Endpoints;
 using FileService.Application.Providers;
+using FileService.Contract;
+using FileService.Contract.Requests;
 using FileService.Data.Models;
 
 namespace FileService.Features;
 
 public static class StartMultipartUpload
 {
-    private record StartMultipartUploadRequest(
-        string BucketName,
-        string FileName, 
-        string ContentType,
-        string Prefix,
-        long Size);
-    
     public sealed class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
@@ -32,7 +27,7 @@ public static class StartMultipartUpload
         {
             BucketName = request.BucketName,
             ContentType = request.ContentType,
-            Name = request.FileName,
+            FileName = request.FileName,
             Prefix = request.Prefix,
             Key = $"{request.Prefix}/{key}"
         };
