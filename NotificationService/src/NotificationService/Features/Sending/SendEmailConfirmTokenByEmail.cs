@@ -1,18 +1,21 @@
-﻿using NotificationService.Api.Enpoints;
-using NotificationService.Domain.Models;
+using NotificationService.Api.Enpoints;
 using NotificationService.Infrastructure.Services;
+using NotificationService.Validators;
 
-namespace NotificationService.Features;
+namespace NotificationService.Features.Sending;
 
-public class SendEmailNotificationByFilter
+public class SendEmailConfirmTokenByEmail
 {
-    private record SendEmailNotificationByFilterRequest(IEnumerable<string> Recievers, string Subject, string Body);
+    private record SubscribeOnEmailNotificationsRequest(
+        string Reciever, 
+        string Subject,
+        string Body);
     
     public sealed class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapPost("sending", Handler);
+            app.MapPost("sending-confirmation-by-email", Handler);
         }
     }
     
@@ -24,13 +27,18 @@ public class SendEmailNotificationByFilter
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns></returns>
     private static async Task<IResult> Handler( 
-        SendEmailNotificationByFilterRequest request,
+        SubscribeOnEmailNotificationsRequest request,
         MailSenderService service,
+        EmailValidator validator,
         CancellationToken cancellationToken = default)
     {
-        var mailData = new MailData(request.Recievers, request.Subject, request.Body);
+        List<string> recievers = [request.Reciever];
+
+        var validationResult = validator.Execute(recievers);
+        if (validationResult.IsFailure)
+            return Results.BadRequest(validationResult.Error);
         
-        var result = await service.Send(mailData);
+        
         
         return Results.Ok();
     }

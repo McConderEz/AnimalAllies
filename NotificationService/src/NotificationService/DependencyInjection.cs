@@ -1,7 +1,10 @@
 ﻿using Hangfire;
 using Hangfire.PostgreSql;
+using MassTransit;
 using NotificationService.Api.Extensions;
 using NotificationService.Application.Abstraction;
+using NotificationService.Contracts.Requests;
+using NotificationService.Features.Consumers;
 using NotificationService.Infrastructure;
 using NotificationService.Infrastructure.DbContext;
 using NotificationService.Infrastructure.Services;
@@ -19,7 +22,8 @@ public static class DependencyInjection
             .AddExtensions(configuration)
             .AddMailConfiguration(configuration)
             .AddTelegramConfiguration()
-            .AddInfrastructure();
+            .AddInfrastructure()
+            .AddMessageBus(configuration);
         
         return services;
     }
@@ -68,6 +72,32 @@ public static class DependencyInjection
         return services;
     }
 
+    private static IServiceCollection AddMessageBus(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMassTransit(configure =>
+        {
+            configure.SetKebabCaseEndpointNameFormatter();
+
+            configure.AddConsumer<SetStartUserNotificationSettingsEvent>();
+            
+            configure.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(new Uri(configuration["RabbitMQ:Host"] ??
+                                 throw new ApplicationException("cannot host rabbitmq")), h =>
+                {
+                    h.Username(configuration["RabbitMQ:UserName"]!);
+                    h.Password(configuration["RabbitMQ:Password"]!);
+                });
+
+                cfg.Durable = true;
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+
+        return services;
+    }
+    
     private static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddScoped<ApplicationDbContext>();

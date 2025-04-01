@@ -54,7 +54,6 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
 
         try
         {
-
             var role = await _roleManager.Roles
                 .FirstOrDefaultAsync(r => r.Name == ParticipantAccount.Participant, cancellationToken);
             if (role is null)
