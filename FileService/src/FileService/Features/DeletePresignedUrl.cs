@@ -1,52 +1,54 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using FileService.Api.Endpoints;
+﻿using FileService.Api.Endpoints;
 using FileService.Application.Providers;
 using FileService.Application.Repositories;
+using FileService.Contract;
+using FileService.Contract.Requests;
+using FileService.Contract.Responses;
 using FileService.Data.Models;
-using FileService.Data.Shared;
+
 
 namespace FileService.Features;
 
 public static class DeletePresignedUrl
 {
-    private record DeletePresignedUrlRequest(
-        string BucketName,
-        string FileName, 
-        string Extension,
-        string ContentType,
-        long Size);
-    
     public sealed class Endpoint: IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapPost("files/{key:guid}/presigned-for-deletion", Handler);
+            app.MapPost("files/presigned-for-deletion", Handler);
         }
     }
 
     private static async Task<IResult> Handler( 
-        DeletePresignedUrlRequest request,
-        Guid key,
+        DeletePresignedUrlsRequest request,
         IFilesDataRepository filesDataRepository,
         IFileProvider provider,
         CancellationToken cancellationToken = default)
     {
-        var fileMetadata = new FileMetadata
+        List<FileMetadata> fileMetadatas = [];
+        fileMetadatas.AddRange(request.Requests
+            .Select(file => 
+                new FileMetadata { BucketName = file.BucketName, Key = $"{file.FileId}{file.Extension}", }));
+
+        var result = await provider.GetPresignedUrlsForDeleteParallel(fileMetadatas, cancellationToken);
+        if (result.IsFailure)
+            return Results.BadRequest(result.Errors);
+
+        List<Guid> guids = [];
+        foreach (var file in request.Requests)
         {
-            BucketName = request.BucketName,
-            Name = request.FileName,
-            Key = $"{key}.{request.Extension}",
-            Extension = request.Extension,
-            ContentType = request.ContentType
-        };
+            if (!Guid.TryParse(file.FileId, out var guid))
+            {
+                return Results.BadRequest();
+            }
+            
+            guids.Add(guid);
+        }
         
-        var result = await provider.GetPresignedUrlForDelete(fileMetadata, cancellationToken); 
+        await filesDataRepository.DeleteRangeAsync(guids, cancellationToken);
         
-        return Results.Ok(new
-        {
-            key,
-            url = result.Value
-        });
+        var response = new GetDeletePresignedUrlsResponse(result.Value);
+        
+        return Results.Ok(response);
     }
 }

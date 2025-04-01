@@ -10,6 +10,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F5DFA8A2-A764-4D3F-918D-F1C5566FF492}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileService.Communication", "src\FileService.Communication\FileService.Communication.csproj", "{7AA785E0-DEFF-4069-BF7E-361E7A670D84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileService.Contract", "src\FileService.Contract\FileService.Contract.csproj", "{B8BB607C-EC98-4202-BD11-8D8AEA6CA37C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,5 +29,18 @@ Global
 		{DB8E75BA-C096-43AD-8DC6-04595E3E527B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB8E75BA-C096-43AD-8DC6-04595E3E527B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB8E75BA-C096-43AD-8DC6-04595E3E527B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AA785E0-DEFF-4069-BF7E-361E7A670D84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AA785E0-DEFF-4069-BF7E-361E7A670D84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AA785E0-DEFF-4069-BF7E-361E7A670D84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AA785E0-DEFF-4069-BF7E-361E7A670D84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8BB607C-EC98-4202-BD11-8D8AEA6CA37C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8BB607C-EC98-4202-BD11-8D8AEA6CA37C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8BB607C-EC98-4202-BD11-8D8AEA6CA37C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8BB607C-EC98-4202-BD11-8D8AEA6CA37C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DB8E75BA-C096-43AD-8DC6-04595E3E527B} = {F5DFA8A2-A764-4D3F-918D-F1C5566FF492}
+		{7AA785E0-DEFF-4069-BF7E-361E7A670D84} = {F5DFA8A2-A764-4D3F-918D-F1C5566FF492}
+		{B8BB607C-EC98-4202-BD11-8D8AEA6CA37C} = {F5DFA8A2-A764-4D3F-918D-F1C5566FF492}
 	EndGlobalSection
 EndGlobal

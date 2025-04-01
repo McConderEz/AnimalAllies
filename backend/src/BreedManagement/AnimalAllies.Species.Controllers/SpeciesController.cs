@@ -14,7 +14,7 @@ namespace AnimalAllies.Species.Presentation;
 
 public class SpeciesController : ApplicationController
 {
-    [Permission("species.create")]
+    //[Permission("species.create")]
     [HttpPost]
     public async Task<IActionResult> Create(
         [FromServices] CreateSpeciesHandler handler,
@@ -33,7 +33,7 @@ public class SpeciesController : ApplicationController
         return Ok(result.Value);
     }
     
-    [Permission("species.create")]
+    //[Permission("species.create")]
     [HttpPost("{speciesId:guid}")]
     public async Task<IActionResult> CreateBreed(
         [FromServices] CreateBreedHandler handler,

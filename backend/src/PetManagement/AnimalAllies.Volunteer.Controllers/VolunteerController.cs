@@ -236,15 +236,11 @@ public class VolunteerController: ApplicationController
     public async Task<ActionResult> AddPetPhoto(
         [FromRoute] Guid volunteerId,
         [FromRoute] Guid petId,
-        [FromForm] AddPetPhotosRequest request,
+        [FromBody] AddPetPhotosRequest request,
         [FromServices] AddPetPhotosHandler handler,
         CancellationToken cancellationToken = default)
     {
-        await using var fileProcessor = new FormFileProcessor();
-
-        var fileDtos = fileProcessor.Process(request.Files);
-
-        var command = request.ToCommand(volunteerId, petId, fileDtos);
+        var command = request.ToCommand(volunteerId, petId);
 
         var result = await handler.Handle(command, cancellationToken);
 
@@ -297,10 +293,11 @@ public class VolunteerController: ApplicationController
     public async Task<ActionResult> DeletePetPhoto(
         [FromRoute] Guid volunteerId,
         [FromRoute] Guid petId,
+        [FromBody] DeletePetPhotosRequest request,
         [FromServices] DeletePetPhotosHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var command = new DeletePetPhotosCommand(volunteerId, petId);
+        var command = new DeletePetPhotosCommand(volunteerId, petId, request.FilePaths);
 
         var result = await handler.Handle(command, cancellationToken);
 

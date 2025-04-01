@@ -1,52 +1,47 @@
 using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
 using AnimalAllies.Core.Extension;
-using AnimalAllies.Core.Messaging;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
-using AnimalAllies.Volunteer.Application.FileProvider;
-using AnimalAllies.Volunteer.Application.Providers;
 using AnimalAllies.Volunteer.Application.Repository;
+using AnimalAllies.Volunteer.Contracts.Responses;
 using AnimalAllies.Volunteer.Domain.VolunteerManagement.Entities.Pet.ValueObjects;
+using FileService.Communication;
+using FileService.Contract.Requests;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using FileInfo = AnimalAllies.Volunteer.Application.FileProvider.FileInfo;
 
 
 namespace AnimalAllies.Volunteer.Application.VolunteerManagement.Commands.AddPetPhoto;
 
-public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
+public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, AddPetPhotosResponse>
 {
     private const string BUCKET_NAME = "photos";
-    private readonly IFileProvider _fileProvider;
+    private readonly FileHttpClient _fileHttpClient;
     private readonly IVolunteerRepository _volunteerRepository;
     private readonly ILogger<AddPetPhotosHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMessageQueue<IEnumerable<FileInfo>> _messageQueue;
     private readonly IValidator<AddPetPhotosCommand> _validator;
 
     public AddPetPhotosHandler(
-        IFileProvider fileProvider,
         IVolunteerRepository volunteerRepository,
         ILogger<AddPetPhotosHandler> logger,
         [FromKeyedServices(Constraints.Context.PetManagement)]IUnitOfWork unitOfWork,
-        IMessageQueue<IEnumerable<FileInfo>> messageQueue,
-        IValidator<AddPetPhotosCommand> validator)
+        IValidator<AddPetPhotosCommand> validator,
+        FileHttpClient fileHttpClient)
     {
-        _fileProvider = fileProvider;
         _volunteerRepository = volunteerRepository;
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _messageQueue = messageQueue;
         _validator = validator;
-        _messageQueue = messageQueue;
+        _fileHttpClient = fileHttpClient;
     }
     
 
-    public async Task<Result<Guid>> Handle(
+    public async Task<Result<AddPetPhotosResponse>> Handle(
         AddPetPhotosCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -75,44 +70,48 @@ public class AddPetPhotosHandler : ICommandHandler<AddPetPhotosCommand, Guid>
             if (pet.IsFailure)
                 return Errors.General.NotFound(petId.Id);
 
-            List<FileData> filesData = [];
-            foreach (var file in command.Photos)
+            List<UploadPresignedUrlRequest> uploadPresignedUrlRequests = [];
+            uploadPresignedUrlRequests.AddRange(
+                command.Photos.Select(file =>
+                    new UploadPresignedUrlRequest(file.BucketName, file.FileName, file.ContentType)));
+
+            var request = new UploadPresignedUrlsRequest(uploadPresignedUrlRequests);
+            
+            var response = await _fileHttpClient.GetManyUploadPresignedUrlsAsync(
+                request, 
+                cancellationToken);
+
+            if (response is null)
+                return Errors.General.Null();
+
+            List<PetPhoto> photos = [];
+            foreach (var presignedUrlResponse in response)
             {
-                var extension = Path.GetExtension(file.FileName);
-
-                var filePath = FilePath.Create(Guid.NewGuid(), extension);
-
-                if (filePath.IsFailure)
-                    return filePath.Errors;
-
-                var fileContent = new FileData(file.Content,new FileInfo(filePath.Value, BUCKET_NAME));
-
-                filesData.Add(fileContent);
+                var path = FilePath.Create(presignedUrlResponse.FileId, presignedUrlResponse.Extension);
+                if (path.IsFailure)
+                    return path.Errors;
+                
+                photos.Add(new PetPhoto(path.Value, false));
             }
-
-            var photos = filesData
-                .Select(f => new PetPhoto(f.FileInfo.FilePath, false))
-                .ToList();
             
             var petPhotoList = new ValueObjectList<PetPhoto>(photos);
 
-            pet.Value.AddPhotos(petPhotoList);
+            var result = pet.Value.AddPhotos(petPhotoList);
+            
+            if (result.IsFailure)
+                return result.Errors;
+            
+
+            var addPetPhotosResponse = new AddPetPhotosResponse(
+                response.Select(r => r.UploadUrl));
 
             await _unitOfWork.SaveChanges(cancellationToken);
-            
-            var uploadResult = await _fileProvider.UploadFiles(filesData, cancellationToken);
-            if (uploadResult.IsFailure)
-            {
-                await _messageQueue.WriteAsync(filesData.Select(f => f.FileInfo), cancellationToken);
-                    
-                return uploadResult.Errors;
-            }
 
             transaction.Commit();
             
             _logger.LogInformation("Files uploaded to pet with id - {id}", petId.Id);
 
-            return pet.Value.Id.Id;
+            return addPetPhotosResponse;
         }
         catch (Exception ex)
         {

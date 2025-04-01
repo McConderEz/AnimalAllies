@@ -9,24 +9,24 @@ public class FileMetadata
     [BsonGuidRepresentation(GuidRepresentation.Standard)]
     public Guid Id { get; set; }
     [BsonElement("name")]
-    public string Name { get; set; } = string.Empty;
+    public string FileName { get; set; } = string.Empty;
     [BsonElement("extension")]
     public string Extension { get; set; } = string.Empty;
     [BsonElement("content_type")]
     public string ContentType { get; set; } = string.Empty;
+    [BsonIgnore]
     public string FullPath { get; set; } = string.Empty;
     [BsonElement("size")]
     public long Size { get; set; }
-    public string StorageInfo { get; set; } = string.Empty;
     [BsonElement("bucket_name")]
     public string BucketName { get; set; } = string.Empty;
     [BsonElement("prefix")]
     public string Prefix { get; set; } = string.Empty;
     [BsonElement("key")]
     public string Key { get; set; } = string.Empty;
+    [BsonIgnore]
     public string UploadId { get; set; } = string.Empty;
-    [BsonElement("download_url")]
-    public string DownloadUrl { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
     public int PartNumber { get; set; }
     public IEnumerable<ETagInfo>? ETags;
 }

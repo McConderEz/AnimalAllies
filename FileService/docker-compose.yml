@@ -1,52 +1,46 @@
-﻿version: '3.8'  
-
-services:
-  fileservice:
-    image: fileservice
-    build:
-      context: .
-      dockerfile: src/FileService/Dockerfile
-
-  mongo:
-    image: mongo
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    ports:
-      - "27017:27017"
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - "8090:8081"
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
-      ME_CONFIG_BASICAUTH: false
-  
-  seq:
-    image: datalust/seq:latest
-    container_name: seq-file-service
-    restart: always
-    environment:
-      - ACCEPT_EULA=Y
-    ports:
-      - "5345:5345"
-      - "8085:80"
-
-  minio:
-    container_name: minio-file-service
-    image: minio/minio
-    ports:
-      - "9011:9011"
-      - "9009:9009"
-    volumes:
-      - minio-data:/data
-    command: server --console-address ":9009" /data
-    restart: always
-
-volumes:
-  minio-data: {}
+﻿#services:
+#  fileservice:
+#    image: fileservice
+#    build:
+#      context: .
+#      dockerfile: src/FileService/Dockerfile
+#    environment:
+#      - ASPNETCORE_ENVIRONMENT=Docker
+#    ports:
+#      - "8080:8080"
+#    
+#  postgres:
+#    container_name: postgres
+#    hostname: postgres
+#    image: postgres:latest
+#    restart: always
+#    environment:
+#      POSTGRES_DB: "animalAllies"
+#      POSTGRES_USER: "postgres"
+#      POSTGRES_PASSWORD: "345890"
+#    volumes:
+#      - postgres-data:/var/lib/postgresql/data
+#    ports:
+#      - "5432:5432"
+#    healthcheck:
+#      test:
+#        [
+#          "CMD-SHELL",
+#          "pg_isready -U postgres -d animalAllies",
+#        ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#  
+#  mongodb:
+#    image: mongo
+#    container_name: mongodb
+#    restart: always
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+#      MONGO_INITDB_ROOT_PASSWORD: mongopassword
+#    ports:
+#      - "27017:27017"
+#
+#volumes:
+#  postgres-data:

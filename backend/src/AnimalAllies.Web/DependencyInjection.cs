@@ -17,6 +17,7 @@ using Dapper;
 using Discussion.Application;
 using Discussion.Infrastructure;
 using Discussion.Presentation;
+using FileService.Communication;
 using MassTransit;
 using VolunteerRequests.Application;
 using VolunteerRequests.Infrastructure;
@@ -37,15 +38,24 @@ public static class DependencyInjection
             .AddDiscussionManagementModule(configuration)
             .AddFramework()
             .AddMessageBus(configuration)
+            .AddFileService(configuration)
             .AddSqlMappers();
         
+        return services;
+    }
+
+    private static IServiceCollection AddFileService(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddFileHttpCommunication(configuration);
+
         return services;
     }
 
     private static void AddSqlMappers(this IServiceCollection services)
     {
         SqlMapper.AddTypeHandler(typeof(SocialNetworkDto[]), new JsonTypeHandler<SocialNetworkDto[]>());
-        SqlMapper.AddTypeHandler(typeof(RequisiteDto[]), new JsonTypeHandler<RequisiteDto[]>());
+        SqlMapper.AddTypeHandler(typeof(RequisiteDto[]), 
+            new JsonTypeHandler<RequisiteDto[]>());
         SqlMapper.AddTypeHandler(typeof(CertificateDto[]), new JsonTypeHandler<CertificateDto[]>());
         SqlMapper.AddTypeHandler(typeof(PetPhotoDto[]), new JsonTypeHandler<PetPhotoDto[]>());
     }

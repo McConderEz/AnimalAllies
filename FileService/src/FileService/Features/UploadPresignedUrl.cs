@@ -1,10 +1,10 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using FileService.Api.Endpoints;
+﻿using FileService.Api.Endpoints;
 using FileService.Application.Providers;
 using FileService.Application.Repositories;
+using FileService.Contract;
+using FileService.Contract.Requests;
+using FileService.Contract.Responses;
 using FileService.Data.Models;
-using FileService.Data.Shared;
 using FileService.Jobs;
 using Hangfire;
 
@@ -12,14 +12,6 @@ namespace FileService.Features;
 
 public static class UploadPresignedUrl
 {
-    private record UploadPresignedUrlRequest(
-        string BucketName,
-        string FileName, 
-        string ContentType,
-        string Prefix,
-        string Extension,
-        long Size);
-    
     public sealed class Endpoint: IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
@@ -34,39 +26,46 @@ public static class UploadPresignedUrl
         IFileProvider fileProvider,
         CancellationToken cancellationToken = default)
     {
-        var key = Guid.NewGuid();
+        if (string.IsNullOrEmpty(request.ContentType))
+            return Results.BadRequest("Content type is empty");
+        
+        var id = Guid.NewGuid();
+        
+        var extension = Path.GetExtension(request.FileName);
 
-        var fileId = Guid.NewGuid();
+        var fileKey = $"{id}{extension}";
         
         var fileMetadata = new FileMetadata
         {
             BucketName = request.BucketName,
             ContentType = request.ContentType,
-            Name = request.FileName,
-            Prefix = request.Prefix,
-            Key = $"{key}.{request.Extension}"
+            FileName = request.FileName,
+            Key = fileKey
         };
         
-        var result = await fileProvider.GetPresignedUrlForUpload(fileMetadata, cancellationToken); 
-        
-        var metaDataResponse =
-            await fileProvider.GetObjectMetadata(fileMetadata.BucketName, fileMetadata.Key, cancellationToken);
+        var result = await fileProvider.GetPresignedUrlForUpload(fileMetadata, cancellationToken);
+        if (result.IsFailure)
+            return Results.Problem(result.Errors.FirstOrDefault()!.ErrorMessage);
 
-        metaDataResponse.Id = fileId;
-        
-        await repository.AddRangeAsync([metaDataResponse], cancellationToken);
-        
-        var jobId = BackgroundJob.Schedule<ConfirmConsistencyJob>(
-            j => j.Execute(
-                metaDataResponse.Id,metaDataResponse.BucketName, metaDataResponse.Key),
-            TimeSpan.FromMinutes(1));
-
-        BackgroundJob.Delete(jobId);
-        
-        return Results.Ok(new
+        var dbRecord = new FileMetadata
         {
-            key,
-            url = result.Value
-        });
+            Id = id,
+            BucketName = request.BucketName,
+            ContentType = request.ContentType,
+            Extension = Path.GetExtension(request.FileName),
+            Key = fileMetadata.Key,
+            FileName = request.FileName,
+            CreatedAt = DateTime.UtcNow
+        };
+        
+        await repository.AddRangeAsync([dbRecord], cancellationToken);
+        
+        BackgroundJob.Schedule<ConfirmConsistencyJob>(
+            j => j.Execute(new[] {dbRecord}, cancellationToken),
+            TimeSpan.FromMinutes(3));
+        
+        var response = new GetUploadPresignedUrlResponse(dbRecord.Id, dbRecord.Extension, result.Value);
+        
+        return Results.Ok(response);
     }
 }

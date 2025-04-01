@@ -4,6 +4,10 @@
     build:
       context: .
       dockerfile: src/AnimalAllies.Web/Dockerfile
+    env_file:
+      - src/AnimalAllies.Web/.env
+    networks:
+      - backend-network
     depends_on:
       minio:
         condition: service_healthy
@@ -12,14 +16,38 @@
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - ADMIN_USERNAME=admin
-      - ADMIN_EMAIL=admin@gmail.com
-      - ADMIN_PASSWORD=Admin123
+      - ADMIN__USERNAME=admin
+      - ADMIN__EMAIL=admin@gmail.com
+      - ADMIN__PASSWORD=Admin123
+    secrets:
+      - nuget_username
+      - nuget_password
+    ports:
+      - "8080:8080"
+      
+  fileservice:
+    image: fileservice
+    build:
+      context: ../FileService
+      dockerfile: src/FileService/Dockerfile
+    networks:
+      - fileservice-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
     
   postgres:
     container_name: postgres
+    hostname: postgres
     image: postgres:latest
     restart: always
+    networks:
+      - fileservice-network
+      - backend-network
     environment:
       POSTGRES_DB: "animalAllies"
       POSTGRES_USER: "postgres"
@@ -43,18 +71,22 @@
     image: datalust/seq:latest
     container_name: seq
     restart: always
+    networks:
+      - backend-network
     environment:
       - ACCEPT_EULA=Y
     ports:
-      - 5341:5341
-      - 8081:80
+      - "5341:5341"
+      - "8081:80"
     
   minio:
     container_name: minio
     image: minio/minio
+    networks:
+      - backend-network
     ports: 
-      - 9000:9000
-      - 9001:9001
+      - "9000:9000"
+      - "9001:9001"
     volumes:
       - minio-data:/data
     command: server --console-address ":9001" /data
@@ -69,6 +101,8 @@
     image: rabbitmq:management-alpine
     container_name: rabbitmq
     hostname: rabbitmq
+    networks:
+      - backend-network
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     ports:
@@ -80,25 +114,18 @@
     image: mongo
     container_name: mongodb
     restart: always
+    networks:
+      - backend-network
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongoadmin
       MONGO_INITDB_ROOT_PASSWORD: mongopassword
     ports:
       - "27017:27017"
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - "8090:8081"
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: root
-      ME_CONFIG_MONGODB_URL: mongodb://root:mongo@mongo:27017/
-      ME_CONFIG_BASICAUTH: false
   
   nginx:
     image: nginx:latest
+    networks:
+      - backend-network
     ports:
       - "80:80"
     volumes:
@@ -112,3 +139,14 @@ volumes:
   postgres-data:
   minio-data:
  
+secrets:
+  nuget_username:
+    file: ./secrets/nuget_username.txt
+  nuget_password:
+    file: ./secrets/nuget_password.txt
+    
+networks:
+  backend-network:
+    driver: bridge
+  fileservice-network:
+    driver: bridge 
