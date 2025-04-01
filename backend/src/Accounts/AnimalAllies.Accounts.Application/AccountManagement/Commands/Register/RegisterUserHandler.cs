@@ -1,19 +1,19 @@
-﻿using AnimalAllies.Accounts.Application.Extensions;
-using AnimalAllies.Accounts.Application.Managers;
+﻿using AnimalAllies.Accounts.Application.Managers;
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
-using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using FluentValidation;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NotificationService.Contracts.Requests;
 
 namespace AnimalAllies.Accounts.Application.AccountManagement.Commands.Register;
 
@@ -25,6 +25,7 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
     private readonly ILogger<RegisterUserHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidator<RegisterUserCommand> _validator;
+    private readonly IPublishEndpoint _publishEndpoint;
     
     public RegisterUserHandler(
         UserManager<User> userManager,
@@ -32,7 +33,8 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         IValidator<RegisterUserCommand> validator,
         RoleManager<Role> roleManager, 
         IAccountManager accountManager,
-        [FromKeyedServices(Constraints.Context.Accounts)]IUnitOfWork unitOfWork)
+        [FromKeyedServices(Constraints.Context.Accounts)]IUnitOfWork unitOfWork,
+        IPublishEndpoint publishEndpoint)
     {
         _userManager = userManager;
         _logger = logger;
@@ -40,6 +42,7 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         _roleManager = roleManager;
         _accountManager = accountManager;
         _unitOfWork = unitOfWork;
+        _publishEndpoint = publishEndpoint;
     }
     
     public async Task<Result> Handle(
@@ -54,11 +57,17 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
 
         try
         {
-
             var role = await _roleManager.Roles
                 .FirstOrDefaultAsync(r => r.Name == ParticipantAccount.Participant, cancellationToken);
             if (role is null)
                 return Errors.General.NotFound();
+
+            var isExistWithSameName =
+                await _userManager.Users.FirstOrDefaultAsync(u => u.UserName!.Equals(command.UserName),
+                    cancellationToken);
+
+            if (isExistWithSameName is not null)
+                return Errors.General.AlreadyExist();
 
             var user = User.CreateParticipant(command.UserName, command.Email, role);
 
@@ -78,6 +87,12 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
             user.ParticipantAccount = participantAccount;
             user.ParticipantAccountId = participantAccount.Id;
 
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var message = new SendConfirmTokenByEmailRequest(user.Id, user.Email!, code);
+
+            await _publishEndpoint.Publish(message, cancellationToken);
+            
             await _unitOfWork.SaveChanges(cancellationToken);
             
             transaction.Commit();

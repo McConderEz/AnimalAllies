@@ -4,7 +4,7 @@ using NotificationService.Infrastructure.Services;
 using NotificationService.Jobs;
 using NotificationService.Validators;
 
-namespace NotificationService.Features;
+namespace NotificationService.Features.Sending;
 
 /// <summary>
 /// Подписаться на события отправки уведомлений
