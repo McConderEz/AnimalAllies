@@ -20,7 +20,7 @@ public abstract class DomainEntity<TId>: Entity<TId>
     /// Добавить событие в очередь
     /// </summary>
     /// <param name="event">доменное событие</param>
-    public void AddDomainEvent(IDomainEvent @event) => _domainEvents.Enqueue(@event);
+    protected void AddDomainEvent(IDomainEvent @event) => _domainEvents.Enqueue(@event);
 
     /// <summary>
     /// Удаление события из очереди

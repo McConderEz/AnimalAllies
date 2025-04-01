@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Hangfire.PostgreSql;
 using MassTransit;
+using Microsoft.AspNetCore.Mvc.Routing;
 using NotificationService.Api.Extensions;
 using NotificationService.Application.Abstraction;
 using NotificationService.Contracts.Requests;
@@ -36,6 +37,8 @@ public static class DependencyInjection
         services.AddScoped<EmailValidator>();
         services.AddScoped<MailSenderService>();
 
+        services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
+        
         return services;
     }
 
@@ -79,6 +82,7 @@ public static class DependencyInjection
             configure.SetKebabCaseEndpointNameFormatter();
 
             configure.AddConsumer<SetStartUserNotificationSettingsEvent>();
+            configure.AddConsumer<SendConfirmTokenByEmailEvent>();
             
             configure.UsingRabbitMq((context, cfg) =>
             {
