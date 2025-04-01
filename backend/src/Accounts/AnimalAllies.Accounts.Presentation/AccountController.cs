@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using AnimalAllies.Accounts.Application.AccountManagement.Commands.AddAvatar;
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.AddSocialNetworks;
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.Login;
 using AnimalAllies.Accounts.Application.AccountManagement.Commands.Refresh;
@@ -81,6 +82,23 @@ public class AccountController: ApplicationController
             return result.Errors.ToResponse();
 
         return Ok(result.IsSuccess);
+    }
+    
+    [Authorize]
+    [HttpPost("avatar")]
+    public async Task<IActionResult> AddAvatarToUser(
+        [FromBody] AddAvatarRequest request,
+        [FromServices] UserScopedData userScopedData,
+        [FromServices] AddAvatarHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new AddAvatarCommand(userScopedData.UserId, request.UploadFileDto);
+
+        var result = await handler.Handle(command, cancellationToken);
+        if (result.IsFailure)
+            return result.Errors.ToResponse();
+
+        return Ok(result);
     }
     
     [Authorize]

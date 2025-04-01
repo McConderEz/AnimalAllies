@@ -15,8 +15,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="FileService.Communication" Version="1.0.0" />
-      <PackageReference Include="FileService.Contracts" Version="1.0.0" />
+      <PackageReference Include="FileService.Communication" Version="1.0.3" />
+      <PackageReference Include="FileService.Contracts" Version="1.0.1" />
     </ItemGroup>
 
 </Project>

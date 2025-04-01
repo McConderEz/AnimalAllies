@@ -28,7 +28,8 @@ public class AddPetPhotosCommandValidator: AbstractValidator<AddPetPhotosCommand
                     .NotEmpty().WithError(Errors.General.ValueIsRequired("BucketName"));
                 
                 p.RuleFor(p => p.ContentType)
-                    .NotEmpty().WithError(Errors.General.ValueIsRequired("ContentType"));
+                    .NotEmpty()
+                    .WithError(Errors.General.ValueIsRequired("ContentType"));
             });
 
     }

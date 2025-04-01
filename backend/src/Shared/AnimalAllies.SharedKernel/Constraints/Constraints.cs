@@ -24,6 +24,8 @@ public static partial class Constraints
         @"^[\w-\.]{1,40}@([\w-]+\.)+[\w-]{2,4}$",
         RegexOptions.Singleline | RegexOptions.Compiled);
 
+    public static readonly string BUCKET_NAME = "photos";
+    
     public enum Context
     {
         PetManagement,
