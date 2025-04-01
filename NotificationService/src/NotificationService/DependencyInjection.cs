@@ -52,6 +52,8 @@ public static class DependencyInjection
 
     private static IServiceCollection AddExtensions(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<BackendUrlSettings>(configuration.GetSection(BackendUrlSettings.BACKEND));
+        
         services.AddLogger(configuration);
 
         services.AddHttpLogging(o =>

@@ -5,34 +5,33 @@ using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Options;
 using NotificationService.Contracts.Requests;
 using NotificationService.Domain.Models;
 using NotificationService.Infrastructure.DbContext;
 using NotificationService.Infrastructure.Services;
+using NotificationService.Options;
 using NotificationService.Validators;
 
 namespace NotificationService.Features.Consumers;
 
 public class SendConfirmTokenByEmailEvent: IConsumer<SendConfirmTokenByEmailRequest>
 {
-    private readonly ApplicationDbContext _dbContext;
     private readonly MailSenderService _mailService;
     private readonly ILogger<SendConfirmTokenByEmailEvent> _logger;
     private readonly EmailValidator _emailValidator;
-    private readonly IUrlHelperFactory _urlHelperFactory;
+    private readonly BackendUrlSettings _options;
 
     public SendConfirmTokenByEmailEvent(
-        ApplicationDbContext dbContext,
         MailSenderService mailService,
         ILogger<SendConfirmTokenByEmailEvent> logger,
         EmailValidator emailValidator, 
-        IUrlHelperFactory urlHelperFactory)
+        IOptions<BackendUrlSettings> options)
     {
-        _dbContext = dbContext;
         _mailService = mailService;
         _logger = logger;
         _emailValidator = emailValidator;
-        _urlHelperFactory = urlHelperFactory;
+        _options = options.Value;
     }
 
     public async Task Consume(ConsumeContext<SendConfirmTokenByEmailRequest> context)
@@ -45,14 +44,16 @@ public class SendConfirmTokenByEmailEvent: IConsumer<SendConfirmTokenByEmailRequ
         
         var encodedCode = WebUtility.UrlEncode(message.Code);
         
-        var url = $"http://localhost:5299/api/Account/confirm-email?" +
-                  $"userId={message.UserId.ToString()}" +
+        var url = $"{_options.ConfirmEmailUrl}" +
+                  $"?userId={message.UserId.ToString()}" +
                   $"&code={encodedCode}";
 
 
         var mailData = new MailData([message.Email], "Confirmation Email",
             $"Чтобы подтвердить аккаунта, перейдите по следующей ссылке: {url}");
 
+        _logger.LogInformation("Sent mail with confirmation token to user {email}", message.Email);
+        
         await _mailService.Send(mailData);
     }
 }

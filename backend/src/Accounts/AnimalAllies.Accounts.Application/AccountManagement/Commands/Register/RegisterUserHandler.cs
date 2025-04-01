@@ -62,6 +62,13 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
             if (role is null)
                 return Errors.General.NotFound();
 
+            var isExistWithSameName =
+                await _userManager.Users.FirstOrDefaultAsync(u => u.UserName!.Equals(command.UserName),
+                    cancellationToken);
+
+            if (isExistWithSameName is not null)
+                return Errors.General.AlreadyExist();
+
             var user = User.CreateParticipant(command.UserName, command.Email, role);
 
             var result = await _userManager.CreateAsync(user, command.Password);

@@ -41,5 +41,7 @@ public class SetStartUserNotificationSettingsEvent: IConsumer<SetStartUserNotifi
 
         await _dbContext.UserNotificationSettings.AddAsync(userNotificationsSettingsEvent, context.CancellationToken);
         await _dbContext.SaveChangesAsync(context.CancellationToken);
+        
+        _logger.LogInformation("Created notification settings for user {userid}", message.UserId);
     }
 }
