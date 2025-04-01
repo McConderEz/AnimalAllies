@@ -25,7 +25,7 @@ public class SetStartUserNotificationSettingsEvent: IConsumer<SetStartUserNotifi
 
         var userNotificationsSettingsEvent =
             await _dbContext.UserNotificationSettings
-                .FirstOrDefaultAsync(s => s.UserId == message.UserId);
+                .FirstOrDefaultAsync(s => s.UserId == message.UserId, context.CancellationToken);
 
         if (userNotificationsSettingsEvent is not null)
             return;
@@ -39,7 +39,7 @@ public class SetStartUserNotificationSettingsEvent: IConsumer<SetStartUserNotifi
             WebNotifications = false
         };
 
-        await _dbContext.UserNotificationSettings.AddAsync(userNotificationsSettingsEvent);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.UserNotificationSettings.AddAsync(userNotificationsSettingsEvent, context.CancellationToken);
+        await _dbContext.SaveChangesAsync(context.CancellationToken);
     }
 }
