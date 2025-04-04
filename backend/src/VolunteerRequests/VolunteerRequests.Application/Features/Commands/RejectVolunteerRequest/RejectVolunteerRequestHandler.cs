@@ -6,9 +6,11 @@ using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using FluentValidation;
+using MassTransit;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NotificationService.Contracts.Requests;
 using VolunteerRequests.Application.Repository;
 using VolunteerRequests.Domain.Aggregates;
 using VolunteerRequests.Domain.ValueObjects;
@@ -22,20 +24,22 @@ public class RejectVolunteerRequestHandler: ICommandHandler<RejectVolunteerReque
     private readonly IVolunteerRequestsRepository _repository;
     private readonly IValidator<RejectVolunteerRequestCommand> _validator;
     private readonly IPublisher _publisher;
-
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public RejectVolunteerRequestHandler(
         ILogger<RejectVolunteerRequestHandler> logger, 
         [FromKeyedServices(Constraints.Context.VolunteerRequests)]IUnitOfWork unitOfWork, 
         IVolunteerRequestsRepository repository, 
         IValidator<RejectVolunteerRequestCommand> validator,
-        IPublisher _publisher)
+        IPublisher publisher,
+        IPublishEndpoint publishEndpoint)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _repository = repository;
         _validator = validator;
-        this._publisher = _publisher;
+        _publisher = publisher;
+        _publishEndpoint = publishEndpoint;
     }
     
     public async Task<Result<string>> Handle(
@@ -70,6 +74,13 @@ public class RejectVolunteerRequestHandler: ICommandHandler<RejectVolunteerReque
             await _unitOfWork.SaveChanges(cancellationToken);
             
             transaction.Commit();
+            
+            var message = new SendNotificationRejectVolunteerRequestEvent(
+                volunteerRequest.Value.UserId,
+                volunteerRequest.Value.VolunteerInfo.Email.Value,
+                rejectionComment.Value);
+
+            await _publishEndpoint.Publish(message, cancellationToken);
             
             _logger.LogInformation("Volunteer request with id {volunteerRequestId} was rejected",
                 command.VolunteerRequestId);

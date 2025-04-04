@@ -12,6 +12,7 @@ using MassTransit;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NotificationService.Contracts.Requests;
 using VolunteerRequests.Application.Repository;
 using VolunteerRequests.Contracts.Messaging;
 
@@ -24,19 +25,22 @@ public class ApproveVolunteerRequestHandler: ICommandHandler<ApproveVolunteerReq
     private readonly IUnitOfWork _unitOfWork;
     private readonly IVolunteerRequestsRepository _repository;
     private readonly IPublisher _publisher;
+    private readonly IPublishEndpoint _publishEndpoint;
     
     public ApproveVolunteerRequestHandler(
         ILogger<ApproveVolunteerRequestHandler> logger,
         IValidator<ApproveVolunteerRequestCommand> validator, 
         [FromKeyedServices(Constraints.Context.VolunteerRequests)]IUnitOfWork unitOfWork, 
         IVolunteerRequestsRepository repository, 
-        IPublisher publisher)
+        IPublisher publisher,
+        IPublishEndpoint publishEndpoint)
     {
         _logger = logger;
         _validator = validator;
         _unitOfWork = unitOfWork;
         _repository = repository;
         _publisher = publisher;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<Result> Handle(
@@ -71,6 +75,12 @@ public class ApproveVolunteerRequestHandler: ICommandHandler<ApproveVolunteerReq
             await _unitOfWork.SaveChanges(cancellationToken);
             
             transaction.Commit();
+            
+            var message = new SendNotificationApproveVolunteerRequestEvent(
+                volunteerRequest.UserId,
+                volunteerRequest.VolunteerInfo.Email.Value);
+
+            await _publishEndpoint.Publish(message, cancellationToken);
             
             _logger.LogInformation("Approved volunteer request with id {id}", command.VolunteerRequestId);
 

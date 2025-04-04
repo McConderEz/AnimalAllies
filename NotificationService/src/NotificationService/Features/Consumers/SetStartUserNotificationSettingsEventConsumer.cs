@@ -6,20 +6,20 @@ using NotificationService.Options;
 
 namespace NotificationService.Features.Consumers;
 
-public class SetStartUserNotificationSettingsEvent: IConsumer<SetStartUserNotificationSettingsRequest>
+public class SetStartUserNotificationSettingsEventConsumer: IConsumer<SetStartUserNotificationSettingsEvent>
 {
     private readonly ApplicationDbContext _dbContext;
-    private readonly ILogger<SetStartUserNotificationSettingsEvent> _logger;
+    private readonly ILogger<SetStartUserNotificationSettingsEventConsumer> _logger;
 
-    public SetStartUserNotificationSettingsEvent(
+    public SetStartUserNotificationSettingsEventConsumer(
         ApplicationDbContext dbContext,
-        ILogger<SetStartUserNotificationSettingsEvent> logger)
+        ILogger<SetStartUserNotificationSettingsEventConsumer> logger)
     {
         _dbContext = dbContext;
         _logger = logger;
     }
 
-    public async Task Consume(ConsumeContext<SetStartUserNotificationSettingsRequest> context)
+    public async Task Consume(ConsumeContext<SetStartUserNotificationSettingsEvent> context)
     {
         var message = context.Message;
 

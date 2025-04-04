@@ -1,30 +1,24 @@
-using System.ComponentModel.DataAnnotations;
 using System.Net;
-using MailKit;
 using MassTransit;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Options;
 using NotificationService.Contracts.Requests;
 using NotificationService.Domain.Models;
-using NotificationService.Infrastructure.DbContext;
 using NotificationService.Infrastructure.Services;
 using NotificationService.Options;
 using NotificationService.Validators;
 
 namespace NotificationService.Features.Consumers;
 
-public class SendConfirmTokenByEmailEvent: IConsumer<SendConfirmTokenByEmailRequest>
+public class SendConfirmTokenByEmailEventConsumer: IConsumer<SendConfirmTokenByEmailEvent>
 {
     private readonly MailSenderService _mailService;
-    private readonly ILogger<SendConfirmTokenByEmailEvent> _logger;
+    private readonly ILogger<SendConfirmTokenByEmailEventConsumer> _logger;
     private readonly EmailValidator _emailValidator;
     private readonly BackendUrlSettings _options;
 
-    public SendConfirmTokenByEmailEvent(
+    public SendConfirmTokenByEmailEventConsumer(
         MailSenderService mailService,
-        ILogger<SendConfirmTokenByEmailEvent> logger,
+        ILogger<SendConfirmTokenByEmailEventConsumer> logger,
         EmailValidator emailValidator, 
         IOptions<BackendUrlSettings> options)
     {
@@ -34,7 +28,7 @@ public class SendConfirmTokenByEmailEvent: IConsumer<SendConfirmTokenByEmailRequ
         _options = options.Value;
     }
 
-    public async Task Consume(ConsumeContext<SendConfirmTokenByEmailRequest> context)
+    public async Task Consume(ConsumeContext<SendConfirmTokenByEmailEvent> context)
     {
         var message = context.Message;
         

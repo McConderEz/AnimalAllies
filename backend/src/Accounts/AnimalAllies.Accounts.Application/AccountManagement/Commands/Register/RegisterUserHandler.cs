@@ -89,7 +89,7 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
 
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-            var message = new SendConfirmTokenByEmailRequest(user.Id, user.Email!, code);
+            var message = new SendConfirmTokenByEmailEvent(user.Id, user.Email!, code);
 
             await _publishEndpoint.Publish(message, cancellationToken);
             
