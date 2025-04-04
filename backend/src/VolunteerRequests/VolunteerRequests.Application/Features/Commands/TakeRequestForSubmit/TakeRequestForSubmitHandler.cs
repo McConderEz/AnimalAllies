@@ -11,6 +11,7 @@ using MassTransit;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NotificationService.Contracts.Requests;
 using VolunteerRequests.Application.Repository;
 
 
@@ -23,19 +24,22 @@ public class TakeRequestForSubmitHandler: ICommandHandler<TakeRequestForSubmitCo
     private readonly IVolunteerRequestsRepository _repository;
     private readonly IDiscussionContract _discussionContract;
     private readonly IValidator<TakeRequestForSubmitCommand> _validator;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public TakeRequestForSubmitHandler(
         ILogger<TakeRequestForSubmitHandler> logger, 
         [FromKeyedServices(Constraints.Context.VolunteerRequests)]IUnitOfWork unitOfWork, 
         IVolunteerRequestsRepository repository, 
         IDiscussionContract discussionContract, 
-        IValidator<TakeRequestForSubmitCommand> validator)
+        IValidator<TakeRequestForSubmitCommand> validator,
+        IPublishEndpoint publishEndpoint)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _repository = repository;
         _discussionContract = discussionContract;
         _validator = validator;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<Result> Handle(
@@ -44,8 +48,7 @@ public class TakeRequestForSubmitHandler: ICommandHandler<TakeRequestForSubmitCo
         var validatorResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validatorResult.IsValid)
             return validatorResult.ToErrorList();
-
-        //TODO: переписать на интеграционные события через Rabbitmq
+        
         
         var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
         try
@@ -72,6 +75,12 @@ public class TakeRequestForSubmitHandler: ICommandHandler<TakeRequestForSubmitCo
             await _unitOfWork.SaveChanges(cancellationToken);
             
             transaction.Commit();
+            
+            var message = new SendNotificationTakeRequestForRevisionEvent(
+                volunteerRequest.Value.UserId,
+                volunteerRequest.Value.VolunteerInfo.Email.Value);
+
+            await _publishEndpoint.Publish(message, cancellationToken);
             
             _logger.LogInformation("admin with id {id} take volunteer request for submit with id {volunteerRequestId}",
                 command.AdminId, command.VolunteerRequestId);

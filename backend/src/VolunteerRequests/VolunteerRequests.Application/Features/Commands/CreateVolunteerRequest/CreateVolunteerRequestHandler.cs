@@ -8,9 +8,11 @@ using AnimalAllies.SharedKernel.Shared.Errors;
 using AnimalAllies.SharedKernel.Shared.Ids;
 using AnimalAllies.SharedKernel.Shared.ValueObjects;
 using FluentValidation;
+using MassTransit;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NotificationService.Contracts.Requests;
 using VolunteerRequests.Application.Repository;
 using VolunteerRequests.Domain.Aggregates;
 using VolunteerRequests.Domain.Events;
@@ -25,7 +27,7 @@ public class CreateVolunteerRequestHandler: ICommandHandler<CreateVolunteerReque
     private readonly IValidator<CreateVolunteerRequestCommand> _validator;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IPublisher _publisher;
-
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public CreateVolunteerRequestHandler(
         [FromKeyedServices(Constraints.Context.VolunteerRequests)]IUnitOfWork unitOfWork,
@@ -33,7 +35,8 @@ public class CreateVolunteerRequestHandler: ICommandHandler<CreateVolunteerReque
         IValidator<CreateVolunteerRequestCommand> validator,
         IVolunteerRequestsRepository repository,
         IPublisher publisher,
-        IDateTimeProvider dateTimeProvider)
+        IDateTimeProvider dateTimeProvider,
+        IPublishEndpoint publishEndpoint)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -41,6 +44,7 @@ public class CreateVolunteerRequestHandler: ICommandHandler<CreateVolunteerReque
         _repository = repository;
         _publisher = publisher;
         _dateTimeProvider = dateTimeProvider;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<Result<VolunteerRequestId>> Handle(
@@ -68,6 +72,10 @@ public class CreateVolunteerRequestHandler: ICommandHandler<CreateVolunteerReque
 
             transaction.Commit();
 
+            var message = new SendNotificationCreateVolunteerRequestEvent(command.UserId, command.Email);
+
+            await _publishEndpoint.Publish(message, cancellationToken);
+            
             _logger.LogInformation("user with id {userId} created volunteer request with id {volunteerRequestId}",
                 command.UserId,
                 volunteerRequest.Id);
