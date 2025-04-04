@@ -52,7 +52,7 @@ public class ConfirmEmailHandler: ICommandHandler<ConfirmEmailCommand>
         if (result.Errors.Any())
             return result.Errors.ToErrorList();
 
-        var message = new SetStartUserNotificationSettingsRequest(user.Id);
+        var message = new SetStartUserNotificationSettingsEvent(user.Id);
 
         await _publishEndpoint.Publish(message, cancellationToken);
         

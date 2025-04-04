@@ -66,6 +66,8 @@ public class AccountSeedService
         var isAdminExist = await _userManager.FindByNameAsync(AdminProfile.ADMIN);
         if(isAdminExist is not null)
             return;
+
+        adminUser.EmailConfirmed = true;
         
         await _userManager.CreateAsync(adminUser, _adminOptions.Password);
 

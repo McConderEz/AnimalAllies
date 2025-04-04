@@ -83,8 +83,12 @@ public static class DependencyInjection
         {
             configure.SetKebabCaseEndpointNameFormatter();
 
-            configure.AddConsumer<SetStartUserNotificationSettingsEvent>();
-            configure.AddConsumer<SendConfirmTokenByEmailEvent>();
+            configure.AddConsumer<SetStartUserNotificationSettingsEventConsumer>();
+            configure.AddConsumer<SendConfirmTokenByEmailEventConsumer>();
+            configure.AddConsumer<ApproveVolunteerRequestEventConsumer>();
+            configure.AddConsumer<CreateVolunteerRequestEventConsumer>();
+            configure.AddConsumer<RejectVolunteerRequestEventConsumer>();
+            configure.AddConsumer<TakeRequestForRevisionEventConsumer>();
             
             configure.UsingRabbitMq((context, cfg) =>
             {
