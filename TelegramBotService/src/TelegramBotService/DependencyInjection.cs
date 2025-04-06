@@ -93,6 +93,7 @@ public static class DependencyInjection
             configure.SetKebabCaseEndpointNameFormatter();
 
             configure.AddConsumer<SendAuthorizationResponseEventConsumer>();
+            configure.AddConsumer<SendTelegramNotificationEventConsumer>();
             
             configure.UsingRabbitMq((context, cfg) =>
             {

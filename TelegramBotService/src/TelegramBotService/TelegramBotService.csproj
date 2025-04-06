@@ -19,7 +19,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.3.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.2" />
-        <PackageReference Include="NotificationService.Contracts" Version="1.0.3" />
+        <PackageReference Include="NotificationService.Contracts" Version="1.0.4" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
         <PackageReference Include="Telegram.Bot" Version="22.4.4" />
     </ItemGroup>
