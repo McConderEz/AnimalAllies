@@ -1,5 +1,7 @@
+using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using TelegramBotService;
+using TelegramBotService.Options;
 using TelegramBotService.Services;
 
 DotNetEnv.Env.Load();
@@ -7,7 +9,6 @@ DotNetEnv.Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
-
 
 builder.Services.ConfigureTelegramBotService(builder.Configuration);
 
@@ -18,17 +19,16 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
 {
     var bot =  scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
 
-    var webhookInfo = await bot.GetWebhookInfo();
-    Console.WriteLine($"Current webhook URL: {webhookInfo.Url}");
+    var options = scope.ServiceProvider.GetRequiredService<IOptions<TelegramBotOptions>>().Value;
     
-    await bot.SetWebhook("https://204f-141-95-145-2.ngrok-free.app/api/Account");
+    await bot.SetWebhook($"{options.Ngrok}/api/Account");
 }
 
 app.Run();

@@ -1,5 +1,8 @@
+using MassTransit;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
+using TelegramBotService.Infrastructure.Repository;
 using TelegramBotService.Options;
 using TelegramBotService.Services;
 
@@ -11,7 +14,8 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddControllers()
+        services
+            .AddControllers()
             .ConfigureApiBehaviorOptions(options =>
             {
                 options.SuppressModelStateInvalidFilter = true; // Отключает 400 при ошибках валидации
@@ -22,7 +26,24 @@ public static class DependencyInjection
             cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
         services.AddSingleton<UserStateServices>();
-        
+
+        services.AddTelegramBot(configuration);
+        services.AddRedisCache(configuration);
+        services.AddMessageBus(configuration);
+        services.AddRepository();
+
+        return services;
+    }
+
+    private static IServiceCollection AddRepository(this IServiceCollection services)
+    {
+        services.AddScoped<RedisUserStateRepository>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddTelegramBot(this IServiceCollection services, IConfiguration configuration)
+    {
         services.Configure<TelegramBotOptions>(configuration.GetSection(TelegramBotOptions.BOT));
         
         services.AddScoped<ITelegramBotClient>(config =>
@@ -32,6 +53,53 @@ public static class DependencyInjection
             return bot;
         });
 
+        return services;
+    }
+
+    private static IServiceCollection AddMessageBus(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddMassTransit(configure =>
+        {
+            configure.SetKebabCaseEndpointNameFormatter();
+            
+            configure.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(new Uri(configuration["RabbitMQ:Host"]!), h =>
+                {
+                    h.Username(configuration["RabbitMQ:UserName"]!);
+                    h.Password(configuration["RabbitMQ:Password"]!);
+                });
+
+                cfg.Durable = true;
+                
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+        
+        return services;
+    }
+    
+    private static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis");
+        });
+      
+
+        services.AddHybridCache(options =>
+        {
+            options.MaximumPayloadBytes = 1024 * 1024 * 10; 
+            options.MaximumKeyLength = 512;
+         
+            options.DefaultEntryOptions = new HybridCacheEntryOptions
+            {
+                Expiration = TimeSpan.FromMinutes(5),
+                LocalCacheExpiration = TimeSpan.FromMinutes(5)
+            };
+        });
         return services;
     }
 }
