@@ -3,6 +3,7 @@ using Telegram.Bot;
 using TelegramBotService;
 using TelegramBotService.Options;
 using TelegramBotService.Services;
+using TelegramBotService.States;
 
 DotNetEnv.Env.Load();
 
@@ -13,6 +14,7 @@ builder.Services.AddOpenApi();
 builder.Services.ConfigureTelegramBotService(builder.Configuration);
 
 var app = builder.Build();
+StateFactory.Initialize(app.Services);
 
 if (app.Environment.IsDevelopment())
 {

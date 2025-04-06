@@ -2,9 +2,12 @@ using MassTransit;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
+using TelegramBotService.Infrastructure;
 using TelegramBotService.Infrastructure.Repository;
 using TelegramBotService.Options;
 using TelegramBotService.Services;
+using TelegramBotService.States;
+using TelegramBotService.States.Authorize;
 
 namespace TelegramBotService;
 
@@ -31,6 +34,18 @@ public static class DependencyInjection
         services.AddRedisCache(configuration);
         services.AddMessageBus(configuration);
         services.AddRepository();
+        services.AddStates();
+
+        return services;
+    }
+
+    private static IServiceCollection AddStates(this IServiceCollection services)
+    {
+        services.AddScoped<StartState>();
+        services.AddScoped<StartAuthorizeState>();
+        services.AddScoped<WaitingForEmailState>();
+        services.AddScoped<WaitingForPasswordState>();
+        services.AddScoped<WaitingCommandState>();
 
         return services;
     }
@@ -56,6 +71,13 @@ public static class DependencyInjection
         return services;
     }
 
+    private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddScoped<ApplicationDbContext>();
+
+        return services;
+    }
+    
     private static IServiceCollection AddMessageBus(
         this IServiceCollection services,
         IConfiguration configuration)

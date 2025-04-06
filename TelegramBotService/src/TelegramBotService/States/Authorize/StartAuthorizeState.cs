@@ -1,5 +1,6 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramBotService.Infrastructure.Repository;
 
 namespace TelegramBotService.States.Authorize;
 
@@ -12,9 +13,9 @@ public class StartAuthorizeState: IState
     {
         await botClient.SendMessage(
             message.Chat.Id, 
-            "Введите ваш email:", 
+            "Добро пожаловать! Введите ваш email:", 
             cancellationToken: cancellationToken);
 
-        return new WaitingForEmailState();
+        return StateFactory.GetState(typeof(WaitingForEmailState).FullName!);
     }
 }

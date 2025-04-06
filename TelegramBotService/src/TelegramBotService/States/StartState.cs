@@ -1,5 +1,6 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramBotService.Infrastructure.Repository;
 using TelegramBotService.States.Authorize;
 
 namespace TelegramBotService.States;
@@ -22,6 +23,6 @@ public class StartState: IState
             text, 
             cancellationToken: cancellationToken);
 
-        return new WaitingCommandState();
+        return StateFactory.GetState(typeof(WaitingCommandState).FullName!);
     }
 }
