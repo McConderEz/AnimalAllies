@@ -16,7 +16,7 @@ public class StartState: IState
             "Добро пожаловать в бота AnimalAllies! \ud83d\udc3e\n\n" +
             "/authorize\n" +
             "/info\n" +
-            "/help\n";
+            "/support\n";
         
         await botClient.SendMessage(
             message.Chat.Id, 

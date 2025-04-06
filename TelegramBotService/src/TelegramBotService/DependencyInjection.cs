@@ -9,6 +9,8 @@ using TelegramBotService.Options;
 using TelegramBotService.Services;
 using TelegramBotService.States;
 using TelegramBotService.States.Authorize;
+using TelegramBotService.States.Info;
+using TelegramBotService.States.Support;
 
 namespace TelegramBotService;
 
@@ -48,6 +50,8 @@ public static class DependencyInjection
         services.AddScoped<WaitingForEmailState>();
         services.AddScoped<WaitingForPasswordState>();
         services.AddScoped<WaitingCommandState>();
+        services.AddScoped<SupportState>();
+        services.AddScoped<InfoState>();
 
         return services;
     }
