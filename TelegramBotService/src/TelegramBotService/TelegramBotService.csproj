@@ -25,7 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Consumers\" />
+      <ProjectReference Include="..\TelegramBotService.Contracts\TelegramBotService.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

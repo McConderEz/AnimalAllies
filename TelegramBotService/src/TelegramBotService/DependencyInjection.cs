@@ -2,6 +2,7 @@ using MassTransit;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
+using TelegramBotService.Consumers;
 using TelegramBotService.Infrastructure;
 using TelegramBotService.Infrastructure.Repository;
 using TelegramBotService.Options;
@@ -35,6 +36,7 @@ public static class DependencyInjection
         services.AddMessageBus(configuration);
         services.AddRepository();
         services.AddStates();
+        services.AddDatabase(configuration);
 
         return services;
     }
@@ -85,6 +87,8 @@ public static class DependencyInjection
         services.AddMassTransit(configure =>
         {
             configure.SetKebabCaseEndpointNameFormatter();
+
+            configure.AddConsumer<SendAuthorizationResponseEventConsumer>();
             
             configure.UsingRabbitMq((context, cfg) =>
             {
