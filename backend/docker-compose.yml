@@ -9,6 +9,12 @@
     networks:
       - backend-network
     depends_on:
+      fileservice:
+        condition: service_started
+      notification-service:
+        condition: service_started
+      telegram-bot-service:
+        condition: service_started
       minio:
         condition: service_healthy
       postgres:
@@ -24,7 +30,44 @@
       - nuget_password
     ports:
       - "8080:8080"
-      
+  
+  telegram-bot-service:
+    image: telegram-bot-service
+    build:
+      context: ../TelegramBotService
+      dockerfile: src/TelegramBotService/Dockerfile
+    networks:
+      - backend-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - BOT_TOKEN=${BOT_TOKEN}
+    ports:
+      - "3000:3000"
+    secrets:
+      - nuget_username
+      - nuget_password
+    depends_on:
+      postgres:
+        condition: service_healthy  
+        
+  notification-service:
+    image: notification-service
+    build:
+      context: ../NotificationService
+      dockerfile: src/NotificationService/Dockerfile
+    networks:
+      - backend-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - "6000:6000"
+    secrets:
+      - nuget_username
+      - nuget_password
+    depends_on:
+      postgres:
+        condition: service_healthy
+  
   fileservice:
     image: fileservice
     build:
