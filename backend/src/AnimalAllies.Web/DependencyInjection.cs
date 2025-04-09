@@ -4,6 +4,7 @@ using AnimalAllies.Accounts.Application.AccountManagement.Consumers.ApprovedVolu
 using AnimalAllies.Accounts.Application.AccountManagement.Consumers.SendUserDataForAuthorizationEvent;
 using AnimalAllies.Accounts.Infrastructure;
 using AnimalAllies.Accounts.Presentation;
+using AnimalAllies.Core;
 using AnimalAllies.Core.Dapper;
 using AnimalAllies.Core.DTOs.Accounts;
 using AnimalAllies.Core.DTOs.ValueObjects;
@@ -40,6 +41,7 @@ public static class DependencyInjection
             .AddFramework()
             .AddMessageBus(configuration)
             .AddFileService(configuration)
+            .AddCore(configuration)
             .AddSqlMappers();
         
         return services;
@@ -68,8 +70,10 @@ public static class DependencyInjection
             configure.SetKebabCaseEndpointNameFormatter();
 
 
-            configure.AddConsumer<ApprovedVolunteerRequestEventConsumer>();
-            configure.AddConsumer<SendUserDataForAuthorizationEventConsumer>();
+            configure.AddConsumer<ApprovedVolunteerRequestEventConsumer,
+                ApprovedVolunteerRequestEventConsumerDefinition>();
+            configure.AddConsumer<SendUserDataForAuthorizationEventConsumer,
+                SendUserDataForAuthorizationEventConsumerDefinition>();
             
             configure.UsingRabbitMq((context, cfg) =>
             {
