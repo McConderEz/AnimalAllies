@@ -1,12 +1,16 @@
 ﻿using AnimalAllies.Accounts.Application.Managers;
 using AnimalAllies.Accounts.Domain;
+using AnimalAllies.Core.Database;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Errors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AnimalAllies.Accounts.Infrastructure.IdentityManagers;
 
-public class RefreshSessionManager(AccountsDbContext accountsDbContext) : IRefreshSessionManager
+public class RefreshSessionManager(AccountsDbContext accountsDbContext,
+    [FromKeyedServices(Constraints.Context.Accounts)] IUnitOfWork unitOfWork) : IRefreshSessionManager
 {
 
     public async Task<Result<RefreshSession>> GetByRefreshToken(
@@ -22,8 +26,9 @@ public class RefreshSessionManager(AccountsDbContext accountsDbContext) : IRefre
         return refreshSession;
     }
     
-    public void Delete(RefreshSession refreshSession)
+    public async Task Delete(RefreshSession refreshSession, CancellationToken cancellationToken = default)
     {
         accountsDbContext.RefreshSessions.Remove(refreshSession);
+        await unitOfWork.SaveChanges(cancellationToken);
     }
 }

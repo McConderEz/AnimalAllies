@@ -5,6 +5,6 @@ namespace AnimalAllies.Accounts.Application.Managers;
 
 public interface IRefreshSessionManager
 {
-    void Delete(RefreshSession refreshSession);
+    Task Delete(RefreshSession refreshSession, CancellationToken cancellationToken = default);
     Task<Result<RefreshSession>> GetByRefreshToken(Guid refreshToken, CancellationToken cancellationToken = default);
 }

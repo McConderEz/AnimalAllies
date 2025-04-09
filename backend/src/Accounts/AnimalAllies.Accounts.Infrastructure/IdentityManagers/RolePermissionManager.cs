@@ -1,9 +1,13 @@
 ﻿using AnimalAllies.Accounts.Domain;
+using AnimalAllies.Core.Database;
+using AnimalAllies.SharedKernel.Constraints;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AnimalAllies.Accounts.Infrastructure.IdentityManagers;
 
-public class  RolePermissionManager(AccountsDbContext accountsDbContext)
+public class  RolePermissionManager(AccountsDbContext accountsDbContext,
+    [FromKeyedServices(Constraints.Context.Accounts)] IUnitOfWork unitOfWork)
 {
     public async Task AddRangeIfExist(Guid roleId,IEnumerable<string> permissions)
     {
@@ -24,7 +28,7 @@ public class  RolePermissionManager(AccountsDbContext accountsDbContext)
             await accountsDbContext.RolePermissions.AddAsync(
                 new RolePermission { RoleId = roleId, PermissionId = permission!.Id });
         }
-
-        await accountsDbContext.SaveChangesAsync();
+        
+        await unitOfWork.SaveChanges();
     }
 }
