@@ -1,13 +1,17 @@
 ﻿using AnimalAllies.Accounts.Application.Managers;
 using AnimalAllies.Accounts.Domain;
+using AnimalAllies.Core.Database;
+using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
 using AnimalAllies.SharedKernel.Shared.Errors;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AnimalAllies.Accounts.Infrastructure.IdentityManagers;
 
-public class PermissionManager(AccountsDbContext accountsDbContext) : IPermissionManager
+public class PermissionManager(AccountsDbContext accountsDbContext,
+    [FromKeyedServices(Constraints.Context.Accounts)] IUnitOfWork unitOfWork) : IPermissionManager
 {
     public async Task<Permission?> FindByCode(string code)
     {
@@ -26,8 +30,8 @@ public class PermissionManager(AccountsDbContext accountsDbContext) : IPermissio
 
             await accountsDbContext.Permissions.AddAsync(new Permission { Code = permissionCode });
         }
-
-        await accountsDbContext.SaveChangesAsync();
+        
+        await unitOfWork.SaveChanges();
     }
 
     public async Task<Result<List<string>>> GetPermissionsByUserId(

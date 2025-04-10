@@ -1,7 +1,6 @@
-﻿using AnimalAllies.Accounts.Contracts;
+﻿using System.Transactions;
 using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
-using AnimalAllies.Core.DTOs.ValueObjects;
 using AnimalAllies.Core.Extension;
 using AnimalAllies.SharedKernel.Constraints;
 using AnimalAllies.SharedKernel.Shared;
@@ -14,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NotificationService.Contracts.Requests;
 using VolunteerRequests.Application.Repository;
-using VolunteerRequests.Contracts.Messaging;
 
 namespace VolunteerRequests.Application.Features.Commands.ApproveVolunteerRequest;
 
@@ -49,8 +47,12 @@ public class ApproveVolunteerRequestHandler: ICommandHandler<ApproveVolunteerReq
         var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
             return validationResult.ToErrorList();
-
-        var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
+        
+        using var scope = new TransactionScope(
+            TransactionScopeOption.Required,
+            new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
+            TransactionScopeAsyncFlowOption.Enabled
+        );
         
         try
         {
@@ -74,13 +76,7 @@ public class ApproveVolunteerRequestHandler: ICommandHandler<ApproveVolunteerReq
 
             await _unitOfWork.SaveChanges(cancellationToken);
             
-            transaction.Commit();
-            
-            var message = new SendNotificationApproveVolunteerRequestEvent(
-                volunteerRequest.UserId,
-                volunteerRequest.VolunteerInfo.Email.Value);
-
-            await _publishEndpoint.Publish(message, cancellationToken);
+            scope.Complete();
             
             _logger.LogInformation("Approved volunteer request with id {id}", command.VolunteerRequestId);
 
@@ -88,8 +84,6 @@ public class ApproveVolunteerRequestHandler: ICommandHandler<ApproveVolunteerReq
         }
         catch (Exception e)
         {
-            transaction.Rollback();
-            
             _logger.LogError("Fail to approve volunteer request");
 
             return Error.Failure("fail.approve.request", "Fail to approve volunteer request");

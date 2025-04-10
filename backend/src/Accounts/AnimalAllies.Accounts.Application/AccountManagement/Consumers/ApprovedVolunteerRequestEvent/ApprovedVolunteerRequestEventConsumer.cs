@@ -9,7 +9,8 @@ using Microsoft.Extensions.Logging;
 
 namespace AnimalAllies.Accounts.Application.AccountManagement.Consumers.ApprovedVolunteerRequestEvent;
 
-public class ApprovedVolunteerRequestEventConsumer: IConsumer<VolunteerRequests.Contracts.Messaging.ApprovedVolunteerRequestEvent>
+public class ApprovedVolunteerRequestEventConsumer:
+    IConsumer<VolunteerRequests.Contracts.Messaging.ApprovedVolunteerRequestEvent>
 {
     private readonly UserManager<User> _userManager;
     private readonly ILogger<ApprovedVolunteerRequestEventConsumer> _logger;
@@ -38,14 +39,27 @@ public class ApprovedVolunteerRequestEventConsumer: IConsumer<VolunteerRequests.
             message.SecondName,
             message.Patronymic).Value;
         
-        var volunteer = new VolunteerAccount(
-            fullName, 
-            message.WorkExperience,
-            user);
+        var volunteer = new VolunteerAccount(fullName, message.WorkExperience, user);
         user.VolunteerAccount = volunteer;
-        //TODO: без transactional outbox
+
         await _accountManager.CreateVolunteerAccount(volunteer);
         
         _logger.LogInformation("created volunteer account to user with id {userId}", user.Id);
+    }
+}
+
+public class ApprovedVolunteerRequestEventConsumerDefinition : ConsumerDefinition<ApprovedVolunteerRequestEventConsumer>
+{
+    public ApprovedVolunteerRequestEventConsumerDefinition()
+    {
+        
+    }
+
+    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<ApprovedVolunteerRequestEventConsumer> consumerConfigurator)
+    {
+        endpointConfigurator.UseMessageRetry(c =>
+        {
+            c.Incremental(3, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
+        });
     }
 }

@@ -27,6 +27,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\PetManagement\AnimalAllies.Volunteer.Contracts\AnimalAllies.Volunteer.Contracts.csproj" />
+      <ProjectReference Include="..\..\VolunteerRequests\VolunteerRequests.Contracts\VolunteerRequests.Contracts.csproj" />
       <ProjectReference Include="..\AnimalAllies.SharedKernel\AnimalAllies.SharedKernel.csproj" />
     </ItemGroup>
 

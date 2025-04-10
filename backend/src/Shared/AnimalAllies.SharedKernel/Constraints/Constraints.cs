@@ -32,6 +32,7 @@ public static partial class Constraints
         BreedManagement,
         Accounts,
         Discussion,
-        VolunteerRequests
+        VolunteerRequests,
+        Outbox,
     }
 }

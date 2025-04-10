@@ -1,13 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Outbox.Outbox;
-using VolunteerRequests.Domain.Aggregates;
 
-namespace VolunteerRequests.Infrastructure.DbContexts;
+namespace Outbox.Outbox;
 
-public class WriteDbContext(IConfiguration configuration) : DbContext
+public class OutboxContext(IConfiguration configuration): DbContext
 {
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder
@@ -19,15 +18,14 @@ public class WriteDbContext(IConfiguration configuration) : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("volunteer_requests");
+        modelBuilder.HasDefaultSchema("outbox");
         modelBuilder.ApplyConfigurationsFromAssembly(
-            typeof(WriteDbContext).Assembly, 
-            type => type.FullName?.Contains("Configurations.Write") ?? false);
+            typeof(OutboxContext).Assembly, 
+            type => type.FullName?.Contains("Configurations") ?? false);
     }
 
     private static readonly ILoggerFactory CreateLoggerFactory
         = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
-   public DbSet<VolunteerRequest> VolunteerRequests { get; set; } = null!;
-   public DbSet<ProhibitionSending> ProhibitionsSending { get; set; } = null!;
+    public DbSet<OutboxMessage> OutboxMessages { get; set; } = null!;
 }
