@@ -18,7 +18,7 @@ namespace AnimalAllies.Accounts.Application.AccountManagement.Commands.ConfirmEm
 
 public class ConfirmEmailHandler: ICommandHandler<ConfirmEmailCommand>
 {
-    public readonly UserManager<User> _userManager;
+    private readonly UserManager<User> _userManager;
     private readonly ILogger<ConfirmEmailHandler> _logger;
     private readonly IValidator<ConfirmEmailCommand> _validator;
     private readonly IPublishEndpoint _publishEndpoint;
@@ -57,6 +57,8 @@ public class ConfirmEmailHandler: ICommandHandler<ConfirmEmailCommand>
         await _publishEndpoint.Publish(message, cancellationToken);
         
         await _unitOfWork.SaveChanges(cancellationToken);
+        
+        _logger.LogInformation("User {UserId} confirmed email.", command.UserId);
 
         return Result.Success();
     }

@@ -6,7 +6,7 @@ using Polly;
 using Polly.Retry;
 using VolunteerRequests.Contracts;
 
-namespace AnimalAllies.Core.Outbox;
+namespace Outbox.Outbox;
 
 public class ProcessOutboxMessageService
 {

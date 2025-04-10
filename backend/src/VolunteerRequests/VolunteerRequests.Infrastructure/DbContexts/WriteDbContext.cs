@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Outbox.Outbox;
 using VolunteerRequests.Domain.Aggregates;
 
 namespace VolunteerRequests.Infrastructure.DbContexts;
@@ -14,8 +15,6 @@ public class WriteDbContext(IConfiguration configuration) : DbContext
             .UseLoggerFactory(CreateLoggerFactory)
             .EnableSensitiveDataLogging()
             .UseSnakeCaseNamingConvention();
-
-        
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

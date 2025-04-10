@@ -1,12 +1,12 @@
-using AnimalAllies.SharedKernel.Shared.Errors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace AnimalAllies.Core.Outbox;
+namespace Outbox.Outbox;
 
 public class OutboxContext(IConfiguration configuration): DbContext
 {
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder
@@ -14,8 +14,6 @@ public class OutboxContext(IConfiguration configuration): DbContext
             .UseLoggerFactory(CreateLoggerFactory)
             .EnableSensitiveDataLogging()
             .UseSnakeCaseNamingConvention();
-
-        //optionsBuilder.AddInterceptors(new SoftDeleteInterceptor());
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,5 +27,5 @@ public class OutboxContext(IConfiguration configuration): DbContext
     private static readonly ILoggerFactory CreateLoggerFactory
         = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
-    public DbSet<OutboxMessage> OutboxMessages { get; set; } = null!; 
+    public DbSet<OutboxMessage> OutboxMessages { get; set; } = null!;
 }

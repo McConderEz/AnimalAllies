@@ -1,7 +1,9 @@
-﻿using AnimalAllies.Core.Outbox;
-using MassTransit;
+﻿using AnimalAllies.Core.Database;
+using AnimalAllies.SharedKernel.Constraints;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Outbox.Abstractions;
 using VolunteerRequests.Contracts.Messaging;
 using VolunteerRequests.Domain.Events;
 
@@ -10,14 +12,17 @@ namespace VolunteerRequests.Application.EventHandlers.ApprovedVolunteerRequestIn
 public class ApprovedVolunteerRequest: INotificationHandler<ApprovedVolunteerRequestDomainEvent>
 {
     private readonly ILogger<ApprovedVolunteerRequest> _logger;
-    private readonly OutboxRepository _outboxRepository;
+    private readonly IOutboxRepository _outboxRepository;
+    private readonly IUnitOfWorkOutbox _unitOfWork;
 
     public ApprovedVolunteerRequest(
         ILogger<ApprovedVolunteerRequest> logger, 
-        OutboxRepository outboxRepository)
+        IOutboxRepository outboxRepository,
+        IUnitOfWorkOutbox unitOfWork)
     {
         _logger = logger;
         _outboxRepository = outboxRepository;
+        _unitOfWork = unitOfWork;
     }
 
 
@@ -30,7 +35,9 @@ public class ApprovedVolunteerRequest: INotificationHandler<ApprovedVolunteerReq
             notification.Patronymic,
             notification.WorkExperience);
         
-        await _outboxRepository.Add(integrationEvent, cancellationToken);
+        await _outboxRepository.AddAsync(integrationEvent, cancellationToken);
+
+        await _unitOfWork.SaveChanges(cancellationToken);
         
         _logger.LogInformation("Sent integration event for creation volunteer account for user with id {userId}",
             notification.UserId);

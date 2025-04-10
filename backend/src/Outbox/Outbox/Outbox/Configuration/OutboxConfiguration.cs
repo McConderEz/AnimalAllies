@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace AnimalAllies.Core.Outbox.Configuration;
+namespace Outbox.Outbox.Configuration;
 
 public class OutboxConfiguration: IEntityTypeConfiguration<OutboxMessage>
 {

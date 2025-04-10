@@ -1,9 +1,10 @@
+using Microsoft.EntityFrameworkCore;
 using Quartz;
 
-namespace AnimalAllies.Core.Outbox;
+namespace Outbox.Outbox;
 
 [DisallowConcurrentExecution]
-public class ProcessOutboxMessageJob: IJob
+public class ProcessOutboxMessageJob: IJob 
 {
     private readonly ProcessOutboxMessageService _processOutboxMessageService;
 

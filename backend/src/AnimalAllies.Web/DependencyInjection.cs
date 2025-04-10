@@ -41,7 +41,6 @@ public static class DependencyInjection
             .AddFramework()
             .AddMessageBus(configuration)
             .AddFileService(configuration)
-            .AddCore(configuration)
             .AddSqlMappers();
         
         return services;

@@ -1,4 +1,4 @@
-namespace AnimalAllies.Core.Outbox;
+namespace Outbox.Outbox;
 
 public class OutboxMessage
 {

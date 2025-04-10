@@ -1,35 +1,38 @@
-using AnimalAllies.Core.Outbox;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Outbox.Abstractions;
+using Outbox.Outbox;
 using Quartz;
 
-namespace AnimalAllies.Core;
+namespace Outbox;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddCore(
-        this IServiceCollection services, 
+    public static IServiceCollection AddOutboxCore(
+        this IServiceCollection services,
         IConfiguration configuration)
     {
-        services
-            .AddQuartzService()
-            .AddOutbox(configuration);
-
+        services.AddScoped<OutboxContext>();
+        services.AddOutbox();
+        services.AddScoped<IUnitOfWorkOutbox, UnitOfWorkOutbox>();
+        services.AddQuartzService();
         return services;
     }
 
-    private static IServiceCollection AddOutbox(this IServiceCollection services, IConfiguration configuration)
+    
+    private static IServiceCollection AddOutbox(
+        this IServiceCollection services)
     {
-        services.AddScoped<OutboxContext>();
-
-        services.AddScoped<OutboxRepository>();
+        services.AddScoped<IOutboxRepository, OutboxRepository<OutboxContext>>();
         
         services.AddScoped<ProcessOutboxMessageService>();
         
         return services;
     }
     
-    private static IServiceCollection AddQuartzService(this IServiceCollection services)
+    private static IServiceCollection AddQuartzService(this IServiceCollection services) 
     {
         services.AddQuartz(configure =>
         {
