@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Reflection;
 using System.Text.Json;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +15,8 @@ public class ProcessOutboxMessageService
     private readonly OutboxContext _context;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly ILogger<ProcessOutboxMessageService> _logger;
-
+    private readonly ConcurrentDictionary<string, Type> _typeCache = new();
+    private readonly Assembly[] _contractAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 
     public ProcessOutboxMessageService(
         OutboxContext context, 
@@ -81,8 +84,7 @@ public class ProcessOutboxMessageService
 
         try
         {
-            var messageType = AssemblyReference.Assembly.GetType(message.Type)
-                              ?? throw new NullReferenceException("Message type not found");
+            var messageType = GetMessageType(message.Type);
 
             var deserializedMessage = JsonSerializer.Deserialize(message.Payload, messageType)
                                       ?? throw new NullReferenceException("Message payload not found");
@@ -101,5 +103,17 @@ public class ProcessOutboxMessageService
             message.ProcessedOnUtc = DateTime.UtcNow;
             _logger.LogError(ex, "Failed to process message ID: {MessageId}", message.Id);
         }
+    }
+    
+    private Type GetMessageType(string typeName)
+    {
+        return _typeCache.GetOrAdd(typeName, name =>
+        {
+            var type = _contractAssemblies
+                .Select(assembly => assembly.GetType(name))
+                .FirstOrDefault(t => t != null);
+
+            return type ?? throw new TypeLoadException($"Type '{name}' not found in any assembly");
+        });
     }
 } 

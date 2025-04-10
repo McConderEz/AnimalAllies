@@ -78,12 +78,6 @@ public class ApproveVolunteerRequestHandler: ICommandHandler<ApproveVolunteerReq
             
             scope.Complete();
             
-            var message = new SendNotificationApproveVolunteerRequestEvent(
-                volunteerRequest.UserId,
-                volunteerRequest.VolunteerInfo.Email.Value);
-
-            await _publishEndpoint.Publish(message, cancellationToken);
-            
             _logger.LogInformation("Approved volunteer request with id {id}", command.VolunteerRequestId);
 
             return Result.Success();

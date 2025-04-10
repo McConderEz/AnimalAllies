@@ -3,6 +3,7 @@ using AnimalAllies.SharedKernel.Constraints;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NotificationService.Contracts.Requests;
 using Outbox.Abstractions;
 using VolunteerRequests.Contracts.Messaging;
 using VolunteerRequests.Domain.Events;
@@ -36,7 +37,13 @@ public class ApprovedVolunteerRequest: INotificationHandler<ApprovedVolunteerReq
             notification.WorkExperience);
         
         await _outboxRepository.AddAsync(integrationEvent, cancellationToken);
+        
+        var integrationEventNotification = new SendNotificationApproveVolunteerRequestEvent(
+            notification.UserId,
+            notification.Email);
 
+        await _outboxRepository.AddAsync(integrationEventNotification, cancellationToken);
+        
         await _unitOfWork.SaveChanges(cancellationToken);
         
         _logger.LogInformation("Sent integration event for creation volunteer account for user with id {userId}",
