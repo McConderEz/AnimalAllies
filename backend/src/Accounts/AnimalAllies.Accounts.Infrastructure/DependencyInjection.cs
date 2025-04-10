@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Outbox;
 
 namespace AnimalAllies.Accounts.Infrastructure;
 
@@ -29,7 +30,15 @@ public static class DependencyInjection
             .AddJwtAuthentication(configuration)
             .AddDbContexts()
             .AddAuthorizationServices()
-            .AddDatabase();
+            .AddDatabase()
+            .AddOutbox(configuration);
+        
+        return services;
+    }
+    
+    private static IServiceCollection AddOutbox(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOutboxCore(configuration);
         
         return services;
     }
