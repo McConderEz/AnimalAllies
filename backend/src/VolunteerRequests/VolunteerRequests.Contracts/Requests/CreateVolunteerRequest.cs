@@ -1,11 +1,19 @@
-﻿using AnimalAllies.Core.DTOs.ValueObjects;
-
+﻿
 namespace VolunteerRequests.Contracts.Requests;
 
 public record CreateVolunteerRequestRequest(
-    FullNameDto FullNameDto,
+    string FirstName,
+    string SecondName,
+    string? Patronymic,
     string Email,
     string PhoneNumber,
     int WorkExperience,
     string VolunteerDescription,
-    IEnumerable<SocialNetworkDto> SocialNetworkDtos);
+    IEnumerable<SocialNetworkRequest> SocialNetworks);
+
+public class SocialNetworkRequest
+{
+    public string Title { get; set; } = string.Empty;
+    public string Url { get; set; } = string.Empty;
+}
+

@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Outbox\Outbox.Abstractions\Outbox.Abstractions.csproj" />
       <ProjectReference Include="..\..\Shared\AnimalAllies.Core\AnimalAllies.Core.csproj" />
       <ProjectReference Include="..\..\Shared\AnimalAllies.SharedKernel\AnimalAllies.SharedKernel.csproj" />
       <ProjectReference Include="..\..\VolunteerRequests\VolunteerRequests.Contracts\VolunteerRequests.Contracts.csproj" />
@@ -18,6 +19,7 @@
       <PackageReference Include="FileService.Communication" Version="1.0.3" />
       <PackageReference Include="FileService.Contracts" Version="1.0.1" />
       <PackageReference Include="NotificationService.Contracts" Version="1.0.2" />
+      <PackageReference Include="Outbox.Abstractions" Version="1.0.0" />
       <PackageReference Include="TelegramBotService.Contracts" Version="1.0.1" />
     </ItemGroup>
 

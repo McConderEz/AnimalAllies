@@ -2,6 +2,7 @@
 using AnimalAllies.SharedKernel.Constraints;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Outbox;
 using VolunteerRequests.Application.Repository;
 using VolunteerRequests.Infrastructure.DbContexts;
 using VolunteerRequests.Infrastructure.Repository;
@@ -16,11 +17,19 @@ public static class DependencyInjection
         services
             .AddDatabase()
             .AddDbContexts()
-            .AddRepositories();
+            .AddRepositories()
+            .AddOutbox(configuration);
         
         return services;
     }
 
+    private static IServiceCollection AddOutbox(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOutboxCore(configuration);
+        
+        return services;
+    }
+    
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IVolunteerRequestsRepository, VolunteerRequestsRepository>();

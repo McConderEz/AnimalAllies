@@ -18,21 +18,21 @@ public class VolunteerContract: IVolunteerContract
         _checkIfPetByBreedIdExistHandler = checkIfPetByBreedIdExistHandler;
     }
     
-    public async Task<Result<bool>> CheckIfPetBySpeciesIdExist(
+    public async Task<bool> CheckIfPetBySpeciesIdExist(
         Guid speciesId,
         CancellationToken cancellationToken = default)
     {
         var query = new CheckIfPetBySpeciesIdExistQuery(speciesId);
 
-        return await _checkIfPetBySpeciesIdExistHandler.Handle(query, cancellationToken);
+        return (await _checkIfPetBySpeciesIdExistHandler.Handle(query, cancellationToken)).Value;
     }
 
-    public async Task<Result<bool>> CheckIfPetByBreedIdExist(
+    public async Task<bool> CheckIfPetByBreedIdExist(
         Guid breedId,
         CancellationToken cancellationToken = default)
     {
         var query = new CheckIfPetByBreedIdExistQuery(breedId);
 
-        return await _checkIfPetByBreedIdExistHandler.Handle(query, cancellationToken);
+        return (await _checkIfPetByBreedIdExistHandler.Handle(query, cancellationToken)).Value;
     }
 }

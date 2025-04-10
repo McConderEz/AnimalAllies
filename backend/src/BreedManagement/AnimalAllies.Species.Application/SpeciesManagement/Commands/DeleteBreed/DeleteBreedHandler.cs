@@ -56,7 +56,7 @@ public class DeleteBreedHandler : ICommandHandler<DeleteBreedCommand, BreedId>
         var petOfThisBreed = await _volunteerContract
             .CheckIfPetByBreedIdExist(breedId.Id, cancellationToken);
         
-        if (petOfThisBreed.IsFailure || petOfThisBreed.Value)
+        if (petOfThisBreed)
             return Errors.Species.DeleteConflict();
         
         var result = species.Value.DeleteBreed(breedId, _dateTimeProvider.UtcNow);
