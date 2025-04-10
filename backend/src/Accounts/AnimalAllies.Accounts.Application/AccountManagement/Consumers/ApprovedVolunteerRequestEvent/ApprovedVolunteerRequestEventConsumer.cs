@@ -41,7 +41,7 @@ public class ApprovedVolunteerRequestEventConsumer:
         
         var volunteer = new VolunteerAccount(fullName, message.WorkExperience, user);
         user.VolunteerAccount = volunteer;
-        //TODO: без transactional outbox
+
         await _accountManager.CreateVolunteerAccount(volunteer);
         
         _logger.LogInformation("created volunteer account to user with id {userId}", user.Id);

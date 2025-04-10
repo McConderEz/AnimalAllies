@@ -1,27 +1,36 @@
-﻿using MassTransit;
+﻿using AnimalAllies.Core.Outbox;
+using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using VolunteerRequests.Contracts.Messaging;
+using VolunteerRequests.Domain.Events;
 
 namespace VolunteerRequests.Application.EventHandlers.ApprovedVolunteerRequestIntegration;
 
-public class ApprovedVolunteerRequest: INotificationHandler<ApprovedVolunteerRequestEvent>
+public class ApprovedVolunteerRequest: INotificationHandler<ApprovedVolunteerRequestDomainEvent>
 {
     private readonly ILogger<ApprovedVolunteerRequest> _logger;
-    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly OutboxRepository _outboxRepository;
 
     public ApprovedVolunteerRequest(
         ILogger<ApprovedVolunteerRequest> logger, 
-        IPublishEndpoint publishEndpoint)
+        OutboxRepository outboxRepository)
     {
         _logger = logger;
-        _publishEndpoint = publishEndpoint;
+        _outboxRepository = outboxRepository;
     }
 
 
-    public async Task Handle(ApprovedVolunteerRequestEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(ApprovedVolunteerRequestDomainEvent notification, CancellationToken cancellationToken)
     {
-        await _publishEndpoint.Publish(notification, cancellationToken);
+        var integrationEvent = new ApprovedVolunteerRequestEvent(
+            notification.UserId,
+            notification.FirstName,
+            notification.SecondName,
+            notification.Patronymic,
+            notification.WorkExperience);
+        
+        await _outboxRepository.Add(integrationEvent, cancellationToken);
         
         _logger.LogInformation("Sent integration event for creation volunteer account for user with id {userId}",
             notification.UserId);

@@ -1,4 +1,5 @@
-﻿using AnimalAllies.Core.Models;
+﻿using AnimalAllies.Core.DTOs.ValueObjects;
+using AnimalAllies.Core.Models;
 using AnimalAllies.Framework;
 using AnimalAllies.Framework.Authorization;
 using AnimalAllies.Framework.Models;
@@ -31,12 +32,13 @@ public class VolunteerRequestsController: ApplicationController
     {
         var command = new CreateVolunteerRequestCommand(
             userScopedData.UserId,
-            request.FullNameDto, 
+            new FullNameDto(request.FirstName, request.SecondName,  request.Patronymic), 
             request.Email,
             request.PhoneNumber,
             request.WorkExperience,
             request.VolunteerDescription,
-            request.SocialNetworkDtos);
+            request.SocialNetworks.Select(s =>
+                new SocialNetworkDto{Title = s.Title,Url = s.Url}));
 
         var result = await handler.Handle(command, cancellationToken);
 
@@ -200,12 +202,13 @@ public class VolunteerRequestsController: ApplicationController
         var command = new UpdateVolunteerRequestCommand(
             userScopedData.UserId,
             request.VolunteerRequestId,
-            request.FullNameDto,
+            new FullNameDto(request.FirstName, request.SecondName,  request.Patronymic), 
             request.Email,
             request.PhoneNumber,
             request.WorkExperience,
             request.VolunteerDescription,
-            request.SocialNetworkDtos);
+            request.SocialNetworks.Select(s =>
+                new SocialNetworkDto{Title = s.Title,Url = s.Url}));
 
         var result = await handler.Handle(command, cancellationToken);
 
