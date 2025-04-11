@@ -5,6 +5,7 @@ using NotificationService.Domain.Models;
 using NotificationService.Infrastructure.DbContext;
 using NotificationService.Infrastructure.Services;
 using NotificationService.Validators;
+using Outbox.Abstractions;
 
 namespace NotificationService.Features.Consumers;
 
@@ -14,20 +15,23 @@ public class RejectVolunteerRequestEventConsumer: IConsumer<SendNotificationReje
     private readonly ILogger<RejectVolunteerRequestEventConsumer> _logger;
     private readonly EmailValidator _emailValidator;
     private readonly ApplicationDbContext _context;
-    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IOutboxRepository _outboxRepository;
+    private readonly IUnitOfWorkOutbox _unitOfWorkOutbox;
 
     public RejectVolunteerRequestEventConsumer(
         MailSenderService mailService,
         ILogger<RejectVolunteerRequestEventConsumer> logger,
         EmailValidator emailValidator,
         ApplicationDbContext context,
-        IPublishEndpoint publishEndpoint)
+        IUnitOfWorkOutbox unitOfWorkOutbox, 
+        IOutboxRepository outboxRepository)
     {
         _mailService = mailService;
         _logger = logger;
         _emailValidator = emailValidator;
         _context = context;
-        _publishEndpoint = publishEndpoint;
+        _unitOfWorkOutbox = unitOfWorkOutbox;
+        _outboxRepository = outboxRepository;
     }
 
     public async Task Consume(ConsumeContext<SendNotificationRejectVolunteerRequestEvent> context)
@@ -60,7 +64,8 @@ public class RejectVolunteerRequestEventConsumer: IConsumer<SendNotificationReje
         {
             var messageEvent = new SendTelegramNotificationEvent(settings.UserId, description);
             
-            await _publishEndpoint.Publish(messageEvent, context.CancellationToken);
+            await _outboxRepository.AddAsync(messageEvent, context.CancellationToken);
+            await _unitOfWorkOutbox.SaveChanges(context.CancellationToken);
         }
 
         _logger.LogInformation("Sent notifications with reject volunteer request notification to user {email}",

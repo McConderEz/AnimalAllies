@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using Amazon;
+using Amazon.S3;
 using FileService.Api.Extensions;
 using FileService.Application.Providers;
 using FileService.Application.Repositories;
@@ -62,7 +63,7 @@ public static class DependencyInjection
                 ForcePathStyle = true,
                 UseHttp = true
             };
-
+            
             return new AmazonS3Client(minioOptions.AccessKey, minioOptions.SecretKey, config);
         });
 

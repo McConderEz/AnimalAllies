@@ -5,6 +5,7 @@ using NotificationService.Domain.Models;
 using NotificationService.Infrastructure.DbContext;
 using NotificationService.Infrastructure.Services;
 using NotificationService.Validators;
+using Outbox.Abstractions;
 
 namespace NotificationService.Features.Consumers;
 
@@ -14,20 +15,23 @@ public class TakeRequestForRevisionEventConsumer: IConsumer<SendNotificationTake
     private readonly ILogger<TakeRequestForRevisionEventConsumer> _logger;
     private readonly EmailValidator _emailValidator;
     private readonly ApplicationDbContext _context;
-    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IOutboxRepository _outboxRepository;
+    private readonly IUnitOfWorkOutbox _unitOfWorkOutbox;
 
     public TakeRequestForRevisionEventConsumer(
         MailSenderService mailService,
         ILogger<TakeRequestForRevisionEventConsumer> logger,
         EmailValidator emailValidator, 
         ApplicationDbContext context, 
-        IPublishEndpoint publishEndpoint)
+        IOutboxRepository outboxRepository, 
+        IUnitOfWorkOutbox unitOfWorkOutbox)
     {
         _mailService = mailService;
         _logger = logger;
         _emailValidator = emailValidator;
         _context = context;
-        _publishEndpoint = publishEndpoint;
+        _outboxRepository = outboxRepository;
+        _unitOfWorkOutbox = unitOfWorkOutbox;
     }
 
     public async Task Consume(ConsumeContext<SendNotificationTakeRequestForRevisionEvent> context)
@@ -60,7 +64,8 @@ public class TakeRequestForRevisionEventConsumer: IConsumer<SendNotificationTake
         {
             var messageEvent = new SendTelegramNotificationEvent(settings.UserId, description);
             
-            await _publishEndpoint.Publish(messageEvent, context.CancellationToken);
+            await _outboxRepository.AddAsync(messageEvent, context.CancellationToken);
+            await _unitOfWorkOutbox.SaveChanges(context.CancellationToken);
         }
         
         _logger.LogInformation("Sent mail with take for revision volunteer request notification to user {email}",

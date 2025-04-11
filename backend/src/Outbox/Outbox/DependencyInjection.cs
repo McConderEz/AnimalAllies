@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddOutbox();
         services.AddScoped<IUnitOfWorkOutbox, UnitOfWorkOutbox>();
         services.AddQuartzService();
+        
         return services;
     }
 
@@ -38,7 +39,10 @@ public static class DependencyInjection
         {
             var jobKey = new JobKey(nameof(ProcessOutboxMessageJob));
 
-            configure.AddJob<ProcessOutboxMessageJob>(jobKey)
+            configure.AddJob<ProcessOutboxMessageJob>(jobKey, configurator =>
+                {
+                    configurator.StoreDurably();
+                })
                 .AddTrigger(trigger => trigger.ForJob(jobKey).WithSimpleSchedule(
                     schedule => schedule.WithIntervalInSeconds(1).RepeatForever()));
         });

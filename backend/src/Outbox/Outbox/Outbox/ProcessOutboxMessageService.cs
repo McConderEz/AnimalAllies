@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
-using VolunteerRequests.Contracts;
 
 namespace Outbox.Outbox;
 

@@ -1,15 +1,18 @@
 ﻿using Hangfire;
 using Hangfire.PostgreSql;
 using MassTransit;
+using MassTransit.Middleware.Outbox;
 using Microsoft.AspNetCore.Mvc.Routing;
 using NotificationService.Api.Extensions;
 using NotificationService.Application.Abstraction;
-using NotificationService.Contracts.Requests;
 using NotificationService.Features.Consumers;
 using NotificationService.Infrastructure;
 using NotificationService.Infrastructure.DbContext;
 using NotificationService.Infrastructure.Services;
 using NotificationService.Options;
+using Outbox;
+using Outbox.Abstractions;
+using Outbox.Outbox;
 using Serilog;
 using EmailValidator = NotificationService.Validators.EmailValidator;
 
@@ -24,7 +27,8 @@ public static class DependencyInjection
             .AddMailConfiguration(configuration)
             .AddTelegramConfiguration()
             .AddInfrastructure()
-            .AddMessageBus(configuration);
+            .AddMessageBus(configuration)
+            .AddOutboxCore(configuration);
         
         return services;
     }

@@ -31,7 +31,7 @@ public static class DependencyInjection
             .AddDbContexts()
             .AddAuthorizationServices()
             .AddDatabase()
-            .AddOutbox(configuration);
+            .AddOutboxCore(configuration);
         
         return services;
     }

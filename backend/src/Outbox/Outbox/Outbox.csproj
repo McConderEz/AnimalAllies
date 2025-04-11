@@ -4,10 +4,10 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>1.0.1</Version>
+        <Version>1.0.3</Version>
         <Authors>McConderEz</Authors>
         <Company>McConderEzBy418</Company>
-        <PackageDescription>Outbox</PackageDescription>
+        <PackageDescription>OutboxAnimalAllies</PackageDescription>
         <RepositoryUrl>https://gitlab.com/McConderEz/AnimalAllies.git</RepositoryUrl>
 
     </PropertyGroup>
@@ -26,7 +26,6 @@
     </ItemGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\..\VolunteerRequests\VolunteerRequests.Contracts\VolunteerRequests.Contracts.csproj" />
       <ProjectReference Include="..\Outbox.Abstractions\Outbox.Abstractions.csproj" />
     </ItemGroup>
 
