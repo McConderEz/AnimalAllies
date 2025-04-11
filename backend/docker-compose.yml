@@ -18,7 +18,7 @@
       minio:
         condition: service_healthy
       postgres:
-        condition: service_healthy    
+        condition: service_healthy
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
@@ -48,8 +48,8 @@
       - nuget_password
     depends_on:
       postgres:
-        condition: service_healthy  
-        
+        condition: service_healthy
+  
   notification-service:
     image: notification-service
     build:
@@ -75,6 +75,7 @@
       dockerfile: src/FileService/Dockerfile
     networks:
       - fileservice-network
+      - backend-network
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
     ports:
@@ -82,7 +83,7 @@
     depends_on:
       postgres:
         condition: service_healthy
-    
+  
   postgres:
     container_name: postgres
     hostname: postgres
@@ -121,15 +122,18 @@
     ports:
       - "5341:5341"
       - "8081:80"
-    
+  
   minio:
     container_name: minio
     image: minio/minio
     networks:
       - backend-network
-    ports: 
+    ports:
       - "9000:9000"
       - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
     volumes:
       - minio-data:/data
     command: server --console-address ":9001" /data
@@ -176,7 +180,7 @@
     depends_on:
       - web
     restart: always
-    
+  
   redis:
     image: redis:latest
     container_name: redis
@@ -188,19 +192,18 @@
       - "6380:6379"
     volumes:
       - ./redisdata:/data
-
 volumes:
   rabbitmq_data:
   postgres-data:
   minio-data:
   redis-data:
- 
+
 secrets:
   nuget_username:
     file: ./secrets/nuget_username.txt
   nuget_password:
     file: ./secrets/nuget_password.txt
-    
+
 networks:
   backend-network:
     driver: bridge

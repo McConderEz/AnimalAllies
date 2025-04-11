@@ -322,7 +322,6 @@ public class MinioProvider : IFileProvider
     {
         try
         {
-            
             var presignedRequest = new GetPreSignedUrlRequest
             {
                 BucketName = fileMetadata.BucketName,
@@ -330,7 +329,7 @@ public class MinioProvider : IFileProvider
                 Verb = HttpVerb.PUT,
                 Expires = DateTime.UtcNow.AddDays(EXPIRATION_URL),
                 ContentType = fileMetadata.ContentType,
-                Protocol = Protocol.HTTP
+                Protocol = Protocol.HTTP,
             };
             
             var result = await _client.GetPreSignedURLAsync(presignedRequest);

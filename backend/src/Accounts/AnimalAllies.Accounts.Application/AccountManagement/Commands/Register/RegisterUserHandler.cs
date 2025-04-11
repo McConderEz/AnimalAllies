@@ -1,4 +1,5 @@
-﻿using AnimalAllies.Accounts.Application.Managers;
+﻿using System.Transactions;
+using AnimalAllies.Accounts.Application.Managers;
 using AnimalAllies.Accounts.Domain;
 using AnimalAllies.Core.Abstractions;
 using AnimalAllies.Core.Database;
@@ -14,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NotificationService.Contracts.Requests;
+using Outbox.Abstractions;
 
 namespace AnimalAllies.Accounts.Application.AccountManagement.Commands.Register;
 
@@ -25,7 +27,8 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
     private readonly ILogger<RegisterUserHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidator<RegisterUserCommand> _validator;
-    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IOutboxRepository _outboxRepository;
+    private readonly IUnitOfWorkOutbox _unitOfWorkOutbox;
     
     public RegisterUserHandler(
         UserManager<User> userManager,
@@ -34,7 +37,8 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         RoleManager<Role> roleManager, 
         IAccountManager accountManager,
         [FromKeyedServices(Constraints.Context.Accounts)]IUnitOfWork unitOfWork,
-        IPublishEndpoint publishEndpoint)
+        IOutboxRepository outboxRepository,
+        IUnitOfWorkOutbox unitOfWorkOutbox)
     {
         _userManager = userManager;
         _logger = logger;
@@ -42,7 +46,8 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         _roleManager = roleManager;
         _accountManager = accountManager;
         _unitOfWork = unitOfWork;
-        _publishEndpoint = publishEndpoint;
+        _outboxRepository = outboxRepository;
+        _unitOfWorkOutbox = unitOfWorkOutbox;
     }
     
     public async Task<Result> Handle(
@@ -53,7 +58,11 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         if (!validatorResult.IsValid)
             return validatorResult.ToErrorList();
 
-        var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
+        using var scope = new TransactionScope(
+            TransactionScopeOption.Required,
+            new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
+            TransactionScopeAsyncFlowOption.Enabled
+        );
 
         try
         {
@@ -91,11 +100,12 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
 
             var message = new SendConfirmTokenByEmailEvent(user.Id, user.Email!, code);
 
-            await _publishEndpoint.Publish(message, cancellationToken);
+            await _outboxRepository.AddAsync(message, cancellationToken);
             
             await _unitOfWork.SaveChanges(cancellationToken);
+            await _unitOfWorkOutbox.SaveChanges(cancellationToken);
             
-            transaction.Commit();
+            scope.Complete();
                 
             _logger.LogInformation("User created:{name} a new account with password", command.UserName);
 
@@ -104,8 +114,6 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         catch(Exception ex)
         {
             _logger.LogError("Registration of user fall with error");
-            
-            transaction.Rollback();
             
             return Error.Failure("cannot.create.user","Can not create user");
         }

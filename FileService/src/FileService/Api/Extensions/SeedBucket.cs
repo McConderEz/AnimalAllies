@@ -1,5 +1,7 @@
 using Amazon.S3;
 using Amazon.S3.Model;
+using Minio;
+using Minio.DataModel.Args;
 
 namespace FileService.Api.Extensions;
 
@@ -8,7 +10,7 @@ namespace FileService.Api.Extensions;
 /// </summary>
 /// <param name="fileProvider"></param>
 /// <param name="logger"></param>
-public class Seeding(IAmazonS3 fileProvider, ILogger<Seeding> logger)
+public class Seeding(IMinioClient fileProvider, ILogger<Seeding> logger)
 {
     private const string BUCKET_NAME = "photos";
 
@@ -16,18 +18,15 @@ public class Seeding(IAmazonS3 fileProvider, ILogger<Seeding> logger)
     {
         logger.LogInformation("Start seeding bucket to S3");
         var buckets = await fileProvider.ListBucketsAsync();
-
-        if (!buckets.Buckets.Exists(b => b.BucketName
-                .Equals(BUCKET_NAME, StringComparison.OrdinalIgnoreCase)))
+        
+        if (!buckets.Buckets.Any(b => b.Name.Equals(BUCKET_NAME, StringComparison.OrdinalIgnoreCase)))
         {
-            var bucketRequest = new PutBucketRequest
-            {
-                BucketName = BUCKET_NAME
-            };
+            var makeBucket = new MakeBucketArgs()
+                .WithBucket(BUCKET_NAME);
 
-            await fileProvider.PutBucketAsync(bucketRequest);
+            await fileProvider.MakeBucketAsync(makeBucket);
             
-            logger.LogInformation("Added bucket {bucketName} to S3", bucketRequest.BucketName);
+            logger.LogInformation("Added bucket {bucketName} to S3", BUCKET_NAME);
         }
         
         logger.LogInformation("End seeding bucket to S3");
