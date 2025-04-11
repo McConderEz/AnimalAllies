@@ -36,6 +36,7 @@
     build:
       context: ../TelegramBotService
       dockerfile: src/TelegramBotService/Dockerfile
+    env_file: ../TelegramBotService/src/TelegramBotService/.env
     networks:
       - backend-network
     environment:
